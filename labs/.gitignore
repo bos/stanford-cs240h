@@ -1,0 +1,7 @@
+*.hi
+*.o
+*_hsc.[ch]
+*~
+*.sw?
+Setup
+dist

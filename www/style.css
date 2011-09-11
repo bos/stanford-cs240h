@@ -1,0 +1,89 @@
+body {
+  margin: 1em 2em 2em 2em;
+  background-color: white;
+  color:black;
+  font-family: serif;
+}
+a {
+  color: red;
+  text-decoration: underline;
+}
+.strikeout {
+  text-decoration: line-through;
+}
+.spaced {
+  //margin: 0px;
+	}
+ul.spaced > li {
+  margin: .5em 0px;
+}
+ol.spaced > li {
+  margin: .5em 0px;
+}
+dl.spaced > dt {
+  margin: .5em 0px .1em 0px;
+}
+li.endgroup {
+  margin: 0px 0px .5em 0px;
+}
+.samp {
+  //background-color: silver;
+  font-family: monospace;
+  margin: 1em 0px;
+  padding: .5em .5em 0px .5em;
+  border: 2px dotted red;
+  overflow: auto;
+}
+.sampcomment {
+  color: silver;
+  font-style: italic;
+  font-family: sans-serif;
+}
+.type {
+  color: green;
+  font-family: monospace;
+}
+.link {
+  color: red;
+  text-decoration: none;
+}
+.aos {
+  color: black;
+  text-decoration: underline;
+}
+.env {
+  font-size: 80%;
+  font-weight: bold;
+}
+.datecol {
+  text-align: center;
+  font-weight: bold;
+}
+.sylcol {
+  text-align: left;
+}
+.noclass {
+  text-align: center;
+  color: green;
+}
+.quiz {
+  text-align: center;
+  color: red;
+  font-weight: bold;
+}
+.due {
+  color: red;
+}
+.emph {
+  color: red;
+  font-weight: bold;
+}
+.listdef {
+  font-weight: bold;
+  color: blue;
+}
+.important {
+  color: black;
+  background-color: yellow;
+  //font-weight: bold;
+}

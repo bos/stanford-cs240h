@@ -1,0 +1,206 @@
+#!/usr/bin/perl -w
+
+use strict;
+use POSIX qw(mktime strftime);
+
+my $CLASS = "CS240h";
+my $YEAR = 2011;
+my $START = "9/26";
+my $END = "12/9";
+my $MEET = "MW";
+my %VACATION = (
+    '11/21' => 'Thanksgiving recess',
+    '11/23' => 'Thanksgiving recess',
+    );
+my ($VIDEO, $EXAM);
+#$VIDEO = 'http://cobb.stanford.edu/courses/cs140/*/*-cs140-300.wmv';
+$EXAM = 'Final Project Presentations Thursday, December 15 12:15pm - 3:15pm';
+
+my @dow = ( 's', 'M', 'T', 'W', 'R', 'F', 'S');
+my @dowl = ( 'Sunday', 'Monday', 'Tuesday', 'Wednesday',
+	     'Thursday', 'Friday', 'Satruday');
+my %dow = map { $dow[$_] => $dowl[$_] } (0..$#dow);
+my @dim = ( 31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 );
+my @mon = ( 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug',
+	    'Sep', 'Oct', 'Nov', 'Dec' );
+
+die "bad date $START" unless $START =~ /^(\d+)\/(\d+)$/;
+my @start = ($1 - 1, $2);
+
+die "bad date $END" unless $END =~ /^(\d+)\/(\d+)$/;
+my @end = ($1 - 1, $2);
+
+my %dow_ok;
+foreach ((split ("", $MEET))) {
+    $dow_ok{$_} = 1;
+} 
+
+sub getnext (;$) {
+    my $prepend = shift;
+    my $ret = '';
+    while (defined ($_ = <SCHED>)) {
+	next if $_ eq "<!-- -*-sched-*- -->\n";
+	last if /<td/i;
+    }
+    return "<td align=\"center\">TBA</td>\n" unless defined $_;
+    $ret .= $_;
+    $ret .= $prepend if defined $prepend;
+    while ($_ !~ m!</td>!i && defined ($_ = <SCHED>)) {
+	$ret .= $_;
+    }
+    if (!$ret) {
+	return "<td align=\"center\">TBA</td>\n";
+    }
+    return $ret;
+}
+
+sub doit () {
+    my @tm = localtime (time);
+    if (defined ($YEAR)) {
+	$tm[5] = $YEAR - 1900;
+    }
+    @tm = ( 0, 0, 12, $start[1], $start[0], $tm[5]);
+    @tm = localtime (mktime (@tm));
+    my $x = $tm[6];
+    @tm = localtime (mktime (@tm) - (24*60*60*$x));
+    #print STDERR "tm[6] = $tm[6]\n";
+    #print "$tm[3] $end[0], $tm[4], $end[1]\n";
+    my $first = 1;
+    while ($tm[4] < $end[0] || ($tm[4] == $end[0] && $tm[3] <= $end[1])) {
+	if ($tm[6] == 0) {
+	    if ($first) {
+		$first = 0;
+	    }
+	    else {
+		print "</tr>\n\n";
+	    }
+	    print "<tr>\n<td class=\"datecol\">\n";
+	    print STDOUT (strftime ("%b %e<br>\n",
+				    localtime (mktime (@tm) + (24*60*60))));
+	    print "-<br>\n";
+	    print STDOUT (strftime ("%b %e<br>\n",
+				    localtime (mktime (@tm) + (5*24*60*60))));
+	    print "</td>\n";
+	}
+	if ($x > 0) {
+	    --$x;
+	    if (defined $dow_ok{$dow[$tm[6]]}) {
+		printf ("\n<td></td>\n");
+	    }
+	}
+	elsif (defined $dow_ok{$dow[$tm[6]]}) {
+	    print "\n";
+	    my $md = sprintf ("%d/%d", $tm[4] + 1, $tm[3]);
+	    if (defined $VACATION{$md}) {
+		print <<"EOF";
+<td class='noclass'>
+$VACATION{$md}<br>
+</td>
+EOF
+	    }
+	    else {
+		my $prepend;
+		if (defined $VIDEO) {
+		    my $ymd = sprintf ("%02d%02d%02d", $tm[5] % 100,
+				       $tm[4] + 1, $tm[3]);
+		    $prepend = "<a href=\"$VIDEO\">" . ($tm[4] + 1)
+			. "/$tm[3]</a>\n";
+		    $prepend =~ s/\*/$ymd/g;
+		}
+		print getnext $prepend;
+	    }
+	}
+	@tm = localtime (mktime (@tm) + (24*60*60));
+	#print ("@tm\n");
+    }
+
+    while ($tm[6] < 7) {
+	if (defined $dow_ok{$dow[$tm[6]]}) {
+	    printf ("\n<td></td>\n");
+	}
+	$tm[6]++;
+    }
+
+    print "</tr>\n\n";
+}
+
+open (SCHED, "<sched.html") || die "sched.html: $!";
+open (STDOUT, '>index.html~') || die "index.html~: $!";
+
+print <<'EOF';
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<head>
+EOF
+
+print "<title>$CLASS Schedule</title>\n";
+
+print <<'EOF';
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+<!--
+a {
+  color: blue;
+}
+//-->
+</style>
+
+</head>
+
+<body>
+
+<div style="text-align: center">
+EOF
+
+print "<h1><a class='aos' href='..'>$CLASS</a> schedule</h1>\n";
+
+print <<'EOF';
+</div>
+
+<table width="100%" cellspacing=5 cellpadding=5 border=1>
+<col width="10%">
+EOF
+
+    my ($i, $n, $w);
+    $n = length ($MEET);
+    $w = 90.0 / $n;
+    
+    for ($i = 0; $i < $n; $i++) {
+	print "<col width=\"$w%\">\n";
+    }
+
+print <<'EOF';
+
+<tr>
+<th>Week of</th>
+
+EOF
+
+foreach (split (//, $MEET)) {
+    print '<th><span style="text-decoration: underline;">'
+	   . $dow{$_} . "</span></th>\n";
+}
+
+print "</tr>\n\n";
+
+
+doit;
+
+print <<'EOF';
+
+</table>
+
+<p class="quiz" style="font-size: large">
+EOF
+
+print "$EXAM\n" if defined ($EXAM);
+
+print <<'EOF';
+</p>
+
+
+</body>
+EOF
+
+close (STDOUT);
+rename ("index.html~", "index.html");
