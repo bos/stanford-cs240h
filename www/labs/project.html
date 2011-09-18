@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+<head>
+<title>CS240h Final project</title>
+<link rel="stylesheet" type="text/css" href="../style.css">
+<style type="text/css">
+<!--
+//-->
+</style>
+</head>
+
+<body>
+
+<h1><a class="aos" href="..">CS240h</a> Final project</h1>
+
+<p>
+The final lab assignment for the class is to undertake a mini research
+project of your choice involving Haskell in a group of 1-3 people.  At
+the end of the term, in addition to the code, you will turn in a short
+(4-8 page) paper describing your project.  You will also present your
+and demo your results in a mini-conference held during the class's
+final exam period, Thursday, December 15 12:15pm-3:15pm.  Lunch will
+be provided.  Make sure you can attend this final exam, as your
+group's presentation will be an important part of your final grade.
+</p>
+
+<p>
+If your project overlaps with your research, this is not a problem.
+We actually encourage this.  However, if your final project overlaps
+with a project for another class (including an independent study you
+are taking for credit), you must obtain permission from the instructor
+of the other class in an email CCed to the CS240h staff mailing list.
+</p>
+
+<p>
+Any of the papers or techniques we discuss in class can be used as a
+inspiration for a project.  Here are a few more specific ideas.  This
+list will gradually expand as the course staff thinks of more
+suggestions.  You are by no means limited to the list.
+</p>
+
+<ul class="spaced">
+
+<li>
+Implement a system that safely incorporates untrusted code through the
+<a href="http://hackage.haskell.org/trac/ghc/wiki/SafeHaskell">SafeHaskell</a>
+extension.  There are several possibilities:
+<ul>
+  <li>
+    You could implement "Haskell@Home"--a generalized version of
+    services such
+    as <a href="http://folding.stanford.edu/">Folding@home</a> and
+    <a href="http://setiathome.ssl.berkeley.edu/">SETI@Home</a>.
+  </li>
+  <li>
+    You could implement a 'bot that executes untrusted code along the
+    lines of
+    <a href="http://www.haskell.org/haskellwiki/Lambdabot">Lambdabot</a>.
+    Lambdabot was written before Haskell was typesafe, and as a result
+    is fairly hairy code and very limited in functionality.  Using
+    type safety you ought to be able to achieve something much cleaner
+    and simpler, and that provides far more functionality.
+  </li>
+  <li>
+    Implement some sort of end-user programmable web-site (like
+    Wikipedia, but for code rather than for information).
+  </li>
+
+</ul>
+</li>
+
+<li>
+  Implement a parser library with a parsec-inspired interface, but
+  that generates DFA-based parsers.
+</li>
+
+<li>
+  Add garbage collection for dynamically-loaded code to GHC.
+</li>
+
+<li>
+  Implement any of the popular Google programming abstractions
+  (Chubby, Map-reduce, BigTable) or related ideas (such
+  as <a href="http://www.usenix.org/events/nsdi11/tech/full_papers/Murray.pdf">Ciel</a>
+  or <a href="http://www.usenix.org/events/nsdi11/tech/full_papers/Bolosky.pdf">Paxos-based
+  data storage</a>) in Haskell.
+</li>
+
+<li>
+  Develop a new generic programming or automatic-instance-generating
+  system for Haskell, possibly using template Haskell or
+  haskell-src-exts.  This has been done before, but it is not hard to
+  identify shortcomings of previous approaches that your
+  implementation could remedy.
+</li>
+
+<li>
+  Develop an extension to the Haskell language that increases
+  expressiveness.  (For instance, the simple ability to constrain type
+  inequality in class instances would allow all kinds programming
+  techniques that today require the frowned-upon OverlappingInstances
+  extension.)
+</li>
+
+<li>
+  Develop a high-level database interface for Haskell.
+  <a href="http://trac.haskell.org/haskelldb">HaskellDB</a> is one
+  example of an interesting way to leverage Haskell's type system to
+  make type-safe SQL queries, but it's a bit hairy.  Can you do
+  something simpler for a no-SQL database?  Or build a
+  higher-layer <a href="http://rubyonrails.org/">RAILS</a>-like
+  object-relational mapping for Haskell?
+</li>
+
+<li>
+Implement RAMCloud bindings for Haskell and build an application in
+Haskell that takes advantage of RAMCloud's unique performance
+characteristics.
+</li>
+
+<li>
+Integrate Haskell into a web browser.  There are several options for
+this:
+<ul>
+<li>
+Implement a GHC back-end for Google's
+<a href="http://code.google.com/p/nativeclient/">Native Client</a>
+environment.
+</li>
+<li>
+Develop PPAPI (pepper plugin-api) bindings for Haskell.
+</li>
+<li>
+Use <a href="https://github.com/sviperll/ghcjs">ghcjs</a> to compile
+Haskell directly to Javascript.  Develop a library that shows off
+Haskell's flexibility for programming styles--for instance by
+supporting functional reactive programming along the lines of that
+provided by
+<a href="http://www.flapjax-lang.org/">Flapjax</a>.
+</li>
+</ul>
+</li>
+
+<li>
+  Put Haskell into an operating system kernel, and use it to allow
+  untrusted extensions
+  (like <a href="http://www-spin.cs.washington.edu/">SPIN</a>) or
+  untrusted device drivers.
+</li>
+
+<li>
+  Develop a Monad with an IO-like interface, but that logs all IO
+  actions (such as changes to memory or the file system) in such a way
+  that they can be undone.  Hence, the execution of a program built on
+  this interface can be reversed for debugging or failure recovery
+  purposes.
+</li>
+
+</ul>
+
+</body>
