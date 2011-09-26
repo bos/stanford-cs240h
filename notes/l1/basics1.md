@@ -751,18 +751,33 @@ infixr 0  $, $!, `seq`
 
 # IO
 
-~~~
-import Data.Char
-import Data.ByteString.Lazy.UTF8 (toString)
-import Network.HTTP.Enumerator
+* We have seen some pure functional code--but how to do IO?
 
-main :: IO ()
-main = do
-  webPageBSring <- simpleHttp "http://cs240h.scs.stanford.edu"
-  let webPage = toString webPageBSring
-  let n = countLowerCase webPage
-  putStrLn ("number of lower-case letters: " ++ show n)
+* Let's import more symbols (assuming you ran cabal as on last slide):
+
+    ~~~~ {.haskell}
+    import Data.Char
+    import qualified Data.ByteString.Lazy.UTF8 as L
+    import Network.HTTP.Enumerator (simpleHttp)
+    ~~~~
+
+    * `import` *module* - imports all symbols in *module*
+    * `import qualified` *module* `as` *ID* - imports all symbols
+      prefixed with *ID*`.` to avoid name conflicts
+    * `import` *module* `(`*function1*[`,` *function2* ...]`)` -
+      imports just the named functions
+
+* Now let's write a program to dump a web page
+
+<!-- get URL from argument? -->
+
 ~~~
+main = do
+  page <- simpleHttp "http://cs240h.scs.stanford.edu"
+  putStr (L.toString page)
+~~~
+
+# `do` notation
 
 
 # Ad hoc polymorphism
