@@ -548,6 +548,26 @@ filter pred (x:xs)
 
 Note function `error :: String -> a` reports assertion failures
 
+# Hoogle
+
+* Let's find the source code for GHC's `length` function?
+
+* [Hoogle] is a search engine just for Haskell functions
+    * Go to <http://www.haskell.org/hoogle/>
+    * Click on *search plugin*
+    * Keyword "`haskell.org`" is too long for me--I change to "`ho`"
+
+* Let's search for length... click on source
+    * All those `#` marks are for "unboxed types", which are faster
+      but not asymptotically
+    * The important point is that `len` is tail recursive
+
+* I use Hoogle all the time, all the time when coding
+    * Most of the source code is not hard to understand
+    * Length may be a bad starter example just because of unboxed
+      types
+    * Try examining the code of the functions you are using to
+      understand them better
 
 # Example: counting letters
 
@@ -700,6 +720,41 @@ infixr 0  $, $!, `seq`
     * If GHCI doesn't specify, means default: `infixl 9`
 
 
+# Hackage and cabal
+
+* [Hackage](http://hackage.haskell.org/packages/archive/pkg-list.html)
+  is a large collection of Haskell packages
+* [Cabal](http://www.haskell.org/ghc/docs/7.0-latest/html/Cabal/index.html)
+  is a tool for browsing hackage and installing packages
+    * Cabal comes with the [haskell platform][Platform]
+    * Run `cabal update` to create `$HOME/.cabal`, download package database
+    * I highly recommend unconmenting and editing these two lines in
+      `$HOME/.cabal/config`
+
+        ~~~
+	documentation: True
+	library-profiling: True
+        ~~~
+
+    * May want to add `$HOME/.cabal/bin` to your path
+* To install packages for the first lab, you will run
+
+    ~~~
+    cabal install http-enumerator utf8-string tagsoup
+    ~~~
+
+    * Will install packages in `$HOME/.cabal`, and register them with
+      GHC in `$HOME/.ghc`
+    * If you ever want to start fresh, must delete both `$HOME/.cabal`
+      and `$HOME/.ghc`
+
+
+# IO
+
+
+# Ad hoc polymorphism
+
+
 
 
 
@@ -707,6 +762,7 @@ infixr 0  $, $!, `seq`
 [Platform]: http://hackage.haskell.org/platform/
 [GHCdoc]: http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html
 [GHCI]: http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html
+[Hoogle]: http://www.haskell.org/hoogle/
 
 
 <!--
