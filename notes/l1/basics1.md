@@ -751,6 +751,15 @@ infixr 0  $, $!, `seq`
 
 # IO
 
+~~~
+main :: IO ()
+main = do
+  webPageBSring <- simpleHttp "http://cs240h.scs.stanford.edu"
+  let webPage = toString webPageBSring
+  let n = countLowerCase webPage
+  putStrLn ("number of lower-case letters: " ++ show n)
+~~~
+
 
 # Ad hoc polymorphism
 
