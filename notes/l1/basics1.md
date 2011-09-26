@@ -74,8 +74,8 @@
 * Rest of term covers more advanced techniques
 * Final grade will be based on several factors
     1. Two small warm-up solo programming exercises
-    #. A large final project & presentation
-    #. Class attendance and participation
+    1. A large final project & presentation
+    1. Class attendance and participation
 
 # Final project
 
@@ -142,14 +142,15 @@ Hello, world!
            in print z       -- program will print 5
     ~~~
 
-    * Bindings are separated by "`;`" character, usually auto-inserted
-      by
+    * Bound names cannot start with upper-case letters
+    * Bindings are separated by "`;`", which is usually auto-inserted
+      by a
       [layout](http://www.haskell.org/onlinereport/haskell2010/haskellch2.html#x7-210002.7)
       rule
 
 * A binding may declare a *function* of one or more arguments
-    * A function and its arguments are separated by white space
-      (both when defining and when invoking it)
+    * Function and arguments are separated by spaces (when defining or
+      invoking them)
 
     ~~~ {.haskell}
     add arg1 arg2 = arg1 + arg2   -- defines function add
@@ -189,7 +190,7 @@ Hello, world!
        definition
 
     ~~~ {.haskell}
-    x = 5                 -- this x is never used in main
+    x = 5                 -- this x is not used in main
 
     main = let x = x + 1  -- introduces new x, defined in terms of itself
            in print x     -- program "diverges" (i.e., loops forever)
@@ -234,8 +235,8 @@ Hello, world!
     * By contrast, our C factorial ran in constant space
 * Fortunately, Haskell supports optimized *tail recursion*
     * A function is tail recursive if it ends with a call to itself
-    * Unfortunately, `factorial` multiplies by `n` *after* evaluating
-      `factorial (n-1)`
+    * Unfortunately, `factorial n` multiplies by `n` *after*
+      evaluating `factorial (n-1)`
 * Idea: use *accumulator* argument to make calls tail recursive
 
     ~~~ {.haskell}
@@ -249,7 +250,7 @@ Hello, world!
 
 # Guards and `where` clauses
 
-* Can shorten function declarations with *guards*:
+* *Guards* let you shorten function declarations:
 
     ~~~ {.haskell}
     factorial n = let loop acc n' | n' > 1 = loop (acc * n') (n' - 1)
@@ -258,8 +259,8 @@ Hello, world!
     ~~~
 
     * "`|`" symbol introduces a guard
-    * Guards evaluated top to bottom, first `True` guard wins
-    * System library defines `otherwise = True`
+    * Guards are evaluated top to bottom; the first `True` guard wins
+    * The system Prelude (standard library) defines `otherwise = True`
 
 * Bindings can also end with `where` clauses--like inverted `let`
 
@@ -271,19 +272,23 @@ Hello, world!
 
     * Unlike `let`, a `where` clause scopes over multiple guarded
       definitions
+      
+    * This is convenient for binding variables to use in guards
 
 
 # Tip: variable names
 
 * Inner functions (e.g., `loop`) often have arguments related to
   outer function
-    * Compiler will warn if you re-use symbol name & shadow binding
-    * Typical practice is to add `'` ("prime") to inner-function's symbol
-    * Haskell accepts the `'` character in symbols, except as first
+    * It is legal to shadow bindings and re-use variable names, but
+      the compiler will warn you
+    * Typical practice is to add `'` (prime) to the inner-function's
+      argument
+    * Haskell accepts the `'` character in variables, except as first
       character
 * Personally, I find this practice a bit error-prone
-    * While learning Haskell, I repeatedly made the error of omitting
-      prime, e.g.:
+    * While learning Haskell, I repeatedly made the error of dropping
+      primes, e.g.:
 
     ~~~ {.haskell}
     factorial n = loop 1 n
@@ -291,7 +296,8 @@ Hello, world!
                           | otherwise = acc
     ~~~
 
-    * Can avoid problem by using the longer symbol name for the outer function
+    * You can avoid the problem by using the longer symbol name for
+      the outer function
 
     ~~~ {.haskell}
     factorial n0 = loop 1 n0
@@ -308,6 +314,7 @@ Hello, world!
     * `Bool` - either `True` or `False`
     * `Char` - a unicode code point (i.e., a character)
     * `Integer` - an arbitrary-size integer
+    * `Double` - an IEEE double-precision floating-point number
     * *type1* `->` *type1* - a function from *type1* to *type2*
 * You can declare the type of a symbol or expression with `::`
 
@@ -317,7 +324,7 @@ Hello, world!
     addx y = x + y
     ~~~
 
-* Usually, the compiler can infer types--ask [GHCI][GHCI] to see
+* Usually the compiler can infer types--ask [GHCI][GHCI] to see
   inferred type:
 
     ~~~
@@ -329,7 +336,90 @@ Hello, world!
 
 # User-defined data types
 
+* The `data` keyword declares user-defined data types.  An example:
 
+    ~~~ {.haskell}
+    data PointT = PointC Double Double deriving Show
+    ~~~
+
+    * This declaration declares a new type, `PointT`, and constructor,
+      `PointC`
+    * A value of type `PointT` contains two `Double`s
+    * `deriving Show` means you can print the type (helpful in GHCI)
+
+* Note that data types and constructors must start with capital letters
+* Types and constructors can use the same name (often do), E.g.:
+    
+    ~~~ {.haskell}
+    data Point = Point Double Double deriving Show
+    ~~~ 
+
+* One type can have multiple constructors (like a tagged union):
+
+    ~~~ {.haskell}
+    data Point = Cartesian Double Double
+               | Polar Double Double
+                 deriving Show
+    data Color = Red | Green | Blue | Indigo | Violet deriving Show
+    ~~~
+
+# Using data types
+
+* Constructors act like functions producing values of their types
+
+    ~~~ {.haskell}
+    data Point = Point Double Double deriving Show
+    myPoint :: Point
+    myPoint = Point 1.0 1.0
+
+    data Color = Red | Green | Blue | Indigo | Violet deriving Show
+    myColor :: Color
+    myColor = Red
+    ~~~
+
+* `case` statements & function bindings "de-construct" types to get
+  inner values
+
+    ~~~ {.haskell}
+    getX :: Point -> Double
+    getX point = case point of
+                   Point x y -> x
+
+    getMaxCoord :: Point -> Double
+    getMaxCoord (Point x y) | x > y     = x
+                            | otherwise = y
+
+    isRed :: Color -> Bool
+    isRed Red = True        -- Only matches constructor Red
+    isRed c   = False       -- Lower-case c just a variable
+    ~~~
+
+# Parameterized types
+
+* Types can take parameters sort of like functions
+    * Type parameters start with lower-case letters
+    * Some examples from the standard Prelude
+
+    ~~~ {.haskell}
+    data Maybe a = Just a
+                 | Nothing
+    data Either a b = Left a
+                    | Right b
+    ~~~
+
+* You can see these at work in GHCI:
+
+    ~~~
+    Prelude> :t Just True
+    Just True :: Maybe Bool
+    Prelude> :t Left True
+    Left True :: Either Bool b   
+    ~~~
+
+* Notice the type of `Left True` contains a type variable, `b`
+    * Expression `Left True` can be of type `Either Bool b` for any
+      type `b`
+    * This is an example of a feature called *parametric polymorphism*
 
 [RWH]: http://book.realworldhaskell.org/
 [Platform]: http://hackage.haskell.org/platform/

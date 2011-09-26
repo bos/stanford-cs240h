@@ -211,6 +211,10 @@ li li { font-size: 85%; font-weight: normal }
 li li li { font-size: 85%; font-weight: normal }
 strong { color: red; }
 li li strong { color: black; }
+/* pandoc's rules about when to insert paragraphs don't interact well
+with the requirement for blank lines around code blocks.  Let's just
+neutralize the effects of p in bullets.  */
+li > p { margin: 0em; }
 
 div dt
 {
