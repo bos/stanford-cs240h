@@ -1028,6 +1028,78 @@ show a = ???                  -- how to implement?
       `MyShow` instance
 
 
+# Superclasses and instance contexts
+
+* One class may require all instances to be members of another
+    * Class `Eq` contains the '==' and '/=' methods
+    * Class `Ord` contains `<`, `>=`, `>`, `<=`, etc.
+    * It doesn't make sense to have an `Ord` instance not also be an
+      `Eq` instance
+    * `Ord` declares `Eq` as a superclass, using a context
+
+    ~~~~ {.haskell}
+    class Eq a => Ord a where
+        (<), (>=), (>), (<=) :: a -> a -> Bool
+        ....
+    ~~~~
+
+* Similarly, an instance may require a context
+    * E.g., you can define `myShow` for a list of items if you know
+      how to call `myShow` on each individual item:
+
+    ~~~~ {.haskell}
+    instance (MyShow a) => MyShow [a] where
+        myShow [] = "[]"
+        myShow (x:xs) = myShow x ++ ":" ++ myShow xs
+    ~~~~
+
+
+
+# The `Monad` class
+
+* `return` and `>>=` are actually methods of a class called `Monad`
+
+~~~~ {.haskell}
+class Monad m where
+    (>>=) :: m a -> (a -> m b) -> m b
+    return :: a -> m a
+    fail :: String -> m a   -- called when pattern binding fails
+~~~~
+
+* This has far-reaching consequences
+    * You can use the syntactic sugar of `do` blocks for non-IO
+      purposes (this turns out to be hugely powerful)
+    * Many monadic functions are polymorphic in the `Monad`--invent a
+      new monad, and you can still use much existing code
+
+# The `Maybe` monad
+
+* System libraries define a `Monad` instance for `Maybe`
+
+~~~~ {.haskell}
+instance  Monad Maybe  where
+    (Just x) >>= k = k x
+    Nothing >>= _  = Nothing
+    return = Just
+    fail _ = Nothing
+~~~~
+
+* Suppose you use `Nothing` to indicate failure
+    * Might have a bunch of functions to extract fields from data
+
+~~~~ {.haskell}
+extractA :: String -> Maybe Int
+extractB :: String -> Maybe String
+...
+parseForm :: String -> Maybe Form
+parseForm raw = do
+    a <- extractA raw
+    b <- extractB raw
+    ...
+    return (Form a b ...)
+~~~~
+
+
 
 [RWH]: http://book.realworldhaskell.org/
 [Platform]: http://hackage.haskell.org/platform/
