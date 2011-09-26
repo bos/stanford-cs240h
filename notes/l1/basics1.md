@@ -516,9 +516,7 @@ Hello, world!
 
 * A `String` is just a list of `Char`, so `['a', 'b', 'c'] == "abc"`
 
-# Some basic list functions
-
-The Prelude defines some list functions approximately as follows:
+# Some basic list functions in Prelude
 
 ~~~ {.haskell}
 head :: [a] -> a
@@ -527,9 +525,15 @@ head []    = error "head: empty list"
 ~~~
 
 ~~~ {.haskell}
-tail :: [a] -> a
+tail :: [a] -> a             -- all but first element
 tail (_:xs) = xs
 tail []     = error "tail: empty list"
+~~~
+
+~~~ {.haskell}
+a ++ b :: [a] -> [a] -> [a]  -- infix operator concatenate lists
+[] ++ ys = ys
+(x:xs) ++ ys = x : xs ++ ys
 ~~~
 
 ~~~ {.haskell}
@@ -796,6 +800,8 @@ main = do
     binds *pat* to *pure-value* (no "`in` ..." required)
     * <span style="color:blue">*action*</span> -- executes *action* and
       discards the result, or returns it if at end of block
+* Note:  GHCI parses input like a `do` block (i.e., can use `<-`, need
+  `let` for bindings)
 
 # What are the types of IO actions?
 
@@ -961,6 +967,66 @@ show a = ???                  -- how to implement?
       declarations)
 
 
+# Classes and Instances
+
+* Ad-hoc polymorphic functions are declared with *classes*
+
+    ~~~~ {.haskell}
+    class MyShow a where
+        myShow :: a -> String
+    ~~~~
+
+* The actual method for each type is defined in an *instance*
+  declaration
+
+    ~~~~ {.haskell}
+    data Point = Point Double Double
+    instance MyShow Point where
+        myShow (Point x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
+    ~~~~
+
+* What's the type of a function that calls `myShow`?  Ask GHCI:
+
+    ~~~~ {.haskell}
+    myPrint x = putStrLn (myShow x)
+    ~~~~
+
+    ~~~~
+    *Main> :t myPrint
+    myPrint :: MyShow a => a -> IO ()
+    ~~~~
+
+# The Context of a type declaration
+
+* Type declarations can contain restrictions on type variables
+    * Restrictions expressed with "`(`*class* *type-var*, ...`) =>`"
+      at start of type, E.g.:
+
+    ~~~~ {.haskell}
+    myPrint :: MyShow a => a -> IO ()
+    ~~~~
+
+    ~~~~ {.haskell}
+    sortAndShow :: (Ord a, MyShow a) => [a] -> String
+    ~~~~
+
+    ~~~~ {.haskell}
+    elem :: (Eq a) => a -> [a] -> Bool
+    elem _ []     = False
+    elem x (y:ys) = x==y || elem x ys
+    ~~~~
+
+    ~~~~ {.haskell}
+    add :: (Num a) => a -> a -> a
+    add a b = a + b
+    ~~~~
+
+* Can think of context as representing hidden *dictionary* arguments
+    * When you call `myPrint`, you explicitly give it a value of type
+      `a`
+    * But also implicitly give it a function pointer for type `a`'s
+      `MyShow` instance
+
 
 
 [RWH]: http://book.realworldhaskell.org/
@@ -970,17 +1036,3 @@ show a = ???                  -- how to implement?
 [Hoogle]: http://www.haskell.org/hoogle/
 
 
-<!--
-
-Declarations
-
-Some data type basics
-
-Things to mention:
-
-  - emacs mode
-  - hoogle
-  - :i for fixity
-  - Ad hoc polymorphism
-
--->
