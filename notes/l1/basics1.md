@@ -786,30 +786,55 @@ main = do
 ~~~
 
 * This task requires some impure (non-functional) actions
-    * Extracting command line arguments, Creating a TCP connection,
-      Writing to stdout
+    * Extracting command-line args, Creating a TCP connection, Writing
+      to stdout
 * A `do` block lets you sequence IO actions.  In a `do` block:
-    * *variable* `<-` *action* -- binds *variable* to result of
-      executing *action*
-    * `let` *variable* `=` *pure-value* -- binds *variable* to
-      *pure-value* (no "`in` ..." required)
-    * *action* -- executes *action* and discards the result
+    * <span style="color:blue">*variable* `<-` *action*</span> -- binds
+      *variable* to result of executing *action*
+    * <span style="color:blue">`let` *variable* `=` *pure-value*</span>
+      -- binds *variable* to *pure-value* (no "`in` ..." required)
+    * <span style="color:blue">*action*</span> -- executes *action* and
+      discards the result
 
+# What are the types of IO actions?
 
-# What are the types of IO actions
+~~~~ {.haskell}
+main :: IO ()
+getArgs :: IO [String]
+simpleHttp :: String -> IO L.ByteString   -- in reality more polymorphic 
+putStr :: String -> IO ()
+~~~~
 
+* `IO` is a parameterized type (just as `Maybe` is parameterized)
+    * "`IO [String]`" means IO action that, if executed, produces a
+      value of type `[String]`
+    * Unlike `Maybe`, we won't see any constructors for `IO`, which is
+      somewhat magic
+* What if we try to print the first command-line argument as follows?
 
-# Command-line arguments
-
+    ~~~~ {.haskell}
+    main = putStr (head getArgs)
     ~~~~
+
+    * Oops, head expects type `[String]`, not `IO [String]`
+
+* How to de-construct an `IO [String]` to get a `[String]`
+    * We can't use `case`, because we don't have a constructor for
+      `IO`<br> ... Besides, order of IO actions is important, while
+      bindings are order-independent
+    * That's the point of the `<-` operator in `do` blocks!
+
+
+# Running `urldump`
+
+~~~~
 $ ghc --make urldump
 [1 of 1] Compiling Main             ( urldump.hs, urldump.o )
 Linking urldump ...
 $ ./urldump http://www.scs.stanford.edu/
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
-          "http://www.w3.org/TR/html4/strict.dtd">
 ...
-    ~~~~
+~~~~
 
 * What if you want to run it in GHCI?
 
@@ -818,8 +843,21 @@ $ ghci ./urldump.hs
 Prelude Main>
     ~~~~
 
-    * Oops, notice no `*` before Main in the prompt
+    * No `*` before `Main` means no access to internal symbols (because
+      compiled)
 
+    ~~~~
+Prelude Main> :load *urldump.hs
+[1 of 1] Compiling Main             ( urldump.hs, interpreted )
+Ok, modules loaded: Main.
+*Main> withArgs ["http://cs240h.scs.stanford.edu/"] main
+    ~~~~
+
+    * Alternate GHCI shortcut:
+
+    ~~~~
+Prelude Main> :main "http://cs240h.scs.stanford.edu/"
+    ~~~~
 
 
 # Ad hoc polymorphism
