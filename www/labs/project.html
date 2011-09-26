@@ -65,6 +65,13 @@ extension.  There are several possibilities:
     Implement some sort of end-user programmable web-site (like
     Wikipedia, but for code rather than for information).
   </li>
+  <li>
+    Implement an online Haskell REPL environment such a
+    <a href="http://tryhaskell.org">Try Haskll</a>.  Using Safe Haskell
+    and some of the recent support in GHC 7.3 for data declarations in GHCi
+    you should be able to provide a far more powerful feature set then
+    existing websites.
+  </li>
 
 </ul>
 </li>
@@ -154,6 +161,25 @@ provided by
   that they can be undone.  Hence, the execution of a program built on
   this interface can be reversed for debugging or failure recovery
   purposes.
+</li>
+
+<li>
+  Add vector / SIMD support to GHC. This is a very heavily requested feature
+  of GHC and is something that is really needed by the community given a lot of
+  emphasis on parallel programming in Haskell. Here are some links to info about
+  this:
+  <ul>
+  <li><a href="http://hackage.haskell.org/trac/ghc/wiki/VectorComputing">
+     GHC Wiki: Vector Computing</a></li>
+  <li><a href="http://hackage.haskell.org/trac/ghc/wiki/SIMD">
+     GHC Wiki: SIMD Computing</a></li>
+  <li><a href="http://hackage.haskell.org/trac/ghc/ticket/3557">
+     GHC Ticket 3557: Add vector opps</a></li>
+  </ul>
+  The basics of this task shouldn't be that hard, especially if you only worry
+  about supporting GHC's LLVM backend. Providing a nice API to the user though
+  and then porting packages like <a href="http://hackage.haskell.org/package/repa">
+  repa</a> would make this a nice project.
 </li>
 
 </ul>
