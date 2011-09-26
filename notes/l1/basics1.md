@@ -859,6 +859,38 @@ Ok, modules loaded: Main.
 Prelude Main> :main "http://cs240h.scs.stanford.edu/"
     ~~~~
 
+# More on polymorphism
+
+* We've seen a bunch of polymorphic functions
+* Here are some more handy ones from Prelude
+
+~~~~ {.haskell}
+id :: a -> a
+id x = x
+~~~~
+
+~~~~ {.haskell}
+const :: a -> b -> a
+const a _ = a
+~~~~
+
+~~~~ {.haskell}
+fst :: (a, b) -> a
+fst (a, _) = a
+~~~~
+
+~~~~ {.haskell}
+snd :: (a, b) -> b
+snd (_, b) = b
+~~~~
+
+~~~~ {.haskell}
+print a = putStrLn (show a)   -- what's the type?  a -> IO ()?
+~~~~
+
+~~~~ {.haskell}
+show a = ???                  -- how to implement?
+~~~~
 
 # Ad hoc polymorphism
 
