@@ -7,7 +7,7 @@
       years ago
     * Course partly inspired by my experience learning Haskell
 
-* Other instructor: Bryan O'Sullivan
+* Also teaching this class: Bryan O'Sullivan
     * Has implemented many key Haskell libraries in widespread use
       today
     * Co-wrote [*Real World Haskell*][RWH], a great non-theoretical
@@ -38,7 +38,7 @@
     * Can parallelize non-concurrent code without changing semantics
     * Concurrent programming abstractions resistant to data races
 
-* Haskell lets you realize new types of functionality
+* Haskell lets you realize new types of functionality (DIFC, STM, ...)
 
 # Why take CS240h?
 
@@ -316,7 +316,7 @@ Hello, world!
 * Some basic types:
     * `Bool` - either `True` or `False`
     * `Char` - a unicode code point (i.e., a character)
-    * `Int` - fixed-precision integer
+    * `Int` - fixed-size integer
     * `Integer` - an arbitrary-size integer
     * `Double` - an IEEE double-precision floating-point number
     * *type1* `->` *type2* - a function from *type1* to *type2*
@@ -427,7 +427,7 @@ Hello, world!
 
 # Parameterized types
 
-* Types can take parameters sort of like functions
+* Types can have parameters sort of the way functions do
     * Type parameters start with lower-case letters
     * Some examples from the standard Prelude
 
@@ -514,8 +514,7 @@ Hello, world!
     oneTwoThree'' = [1..3]      -- define list by a range
     ~~~
 
-    * A `String` is just a list of `Char`, so
-      `['a', 'b', 'c'] == "abc"`
+* A `String` is just a list of `Char`, so `['a', 'b', 'c'] == "abc"`
 
 # Some basic list functions
 
@@ -642,7 +641,7 @@ Note function `error :: String -> a` reports assertion failures
     * Infix application is the default
     * Putting functions in parentheses makes them prefix, e.g., `(+) 1
       2`
-* For tuples, prefix constructors are `(,,)`, `(,,,)`, `(,,,,)`, etc.
+* For tuples, prefix constructors are `(,)`, `(,,)`, `(,,,)`, `(,,,,)`, etc.
 * Infix functions can be partially applied in a parenthesized
   *section*
 
@@ -699,6 +698,10 @@ infixr 0  $, $!, `seq`
     ~~~
 
     * If GHCI doesn't specify, means default: `infixl 9`
+
+
+
+
 
 [RWH]: http://book.realworldhaskell.org/
 [Platform]: http://hackage.haskell.org/platform/
