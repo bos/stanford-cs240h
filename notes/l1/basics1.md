@@ -749,35 +749,77 @@ infixr 0  $, $!, `seq`
       and `$HOME/.ghc`
 
 
-# IO
+# Modules and `import` syntax
 
-* We have seen some pure functional code--but how to do IO?
-
-* Let's import more symbols (assuming you ran cabal as on last slide):
+* Haskell groups top-level bindings into *modules*
+    * The default module name is `Main`, because programs start at
+      function `main` in `Main`
+    * Except for `Main`, a module named *M* must reside in a file
+      named *M*`.hs`
+    * Module names are capitalized; I generally lower-case file names
+      of `Main` modules
+* Let's add this to the top of our source file
 
     ~~~~ {.haskell}
-    import Data.Char
+    module Main where      -- redundant since Main is the default
     import qualified Data.ByteString.Lazy.UTF8 as L
+    import Data.Char
     import Network.HTTP.Enumerator (simpleHttp)
+    import System.Environment
     ~~~~
 
     * `import` *module* - imports all symbols in *module*
-    * `import qualified` *module* `as` *ID* - imports all symbols
-      prefixed with *ID*`.` to avoid name conflicts
+    * `import qualified` *module* `as` *ID* - prefixes imported symbols
+      with *ID*`.`
     * `import` *module* `(`*function1*[`,` *function2* ...]`)` -
       imports just the named functions
 
-* Now let's write a program to dump a web page
-
-<!-- get URL from argument? -->
-
-~~~
-main = do
-  page <- simpleHttp "http://cs240h.scs.stanford.edu"
-  putStr (L.toString page)
-~~~
-
 # `do` notation
+
+* Let's write a program to dump a web page
+
+~~~ {.haskell}
+main = do
+  (url:_) <- getArgs        -- Sets url to first command-line argument
+  page <- simpleHttp url    -- Sets page to contents as a ByteString
+  putStr (L.toString page)  -- Converts ByteString to String and prints it
+~~~
+
+* This task requires some impure (non-functional) actions
+    * Extracting command line arguments, Creating a TCP connection,
+      Writing to stdout
+* A `do` block lets you sequence IO actions.  In a `do` block:
+    * *variable* `<-` *action* -- binds *variable* to result of
+      executing *action*
+    * `let` *variable* `=` *pure-value* -- binds *variable* to
+      *pure-value* (no "`in` ..." required)
+    * *action* -- executes *action* and discards the result
+
+
+# What are the types of IO actions
+
+
+# Command-line arguments
+
+    ~~~~
+$ ghc --make urldump
+[1 of 1] Compiling Main             ( urldump.hs, urldump.o )
+Linking urldump ...
+$ ./urldump http://www.scs.stanford.edu/
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+          "http://www.w3.org/TR/html4/strict.dtd">
+...
+    ~~~~
+
+* What if you want to run it in GHCI?
+
+    ~~~~
+$ ghci ./urldump.hs
+Prelude Main>
+    ~~~~
+
+    * Oops, notice no `*` before Main in the prompt
+
 
 
 # Ad hoc polymorphism
