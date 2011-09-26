@@ -752,6 +752,10 @@ infixr 0  $, $!, `seq`
 # IO
 
 ~~~
+import Data.Char
+import Data.ByteString.Lazy.UTF8 (toString)
+import Network.HTTP.Enumerator
+
 main :: IO ()
 main = do
   webPageBSring <- simpleHttp "http://cs240h.scs.stanford.edu"
