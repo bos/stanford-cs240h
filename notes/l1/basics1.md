@@ -7,7 +7,7 @@
       years ago
     * Course partly inspired by my experience learning Haskell
 
-* Co-teaching with Bryan O'Sullivan
+* Other instructor: Bryan O'Sullivan
     * Has implemented many key Haskell libraries in widespread use
       today
     * Co-wrote [*Real World Haskell*][RWH], a great non-theoretical
@@ -161,6 +161,9 @@ Hello, world!
 
     ~~~ {.haskell}
     bad = print add 2 3     -- error! (print should have only 1 argument)
+    ~~~
+
+    ~~~ {.haskell}
     main = print (add 2 3)  -- ok, calls print with 1 argument, 5
     ~~~
 
@@ -175,9 +178,9 @@ Hello, world!
     x = 6                      -- error, cannot re-bind x
     ~~~
 
-    * *order-independent* - bindings can be evaluated as needed, in
-       any order
-    * *lazy* - definitions of unused symbols are not evaluated
+    * *order-independent* - order of bindings in source code does not
+       matter
+    * *lazy* - definitions of symbols are evaluated only when needed
 
     ~~~ {.haskell}
     safeDiv x y =
@@ -313,30 +316,53 @@ Hello, world!
 * Some basic types:
     * `Bool` - either `True` or `False`
     * `Char` - a unicode code point (i.e., a character)
+    * `Int` - fixed-precision integer
     * `Integer` - an arbitrary-size integer
     * `Double` - an IEEE double-precision floating-point number
-    * *type1* `->` *type1* - a function from *type1* to *type2*
+    * *type1* `->` *type2* - a function from *type1* to *type2*
+    * `(`*type1*`,` *type2*`,` ...`,` *typeN*`)` - a tuple
+    * `()` - a zero-tuple, pronounced *unit* (kind of like `void` in
+      C); there only one value of this type, also written `()`
 * You can declare the type of a symbol or expression with `::`
 
     ~~~ {.haskell}
     x :: Integer
-    x = 2
-    addx y = x + y
+    x = (1 :: Integer) + (1 :: Integer) :: Integer
     ~~~
 
-* Usually the compiler can infer types--ask [GHCI][GHCI] to see
-  inferred type:
+
+# More on types
+
+* Function application happens one argument at a time
+  (a.k.a. "*currying*")
+
+    ~~~ {.haskell}
+    add :: Integer -> (Integer -> Integer)
+    add arg1 arg2 = arg1 + arg2
+    ~~~
+
+    * So `add 2 3` is equivalent to `(add 2) 3`
+    * `(add 2)` takes 3 returns 5, so `(add 2) has type Integer -> Integer`
+    * `->` associates to the right, so parens usually omitted in
+      multi-argument function types:<br>
+      `fn ::` *argType1* `->` *argType2* `->` ... `->` *argTypeN* `->`
+      *resultType*
+
+* Usually the compiler can infer types
+    * You can ask [GHCI][GHCI] to show you inferred types with `:t`
 
     ~~~
-    *Main> :t addx
-    addx :: Integer -> Integer
+    *Main> :t add
+    add :: Integer -> Integer -> Integer
     ~~~
 
-    * But it is good practice to declare types of top-level bindings
+    * Good practice to declare types of top-level bindings
+      anyway (compiler warns if missing)
 
 # User-defined data types
 
-* The `data` keyword declares user-defined data types.  An example:
+* The `data` keyword declares user-defined data types (like `struct`
+  in C), E.g.:
 
     ~~~ {.haskell}
     data PointT = PointC Double Double deriving Show
@@ -360,6 +386,9 @@ Hello, world!
     data Point = Cartesian Double Double
                | Polar Double Double
                  deriving Show
+    ~~~
+
+    ~~~ {.haskell}
     data Color = Red | Green | Blue | Indigo | Violet deriving Show
     ~~~
 
@@ -371,7 +400,9 @@ Hello, world!
     data Point = Point Double Double deriving Show
     myPoint :: Point
     myPoint = Point 1.0 1.0
+    ~~~
 
+    ~~~ {.haskell}
     data Color = Red | Green | Blue | Indigo | Violet deriving Show
     myColor :: Color
     myColor = Red
@@ -381,14 +412,14 @@ Hello, world!
   inner values
 
     ~~~ {.haskell}
-    getX :: Point -> Double
+    getX, getMaxCoord :: Point -> Double
     getX point = case point of
                    Point x y -> x
-
-    getMaxCoord :: Point -> Double
     getMaxCoord (Point x y) | x > y     = x
                             | otherwise = y
+    ~~~
 
+    ~~~ {.haskell}
     isRed :: Color -> Bool
     isRed Red = True        -- Only matches constructor Red
     isRed c   = False       -- Lower-case c just a variable
@@ -403,6 +434,9 @@ Hello, world!
     ~~~ {.haskell}
     data Maybe a = Just a
                  | Nothing
+    ~~~
+
+    ~~~ {.haskell}
     data Either a b = Left a
                     | Right b
     ~~~
@@ -421,6 +455,158 @@ Hello, world!
       type `b`
     * This is an example of a feature called *parametric polymorphism*
 
+# More type deconstruction tips
+
+* Special variable "`_`" can be bound but not used
+    * Use it when you don't care about a value:
+
+    ~~~ {.haskell}
+    isJust :: Maybe a -> Bool      -- note parametric polymorphism
+    isJust (Just _) = True
+    isJust Nothing  = False
+    ~~~
+
+    ~~~ {.haskell}
+    isRed Red = True
+    isRed _   = False              -- we don't need the non-red value
+    ~~~
+
+    * Compiler warns if a bound variable not used; `_` avoids this
+
+* You can deconstruct types and bind variables within guards, E.g.:
+
+    ~~~ {.haskell}
+    addMaybes mx my | Just x <- mx, Just y <- my = Just (x + y)
+    addMaybes _ _                                = Nothing
+    ~~~
+
+    though often there is a simpler way
+    
+    ~~~ {.haskell}
+    addMaybes (Just x) (Just y) = Just (x + y)
+    addMaybes _ _               = Nothing
+    ~~~
+
+
+# Lists
+
+* We could define homogeneous lists with the `data` keyword
+
+    ~~~ {.haskell}
+    data List a = Cons a (List a) | Nil
+
+    oneTwoThree = (Cons 1 (Cons 2 (Cons 3 Nil))) :: List Integer
+    ~~~
+
+* But Haskell has built-in lists with syntactic sugar
+    * Instead of `List Integer`, the type is written `[Integer]`
+    * Instead of `Cons`, the constructor is called `:` and is *infix*
+    * Instead of `Nil`, the empty list is called `[]`
+
+    ~~~ {.haskell}
+    oneTwoThree = 1:2:3:[] :: [Integer]
+    ~~~
+
+    * But there are even more convenient syntaxes for the same list:
+
+    ~~~ {.haskell}
+    oneTwoThree' = [1, 2, 3]    -- comma-separated elements within brackets
+    oneTwoThree'' = [1..3]      -- define list by a range
+    ~~~
+
+    * A `String` is just a list of `Char`, so
+      `['a', 'b', 'c'] == "abc"`
+
+# Some basic list functions
+
+The Prelude defines some list functions approximately like:
+
+~~~ {.haskell}
+head :: [a] -> a
+head (x:_) = x
+head []    = error "head: empty list"
+~~~
+
+~~~ {.haskell}
+tail :: [a] -> a
+tail (_:xs) = xs
+tail []     = error "tail: empty list"
+~~~
+
+~~~ {.haskell}
+length :: [a] -> Int         -- This code is from language spec
+length []    =  0            -- GHC implements differently, why?
+length (_:l) =  1 + length l
+~~~
+
+~~~ {.haskell}
+filter :: (a -> Bool) -> [a] -> [a]
+filter pred [] = []
+filter pred (x:xs)
+  | pred x     = x : filter pred xs
+  | otherwise  = filter pred xs
+~~~
+
+Note function `error :: String -> a` reports assertion failures
+
+
+# Example: counting letters
+
+* Here's a function to count lower-case letters in a `String`
+
+    ~~~ {.haskell}
+    import Data.Char    -- brings function isLower into scope
+
+    countLowerCase :: String -> Int
+    countLowerCase str = length (filter isLower str)
+    ~~~
+
+* If we fix `length`, `countLowerCase` might run in constant space
+    * Recall Haskell evaluates expressions lazily...  Means in most
+      contexts values are interchangeable with function pointers
+      (a.k.a. *thunks*)
+
+    * A `String` is a `[Char]`, which is type with two values, a
+      *head* and *tail*
+
+    * But until each of the *head* or *tail* are needed, they can be
+      stored as function pointers
+
+    * So `length` will causes `filter` to produce `Char`s one at a time
+
+    * `length` does not hold on to characters once counted; 
+      can be garbage-collected at will
+
+# Function composition
+    
+* Here's an even more concise definition
+
+    ~~~ {.haskell}
+    countLowerCase :: String -> Int
+    countLowerCase = length . filter isLower
+    ~~~
+
+* The "`.`" operator provides function composition
+
+    ~~~ {.haskell}
+    (f . g) x = f (g x)
+    ~~~
+
+    * On previous slide, `countLowerCase`'s argument had name `str`
+
+    * The new version doesn't name the argument, a style called
+      *point-free*
+
+* Function composition can be used almost like Unix pipelines
+
+    ~~~ {.haskell}
+    process = countLowercase . toPigLatin . extractComments . unCompress
+    ~~~
+
+
+# Infix vs. Prefix notation
+
+
 [RWH]: http://book.realworldhaskell.org/
 [Platform]: http://hackage.haskell.org/platform/
 [GHCdoc]: http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html
@@ -438,5 +624,5 @@ Things to mention:
   - emacs mode
   - hoogle
   - :i for fixity
-  - layout
+
 -->
