@@ -789,12 +789,13 @@ main = do
     * Extracting command-line args, Creating a TCP connection, Writing
       to stdout
 * A `do` block lets you sequence IO actions.  In a `do` block:
-    * <span style="color:blue">*variable* `<-` *action*</span> -- binds
-      *variable* to result of executing *action*
-    * <span style="color:blue">`let` *variable* `=` *pure-value*</span>
-      -- binds *variable* to *pure-value* (no "`in` ..." required)
+    * <span style="color:blue">*pat* `<-` *action*</span> -- binds
+      *pat* (variable or constructor pattern) to result of executing
+      **action*
+    * <span style="color:blue">`let` *pat* `=` *pure-value*</span> --
+    binds *pat* to *pure-value* (no "`in` ..." required)
     * <span style="color:blue">*action*</span> -- executes *action* and
-      discards the result
+      discards the result, or returns it if at end of block
 
 # What are the types of IO actions?
 
@@ -858,6 +859,61 @@ Ok, modules loaded: Main.
     ~~~~
 Prelude Main> :main "http://cs240h.scs.stanford.edu/"
     ~~~~
+
+# The `return` function
+
+* Let's combine `simpleHttp` and `L.toString` into one function
+
+    ~~~~ {.haskell}
+    simpleHttpStr :: String -> IO String
+    simpleHttpStr url = do
+      page <- simpleHttp url
+      return (L.toString page)
+    ~~~~
+
+    * The return value of a `do` block is that of its last action
+* Note:  **`return` is not control flow statement**, just a function
+
+    ~~~~ {.haskell}
+    return :: a -> IO a
+    ~~~~
+
+    * Every action in an `IO` do block must have type `IO a` for some
+      `a`
+    * `L.toString` returns a `String`, use `return` to make an `IO
+      String`
+    * In a do block, "`let x = e`" is like "`x <- return e`" (unless
+      `e` contains symbol `x`)
+
+
+# Point-free IO composition
+
+* Recall point-free function composition with "`.`" (fixity `infixr 9`)
+* Function `>>=` (pronounced "bind") allows point-free IO composition
+
+    ~~~~ {.haskell}
+    (>>=) :: IO a -> (a -> IO b) -> IO b
+    infixl 1 >>=
+    ~~~~
+
+* Let's re-write `urldump` in point-free style
+
+    ~~~~ {.haskell}
+    main = getArgs >>= simpleHttpStr . head
+    ~~~~
+
+    * Note `>>=` composes left-to-right, while `.` goes right-to-left
+* `do` blocks are just syntactic sugar for calling `>>=`
+    * Let's de-sugar our original `main`:
+
+    ~~~~ {.haskell}
+    main =
+        getArgs >>= \(url:_) ->
+        simpleHttp url >>= \page ->
+        putStr (L.toString page)
+    ~~~~
+
+
 
 # More on polymorphism
 
