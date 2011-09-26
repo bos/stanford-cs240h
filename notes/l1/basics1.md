@@ -948,8 +948,17 @@ print a = putStrLn (show a)   -- what's the type?  a -> IO ()?
 show a = ???                  -- how to implement?
 ~~~~
 
-# Ad hoc polymorphism
+# Parametric vs. ad hoc polymorphism
 
+* There are actually *two* kinds of polymorphism at work here
+* *parametric polymorphism* -- does the same thing for every type
+    * E.g., `id :: a -> a`  just passes the value through
+    * Works for every possible type
+* *ad hoc polymorphism* -- does different things on different types
+    * E.g., `1 + 1` and `1.0 + 1.0` compute very different functions
+    * E.g., `show` converts value to `String`, depends entirely on input type
+    * Only works on types that support it (hence "`deriving Show`" in
+      declarations)
 
 
 
