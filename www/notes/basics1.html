@@ -1,0 +1,720 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+/*]]>*/
+  </style>
+</head>
+<body>
+<h1 id="cs240h-functional-systems-in-haskell">CS240h: Functional systems in Haskell</h1>
+<ul>
+<li>I'm David Mazières
+<ul>
+<li>Spent most of my career working on OSes, Systems, and Security</li>
+<li>Previously used C++ and C, but started using Haskell a couple of years ago</li>
+<li>Course partly inspired by my experience learning Haskell</li>
+</ul></li>
+<li>Also teaching this class: Bryan O'Sullivan
+<ul>
+<li>Has implemented many key Haskell libraries in widespread use today</li>
+<li>Co-wrote <a href="http://book.realworldhaskell.org/"><em>Real World Haskell</em></a>, a great non-theoretical intro book</li>
+<li>Also plenty of systems experience (e.g., Linux early userspace code)</li>
+</ul></li>
+<li>Course assistant: David Terei
+<ul>
+<li>Implemented LLVM backend and type-safe extensions that ship with GHC Haskell compiler</li>
+<li>Currently using Haskell for security research here at Stanford</li>
+</ul></li>
+</ul>
+<h1 id="why-haskell">Why Haskell?</h1>
+<ul>
+<li>Haskell's expressive power can improve productivity
+<ul>
+<li>Small language core provides big flexibility</li>
+<li>Code can be very concise, speeding development</li>
+<li>Get best of both worlds from compiled and interpreted languages</li>
+</ul></li>
+<li>Haskell makes code easier to understand and maintain
+<ul>
+<li>Can dive into complex libraries and understand <em>what</em> the code is doing<br> (<em>why</em> may be a different story, but conciseness leaves room for comments...)</li>
+</ul></li>
+<li>Haskell can increase the robustness of systems
+<ul>
+<li>Strong typing catches many bugs at compile time</li>
+<li>Functional code permits better testing methodologies</li>
+<li>Can parallelize non-concurrent code without changing semantics</li>
+<li>Concurrent programming abstractions resistant to data races</li>
+</ul></li>
+<li>Haskell lets you realize new types of functionality (DIFC, STM, ...)</li>
+</ul>
+<h1 id="why-take-cs240h">Why take CS240h?</h1>
+<ul>
+<li>Learn to build systems in Haskell with reduced upfront cost
+<ul>
+<li>Historically, Haskell was a vehicle for language research.<br> The history is reflected in how the language is usually taught</li>
+<li>CS240h will present the language more from a systems perspective</li>
+</ul></li>
+<li>Learn new, surprising, and effective programming techniques
+<ul>
+<li>There are more than enough to fill a 10-week quarter</li>
+<li>Often only documented in more theoretical papers</li>
+</ul></li>
+<li><strong>You enjoy programming</strong>
+<ul>
+<li>With Haskell, you will think about programming in new ways</li>
+</ul></li>
+<li>You sometimes get frustrated with other languages
+<ul>
+<li>Maybe you've wanted to design a new language, or tend to &quot;max-out&quot; existing language features (macros, templates, overloading, etc.)</li>
+<li>Things that require changes to most languages can be done in a library with Haskell</li>
+</ul></li>
+</ul>
+<h1 id="administrivia">Administrivia</h1>
+<ul>
+<li>We assume some of you may have toyed with Haskell, others not</li>
+<li>First week cover Haskell basics
+<ul>
+<li>If you haven't used Haskell, you should supplement by reading parts of <a href="http://book.realworldhaskell.org/">Bryan's book</a> and/or on-line tutorials (such as <a href="http://www.haskell.org/tutorial/"><code class="url">http://www.haskell.org/tutorial/</code></a>).</li>
+<li>If you have used Haskell, you may still learn some things from these lectures</li>
+</ul></li>
+<li>Rest of term covers more advanced techniques</li>
+<li>Final grade will be based on several factors
+<ol style="list-style-type: decimal">
+<li>Two small warm-up solo programming exercises</li>
+<li>A large final project &amp; presentation</li>
+<li>Class attendance and participation</li>
+</ol></li>
+</ul>
+<h1 id="final-project">Final project</h1>
+<ul>
+<li>Final project is most important component of grade</li>
+<li>Consists of a Haskell-related project of your choice
+<ul>
+<li>Form project team of 1-3 people</li>
+<li>Meet with one of the instructors to discuss project</li>
+<li>Complete and evaluate project and turn in short paper</li>
+<li>Final exam will be mini-conference where you present your work<br><strong>(Make sure you are here for exam December 15)</strong></li>
+</ul></li>
+<li>Class home page has list of <a href="http://cs240h.scs.stanford.edu/labs/project.html">suggested projects</a> (we will add more)</li>
+<li>We encourage overlap of CS240h project with your research
+<ul>
+<li>The programming techniques you learn in CS240h are likely orthogonal to whatever research you are doing</li>
+</ul></li>
+<li>We are okay with CS240h project also serving as another class project,<br><strong>provided the other instructor and all teammates (from both classes) approve</strong></li>
+</ul>
+<h1 id="getting-started-with-haskell">Getting started with Haskell</h1>
+<ul>
+<li>Install the <a href="http://hackage.haskell.org/platform/">Haskell Platform</a>, which includes the <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html">GHC</a> compiler.</li>
+<li>Create a file called <code>hello.hs</code> with the following contents:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello, world!&quot;</span></code></pre>
+<ul>
+<li>Compile your program to a native executable like this:</li>
+</ul>
+<pre><code>$ ghc --make hello
+[1 of 1] Compiling Main             ( hello.hs, hello.o )
+Linking hello ...
+$ ./hello
+Hello, world!
+</code></pre>
+<ul>
+<li>Or run it in the <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html">GHCI interpreter</a> like this:</li>
+</ul>
+<pre><code>$ ghci hello.hs 
+GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
+...
+Ok, modules loaded: Main.
+*Main&gt; main
+Hello, world!
+*Main&gt; 
+</code></pre>
+<h1 id="bindings">Bindings</h1>
+<ul>
+<li><p>Haskell uses the <code>=</code> sign to declare <em>bindings</em>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">x <span class="fu">=</span> <span class="dv">2</span>                   <span class="co">-- Two hyphens introduce a comment</span><br />y <span class="fu">=</span> <span class="dv">3</span>                   <span class="co">--    ...that continues to end of line.</span><br />main <span class="fu">=</span> <span class="kw">let</span> z <span class="fu">=</span> x <span class="fu">+</span> y    <span class="co">-- let introduces local bindings</span><br />       <span class="kw">in</span> <span class="fu">print</span> z       <span class="co">-- program will print 5</span></code></pre>
+<ul>
+<li>Bound names cannot start with upper-case letters</li>
+<li>Bindings are separated by &quot;<code>;</code>&quot;, which is usually auto-inserted by a <a href="http://www.haskell.org/onlinereport/haskell2010/haskellch2.html#x7-210002.7">layout</a> rule</li>
+</ul></li>
+<li>A binding may declare a <em>function</em> of one or more arguments
+<ul>
+<li>Function and arguments are separated by spaces (when defining or invoking them)</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">add arg1 arg2 <span class="fu">=</span> arg1 <span class="fu">+</span> arg2   <span class="co">-- defines function add</span><br />five <span class="fu">=</span> add <span class="dv">2</span> <span class="dv">3</span>                <span class="co">-- invokes function add</span></code></pre></li>
+<li><p>Parentheses can wrap compound expressions, must do so for arguments</p>
+<pre class="sourceCode"><code class="sourceCode haskell">bad <span class="fu">=</span> <span class="fu">print</span> add <span class="dv">2</span> <span class="dv">3</span>     <span class="co">-- error! (print should have only 1 argument)</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> <span class="fu">print</span> (add <span class="dv">2</span> <span class="dv">3</span>)  <span class="co">-- ok, calls print with 1 argument, 5</span></code></pre></li>
+</ul>
+<h1 id="haskell-is-a-pure-functional-language">Haskell is a <em>pure</em> functional language</h1>
+<ul>
+<li>Unlike variables in imperative languages, Haskell bindings are
+<ul>
+<li><em>immutable</em> - can only bind a symbol once in a give scope<br> (We still call bound symbols &quot;variables&quot; though)</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">x <span class="fu">=</span> <span class="dv">5</span><br />x <span class="fu">=</span> <span class="dv">6</span>                      <span class="co">-- error, cannot re-bind x</span></code></pre>
+<ul>
+<li><em>order-independent</em> - order of bindings in source code does not matter</li>
+<li><em>lazy</em> - definitions of symbols are evaluated only when needed</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">safeDiv x y <span class="fu">=</span><br />    <span class="kw">let</span> q <span class="fu">=</span> x <span class="fu">/</span> y          <span class="co">-- safe as q never evaluated if y == 0</span><br />    <span class="kw">in</span> <span class="kw">if</span> y <span class="fu">==</span> <span class="dv">0</span> <span class="kw">then</span> <span class="dv">0</span> <span class="kw">else</span> q<br />main <span class="fu">=</span> <span class="fu">print</span> (safeDiv <span class="dv">1</span> <span class="dv">0</span>) <span class="co">-- prints 0</span></code></pre>
+<ul>
+<li><em>recursive</em> - the bound symbol is in scope within its own definition</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">x <span class="fu">=</span> <span class="dv">5</span>                 <span class="co">-- this x is not used in main</span><br /><br />main <span class="fu">=</span> <span class="kw">let</span> x <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span>  <span class="co">-- introduces new x, defined in terms of itself</span><br />       <span class="kw">in</span> <span class="fu">print</span> x     <span class="co">-- program &quot;diverges&quot; (i.e., loops forever)</span></code></pre></li>
+</ul>
+<h1 id="how-to-program-without-mutable-variables">How to program without mutable variables?</h1>
+<ul>
+<li><p>In C, we use mutable variables to create loops:</p>
+<pre class="sourceCode"><code class="sourceCode c"><span class="dt">long</span> factorial (<span class="dt">int</span> n)<br />{<br />  <span class="dt">long</span> result = <span class="dv">1</span>;<br />  <span class="kw">while</span> (n &gt; <span class="dv">1</span>)<br />    result *= n--;<br />  <span class="kw">return</span> result;<br />}</code></pre></li>
+<li><p>In Haskell, can use recursion to &quot;re-bind&quot; argument symbols in new scope</p>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> <span class="kw">if</span> n <span class="fu">&gt;</span> <span class="dv">1</span><br />              <span class="kw">then</span> n <span class="fu">*</span> factorial (n<span class="fu">-</span><span class="dv">1</span>)<br />              <span class="kw">else</span> <span class="dv">1</span></code></pre>
+<ul>
+<li>Recursion often fills a similar need to mutable variables</li>
+<li>But the above Haskell factorial is inferior to the C one--why?</li>
+</ul></li>
+</ul>
+<h1 id="tail-recursion">Tail recursion</h1>
+<ul>
+<li>Each recursive call may require a stack frame
+<ul>
+<li>This Haskell code requires <code>n</code> stack frames</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> <span class="kw">if</span> n <span class="fu">&gt;</span> <span class="dv">1</span> <span class="kw">then</span> n <span class="fu">*</span> factorial (n<span class="fu">-</span><span class="dv">1</span>) <span class="kw">else</span> <span class="dv">1</span></code></pre>
+<ul>
+<li>By contrast, our C factorial ran in constant space</li>
+</ul></li>
+<li>Fortunately, Haskell supports optimized <em>tail recursion</em>
+<ul>
+<li>A function is tail recursive if it ends with a call to itself</li>
+<li>Unfortunately, <code>factorial n</code> multiplies by <code>n</code> <em>after</em> evaluating <code>factorial (n-1)</code></li>
+</ul></li>
+<li><p>Idea: use <em>accumulator</em> argument to make calls tail recursive</p>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> <span class="kw">let</span> loop acc n' <span class="fu">=</span> <span class="kw">if</span> n' <span class="fu">&gt;</span> <span class="dv">1</span><br />                                <span class="kw">then</span> loop (acc <span class="fu">*</span> n') (n' <span class="fu">-</span> <span class="dv">1</span>)<br />                                <span class="kw">else</span> acc<br />              <span class="kw">in</span> loop <span class="dv">1</span> n</code></pre>
+<ul>
+<li>Here <code>loop</code> is tail recursive, compiles to an actual loop</li>
+</ul></li>
+</ul>
+<h1 id="guards-and-where-clauses">Guards and <code>where</code> clauses</h1>
+<ul>
+<li><p><em>Guards</em> let you shorten function declarations:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> <span class="kw">let</span> loop acc n' <span class="fu">|</span> n' <span class="fu">&gt;</span> <span class="dv">1</span> <span class="fu">=</span> loop (acc <span class="fu">*</span> n') (n' <span class="fu">-</span> <span class="dv">1</span>)<br />                              <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> acc<br />              <span class="kw">in</span> loop <span class="dv">1</span> n</code></pre>
+<ul>
+<li>&quot;<code>|</code>&quot; symbol introduces a guard</li>
+<li>Guards are evaluated top to bottom; the first <code>True</code> guard wins</li>
+<li>The system Prelude (standard library) defines <code>otherwise = True</code></li>
+</ul></li>
+<li><p>Bindings can also end with <code>where</code> clauses--like inverted <code>let</code></p>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> loop <span class="dv">1</span> n<br />    <span class="kw">where</span> loop acc n' <span class="fu">|</span> n' <span class="fu">&gt;</span> <span class="dv">1</span>    <span class="fu">=</span> loop (acc <span class="fu">*</span> n') (n' <span class="fu">-</span> <span class="dv">1</span>)<br />                      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> acc</code></pre>
+<ul>
+<li><p>Unlike <code>let</code>, a <code>where</code> clause scopes over multiple guarded definitions</p></li>
+<li><p>This is convenient for binding variables to use in guards</p></li>
+</ul></li>
+</ul>
+<h1 id="tip-variable-names">Tip: variable names</h1>
+<ul>
+<li>Inner functions (e.g., <code>loop</code>) often have arguments related to outer function
+<ul>
+<li>It is legal to shadow bindings and re-use variable names, but the compiler will warn you</li>
+<li>Typical practice is to add <code>'</code> (prime) to the inner-function's argument</li>
+<li>Haskell accepts the <code>'</code> character in variables, except as first character</li>
+</ul></li>
+<li>Personally, I find this practice a bit error-prone
+<ul>
+<li>While learning Haskell, I repeatedly made the error of dropping primes, e.g.:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> loop <span class="dv">1</span> n<br />    <span class="kw">where</span> loop acc n' <span class="fu">|</span> n' <span class="fu">&gt;</span> <span class="dv">1</span>    <span class="fu">=</span> loop (acc <span class="fu">*</span> n) (n' <span class="fu">-</span> <span class="dv">1</span>) <span class="co">-- bug</span><br />                      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> acc</code></pre>
+<ul>
+<li>You can avoid the problem by using the longer symbol name for the outer function</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n0 <span class="fu">=</span> loop <span class="dv">1</span> n0<br />    <span class="kw">where</span> loop acc n <span class="fu">|</span> n <span class="fu">&gt;</span> <span class="dv">1</span>     <span class="fu">=</span> loop (acc <span class="fu">*</span> n) (n <span class="fu">-</span> <span class="dv">1</span>)<br />                     <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> acc</code></pre>
+<ul>
+<li>Here accidentally typing &quot;<code>factorial n0 = loop 1 n</code>&quot; causes compile error</li>
+</ul></li>
+</ul>
+<h1 id="every-expression-and-binding-has-a-type">Every expression and binding has a type</h1>
+<ul>
+<li>Some basic types:
+<ul>
+<li><code>Bool</code> - either <code>True</code> or <code>False</code></li>
+<li><code>Char</code> - a unicode code point (i.e., a character)</li>
+<li><code>Int</code> - fixed-size integer</li>
+<li><code>Integer</code> - an arbitrary-size integer</li>
+<li><code>Double</code> - an IEEE double-precision floating-point number</li>
+<li><em>type1</em> <code>-&gt;</code> <em>type2</em> - a function from <em>type1</em> to <em>type2</em></li>
+<li><code>(</code><em>type1</em><code>,</code> <em>type2</em><code>,</code> ...<code>,</code> <em>typeN</em><code>)</code> - a tuple</li>
+<li><code>()</code> - a zero-tuple, pronounced <em>unit</em> (kind of like <code>void</code> in C); there only one value of this type, also written <code>()</code></li>
+</ul></li>
+<li><p>You can declare the type of a symbol or expression with <code>::</code></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">x </span><span class="ot">::</span> <span class="dt">Integer</span><br />x <span class="fu">=</span> (<span class="dv">1</span><span class="ot"> </span><span class="ot">::</span> <span class="dt">Integer</span>) <span class="fu">+</span> (<span class="dv">1</span><span class="ot"> </span><span class="ot">::</span> <span class="dt">Integer</span>)<span class="ot"> </span><span class="ot">::</span> <span class="dt">Integer</span></code></pre></li>
+</ul>
+<h1 id="more-on-types">More on types</h1>
+<ul>
+<li><p>Function application happens one argument at a time (a.k.a. &quot;<em>currying</em>&quot;)</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">add </span><span class="ot">::</span> <span class="dt">Integer</span> <span class="ot">-&gt;</span> (<span class="dt">Integer</span> <span class="ot">-&gt;</span> <span class="dt">Integer</span>)<br />add arg1 arg2 <span class="fu">=</span> arg1 <span class="fu">+</span> arg2</code></pre>
+<ul>
+<li>So <code>add 2 3</code> is equivalent to <code>(add 2) 3</code></li>
+<li><code>(add 2)</code> takes 3 returns 5, so <code>(add 2) has type Integer -&gt; Integer</code></li>
+<li><code>-&gt;</code> associates to the right, so parens usually omitted in multi-argument function types:<br> <code>fn ::</code> <em>argType1</em> <code>-&gt;</code> <em>argType2</em> <code>-&gt;</code> ... <code>-&gt;</code> <em>argTypeN</em> <code>-&gt;</code> <em>resultType</em></li>
+</ul></li>
+<li>Usually the compiler can infer types
+<ul>
+<li>You can ask <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html">GHCI</a> to show you inferred types with <code>:t</code></li>
+</ul>
+<pre><code>*Main&gt; :t add
+add :: Integer -&gt; Integer -&gt; Integer
+</code></pre>
+<ul>
+<li>Good practice to declare types of top-level bindings anyway (compiler warns if missing)</li>
+</ul></li>
+</ul>
+<h1 id="user-defined-data-types">User-defined data types</h1>
+<ul>
+<li><p>The <code>data</code> keyword declares user-defined data types (like <code>struct</code> in C), E.g.:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">PointT</span> <span class="fu">=</span> <span class="dt">PointC</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="kw">deriving</span> <span class="kw">Show</span></code></pre>
+<ul>
+<li>This declaration declares a new type, <code>PointT</code>, and constructor, <code>PointC</code></li>
+<li>A value of type <code>PointT</code> contains two <code>Double</code>s</li>
+<li><code>deriving Show</code> means you can print the type (helpful in GHCI)</li>
+</ul></li>
+<li>Note that data types and constructors must start with capital letters</li>
+<li><p>Types and constructors can use the same name (often do), E.g.:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="kw">deriving</span> <span class="kw">Show</span></code></pre></li>
+<li><p>One type can have multiple constructors (like a tagged union):</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Cartesian</span> <span class="dt">Double</span> <span class="dt">Double</span><br />           <span class="fu">|</span> <span class="dt">Polar</span> <span class="dt">Double</span> <span class="dt">Double</span><br />             <span class="kw">deriving</span> <span class="kw">Show</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Color</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="fu">|</span> <span class="dt">Blue</span> <span class="fu">|</span> <span class="dt">Indigo</span> <span class="fu">|</span> <span class="dt">Violet</span> <span class="kw">deriving</span> <span class="kw">Show</span></code></pre></li>
+</ul>
+<h1 id="using-data-types">Using data types</h1>
+<ul>
+<li><p>Constructors act like functions producing values of their types</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="kw">deriving</span> <span class="kw">Show</span><br /><span class="ot">myPoint </span><span class="ot">::</span> <span class="dt">Point</span><br />myPoint <span class="fu">=</span> <span class="dt">Point</span> <span class="dv">1</span><span class="fu">.</span><span class="dv">0</span> <span class="dv">1</span><span class="fu">.</span><span class="dv">0</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Color</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="fu">|</span> <span class="dt">Blue</span> <span class="fu">|</span> <span class="dt">Indigo</span> <span class="fu">|</span> <span class="dt">Violet</span> <span class="kw">deriving</span> <span class="kw">Show</span><br /><span class="ot">myColor </span><span class="ot">::</span> <span class="dt">Color</span><br />myColor <span class="fu">=</span> <span class="dt">Red</span></code></pre></li>
+<li><p><code>case</code> statements &amp; function bindings &quot;de-construct&quot; values with <em>patterns</em></p>
+<pre class="sourceCode"><code class="sourceCode haskell">getX,<span class="ot"> getMaxCoord </span><span class="ot">::</span> <span class="dt">Point</span> <span class="ot">-&gt;</span> <span class="dt">Double</span><br />getX point <span class="fu">=</span> <span class="kw">case</span> point <span class="kw">of</span><br />               <span class="dt">Point</span> x y <span class="ot">-&gt;</span> x<br />getMaxCoord (<span class="dt">Point</span> x y) <span class="fu">|</span> x <span class="fu">&gt;</span> y     <span class="fu">=</span> x<br />                        <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> y</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">isRed </span><span class="ot">::</span> <span class="dt">Color</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span><br />isRed <span class="dt">Red</span> <span class="fu">=</span> <span class="kw">True</span>        <span class="co">-- Only matches constructor Red</span><br />isRed c   <span class="fu">=</span> <span class="kw">False</span>       <span class="co">-- Lower-case c just a variable</span></code></pre></li>
+</ul>
+<h1 id="parameterized-types">Parameterized types</h1>
+<ul>
+<li>Types can have parameters sort of the way functions do
+<ul>
+<li>Type parameters start with lower-case letters</li>
+<li>Some examples from the standard Prelude</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="fu">=</span> <span class="kw">Just</span> a<br />             <span class="fu">|</span> <span class="kw">Nothing</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Either</span> a b <span class="fu">=</span> <span class="kw">Left</span> a<br />                <span class="fu">|</span> <span class="kw">Right</span> b</code></pre></li>
+<li><p>You can see these at work in GHCI:</p>
+<pre><code>Prelude&gt; :t Just True
+Just True :: Maybe Bool
+Prelude&gt; :t Left True
+Left True :: Either Bool b   
+</code></pre></li>
+<li>Notice the type of <code>Left True</code> contains a type variable, <code>b</code>
+<ul>
+<li>Expression <code>Left True</code> can be of type <code>Either Bool b</code> for any type <code>b</code></li>
+<li>This is an example of a feature called <em>parametric polymorphism</em></li>
+</ul></li>
+</ul>
+<h1 id="more-deconstruction-tips">More deconstruction tips</h1>
+<ul>
+<li>Special variable &quot;<code>_</code>&quot; can be bound but not used
+<ul>
+<li>Use it when you don't care about a value:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">isJust </span><span class="ot">::</span> <span class="dt">Maybe</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>      <span class="co">-- note parametric polymorphism</span><br />isJust (<span class="kw">Just</span> _) <span class="fu">=</span> <span class="kw">True</span><br />isJust <span class="kw">Nothing</span>  <span class="fu">=</span> <span class="kw">False</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell">isRed <span class="dt">Red</span> <span class="fu">=</span> <span class="kw">True</span><br />isRed _   <span class="fu">=</span> <span class="kw">False</span>              <span class="co">-- we don't need the non-red value</span></code></pre>
+<ul>
+<li>Compiler warns if a bound variable not used; <code>_</code> avoids this</li>
+</ul></li>
+<li><p>You can deconstruct types and bind variables within guards, E.g.:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">addMaybes mx my <span class="fu">|</span> <span class="kw">Just</span> x <span class="ot">&lt;-</span> mx, <span class="kw">Just</span> y <span class="ot">&lt;-</span> my <span class="fu">=</span> <span class="kw">Just</span> (x <span class="fu">+</span> y)<br />addMaybes _ _                                <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<p>though often there is a simpler way</p>
+<pre class="sourceCode"><code class="sourceCode haskell">addMaybes (<span class="kw">Just</span> x) (<span class="kw">Just</span> y) <span class="fu">=</span> <span class="kw">Just</span> (x <span class="fu">+</span> y)<br />addMaybes _ _               <span class="fu">=</span> <span class="kw">Nothing</span></code></pre></li>
+</ul>
+<h1 id="lists">Lists</h1>
+<ul>
+<li><p>We could define homogeneous lists with the <code>data</code> keyword</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">List</span> a <span class="fu">=</span> <span class="dt">Cons</span> a (<span class="dt">List</span> a) <span class="fu">|</span> <span class="dt">Nil</span><br /><br />oneTwoThree <span class="fu">=</span> (<span class="dt">Cons</span> <span class="dv">1</span> (<span class="dt">Cons</span> <span class="dv">2</span> (<span class="dt">Cons</span> <span class="dv">3</span> <span class="dt">Nil</span>)))<span class="ot"> </span><span class="ot">::</span> <span class="dt">List</span> <span class="dt">Integer</span></code></pre></li>
+<li>But Haskell has built-in lists with syntactic sugar
+<ul>
+<li>Instead of <code>List Integer</code>, the type is written <code>[Integer]</code></li>
+<li>Instead of <code>Cons</code>, the constructor is called <code>:</code> and is <em>infix</em></li>
+<li>Instead of <code>Nil</code>, the empty list is called <code>[]</code></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">oneTwoThree <span class="fu">=</span> <span class="dv">1</span><span class="fu">:</span><span class="dv">2</span><span class="fu">:</span><span class="dv">3</span><span class="fu">:</span>[]<span class="ot"> </span><span class="ot">::</span> [<span class="dt">Integer</span>]</code></pre>
+<ul>
+<li>But there are even more convenient syntaxes for the same list:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">oneTwoThree' <span class="fu">=</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>]    <span class="co">-- comma-separated elements within brackets</span><br />oneTwoThree'' <span class="fu">=</span> [<span class="dv">1</span><span class="fu">..</span><span class="dv">3</span>]      <span class="co">-- define list by a range</span></code></pre></li>
+<li><p>A <code>String</code> is just a list of <code>Char</code>, so <code>['a', 'b', 'c'] == &quot;abc&quot;</code></p></li>
+</ul>
+<h1 id="some-basic-list-functions-in-prelude">Some basic list functions in Prelude</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">head</span><span class="ot"> </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> a<br /><span class="fu">head</span> (x<span class="fu">:</span>_) <span class="fu">=</span> x<br /><span class="fu">head</span> []    <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;head: empty list&quot;</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">tail</span><span class="ot"> </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> a             <span class="co">-- all but first element</span><br /><span class="fu">tail</span> (_<span class="fu">:</span>xs) <span class="fu">=</span> xs<br /><span class="fu">tail</span> []     <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;tail: empty list&quot;</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell">a <span class="fu">++</span><span class="ot"> b </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]  <span class="co">-- infix operator concatenate lists</span><br />[] <span class="fu">++</span> ys <span class="fu">=</span> ys<br />(x<span class="fu">:</span>xs) <span class="fu">++</span> ys <span class="fu">=</span> x <span class="fu">:</span> xs <span class="fu">++</span> ys</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">length</span><span class="ot"> </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Int</span>         <span class="co">-- This code is from language spec</span><br /><span class="fu">length</span> []    <span class="fu">=</span>  <span class="dv">0</span>            <span class="co">-- GHC implements differently, why?</span><br /><span class="fu">length</span> (_<span class="fu">:</span>l) <span class="fu">=</span>  <span class="dv">1</span> <span class="fu">+</span> <span class="fu">length</span> l</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">filter</span><span class="ot"> </span><span class="ot">::</span> (a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]<br /><span class="fu">filter</span> <span class="fu">pred</span> [] <span class="fu">=</span> []<br /><span class="fu">filter</span> <span class="fu">pred</span> (x<span class="fu">:</span>xs)<br />  <span class="fu">|</span> <span class="fu">pred</span> x     <span class="fu">=</span> x <span class="fu">:</span> <span class="fu">filter</span> <span class="fu">pred</span> xs<br />  <span class="fu">|</span> <span class="fu">otherwise</span>  <span class="fu">=</span> <span class="fu">filter</span> <span class="fu">pred</span> xs</code></pre>
+<p>Note function <code>error :: String -&gt; a</code> reports assertion failures</p>
+<h1 id="hoogle">Hoogle</h1>
+<ul>
+<li><p>Let's find the source code for GHC's <code>length</code> function?</p></li>
+<li><a href="http://www.haskell.org/hoogle/">Hoogle</a> is a search engine just for Haskell functions
+<ul>
+<li>Go to <a href="http://www.haskell.org/hoogle/"><code class="url">http://www.haskell.org/hoogle/</code></a></li>
+<li>Click on <em>search plugin</em></li>
+<li>Keyword &quot;<code>haskell.org</code>&quot; is too long for me--I change to &quot;<code>ho</code>&quot;</li>
+</ul></li>
+<li>Let's search for length... click on source
+<ul>
+<li>All those <code>#</code> marks are for &quot;unboxed types&quot;, which are faster but not asymptotically</li>
+<li>The important point is that <code>len</code> is tail recursive</li>
+</ul></li>
+<li>I use Hoogle all the time, all the time when coding
+<ul>
+<li>Most of the source code is not hard to understand</li>
+<li>Length may be a bad starter example just because of unboxed types</li>
+<li>Try examining the code of the functions you are using to understand them better</li>
+</ul></li>
+</ul>
+<h1 id="example-counting-letters">Example: counting letters</h1>
+<ul>
+<li><p>Here's a function to count lower-case letters in a <code>String</code></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Data.Char</span>    <span class="co">-- brings function isLower into scope</span><br /><br /><span class="ot">countLowerCase </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span><br />countLowerCase str <span class="fu">=</span> <span class="fu">length</span> (<span class="fu">filter</span> <span class="fu">isLower</span> str)</code></pre></li>
+<li>If we fix <code>length</code>, <code>countLowerCase</code> might run in constant space
+<ul>
+<li><p>Recall Haskell evaluates expressions lazily... Means in most contexts values are interchangeable with function pointers (a.k.a. <em>thunks</em>)</p></li>
+<li><p>A <code>String</code> is a <code>[Char]</code>, which is type with two values, a <em>head</em> and <em>tail</em></p></li>
+<li><p>But until each of the <em>head</em> or <em>tail</em> are needed, they can be stored as function pointers</p></li>
+<li><p>So <code>length</code> will causes <code>filter</code> to produce <code>Char</code>s one at a time</p></li>
+<li><p><code>length</code> does not hold on to characters once counted; can be garbage-collected at will</p></li>
+</ul></li>
+</ul>
+<h1 id="function-composition">Function composition</h1>
+<ul>
+<li><p>Here's an even more concise definition</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">countLowerCase </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span><br />countLowerCase <span class="fu">=</span> <span class="fu">length</span> <span class="fu">.</span> <span class="fu">filter</span> <span class="fu">isLower</span></code></pre></li>
+<li><p>The &quot;<code>.</code>&quot; operator provides function composition</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(f <span class="fu">.</span> g) x <span class="fu">=</span> f (g x)</code></pre>
+<ul>
+<li><p>On previous slide, <code>countLowerCase</code>'s argument had name <code>str</code></p></li>
+<li><p>The new version doesn't name the argument, a style called <em>point-free</em></p></li>
+</ul></li>
+<li><p>Function composition can be used almost like Unix pipelines</p>
+<pre class="sourceCode"><code class="sourceCode haskell">process <span class="fu">=</span> countLowercase <span class="fu">.</span> toPigLatin <span class="fu">.</span> extractComments <span class="fu">.</span> unCompress</code></pre></li>
+</ul>
+<h1 id="lambda-abstraction">Lambda abstraction</h1>
+<ul>
+<li><p>Sometimes you want to name the arguments but not the function</p></li>
+<li>Haskell allows anonymous functions through <em>lambda abstraction</em>
+<ul>
+<li>The notation is <code>\</code><em>variable(s)</em> <code>-&gt;</code> <em>body</em> (where <code>\</code> is pronounced &quot;lambda&quot;)</li>
+</ul></li>
+<li><p>Example:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">countLowercaseAndDigits </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Int</span><br />countLowercaseAndDigits <span class="fu">=</span> <span class="fu">length</span> <span class="fu">.</span> <span class="fu">filter</span> (\c <span class="ot">-&gt;</span> <span class="fu">isLower</span> c <span class="fu">||</span> <span class="fu">isDigit</span> c)</code></pre></li>
+<li><p>Lambda abstractions can deconstruct values with patterns, e.g.:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">        <span class="fu">...</span> (\(<span class="kw">Right</span> x) <span class="ot">-&gt;</span> x) <span class="fu">...</span></code></pre>
+<ul>
+<li>But note that guards or multiple bindings are not allowed</li>
+<li>Patterns must have the right constructor or will get run-time error</li>
+</ul></li>
+</ul>
+<h1 id="infix-vs.-prefix-notation">Infix vs. Prefix notation</h1>
+<ul>
+<li>We've seen some infix functions &amp; constructors: <code>+</code>, <code>*</code>, <code>/</code>, <code>.</code>, <code>||</code>, <code>:</code></li>
+<li>In fact, any binary function or constructor can be used infix or prefix</li>
+<li>For functions and constructors composed of letters, digits, <code>_</code>, and <code>'</code>
+<ul>
+<li>Prefix is the default: <code>add 1 2</code></li>
+<li>Putting function in backticks makes it infix: <code>1 `add` 2</code></li>
+</ul></li>
+<li>For functions starting with one of <code>!#$%&amp;*+./&lt;=&gt;?@\^|-~</code> or constructors starting &quot;<code>:</code>&quot;
+<ul>
+<li>Infix application is the default</li>
+<li>Putting functions in parentheses makes them prefix, e.g., <code>(+) 1   2</code></li>
+</ul></li>
+<li>For tuples, prefix constructors are <code>(,)</code>, <code>(,,)</code>, <code>(,,,)</code>, <code>(,,,,)</code>, etc.</li>
+<li><p>Infix functions can be partially applied in a parenthesized <em>section</em></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">stripPunctuation </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span><br />stripPunctuation <span class="fu">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> <span class="st">&quot;!#$%&amp;*+./&lt;=&gt;?@\\^|-~:&quot;</span>)</code></pre></li>
+</ul>
+<h1 id="fixity">Fixity</h1>
+<ul>
+<li>Most operators are just library functions in Haskell
+<ul>
+<li>Very few operators reserved by language syntax (<code>..</code>, <code>:</code>, <code>::</code>, <code>=</code>, <code>\</code>, <code>|</code>, <code>&lt;-</code>, <code>-&gt;</code>, <code>@</code>, <code>~</code>, <code>=&gt;</code>, <code>--</code>)</li>
+<li>You can go crazy and define your own operators</li>
+<li>Or even use your own definitions instead of system ones</li>
+</ul></li>
+<li>Define precedence of infix operators with fixity declarations
+<ul>
+<li>Keywords: <code>infixl</code>/<code>infixr</code>/<code>infix</code> for left/right/no associativity</li>
+<li>Syntax: <em>infix-keyword</em> [0-9] <em>function</em> [, <em>function</em> ...]</li>
+<li>Allowed wherever a type declaration is allowed</li>
+</ul></li>
+<li>0 is lowest allowed fixity precedence, 9 is highest
+<ul>
+<li>Prefix function application has fixity 10--higher than any infix call</li>
+<li>Lambda abstractions, <code>else</code> clauses, and <code>let</code>...<code>in</code> clauses extend as far to the right as possible (meaning they never stop at any infix operator, no matter how low precedence)</li>
+</ul></li>
+</ul>
+<h1 id="fixity-of-specific-operators">Fixity of specific operators</h1>
+<ul>
+<li>Here is the fixity of the <a href="http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-820061">standard operators</a>:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">infixl</span> <span class="dv">9</span>  <span class="fu">!!</span>             <span class="co">-- This is the default when fixity unspecified</span><br /><span class="kw">infixr</span> <span class="dv">9</span>  <span class="fu">.</span><br /><span class="kw">infixr</span> <span class="dv">8</span>  <span class="fu">^</span>, <span class="fu">^^</span>, &#8902;&#8902;<br /><span class="kw">infixl</span> <span class="dv">7</span>  &#8902;, <span class="fu">/</span>, <span class="ot">`quot`</span>, <span class="ot">`rem`</span>, <span class="ot">`div`</span>, <span class="ot">`mod`</span>  <br /><span class="kw">infixl</span> <span class="dv">6</span>  <span class="fu">+</span>, <span class="fu">-</span>           <span class="co">-- Unary negation &quot;-&quot; has this fixity, too</span><br /><span class="kw">infixr</span> <span class="dv">5</span>  <span class="fu">++</span>             <span class="co">-- built-in &quot;:&quot; constructor has this fixity, too</span><br />infix  <span class="dv">4</span>  <span class="fu">==</span>, <span class="fu">/=</span>, <span class="fu">&lt;</span>, <span class="fu">&lt;=</span>, <span class="fu">&gt;=</span>, <span class="fu">&gt;</span>, <span class="ot">`elem`</span>, <span class="ot">`notElem`</span><br /><span class="kw">infixr</span> <span class="dv">3</span>  <span class="fu">&amp;&amp;</span><br /><span class="kw">infixr</span> <span class="dv">2</span>  <span class="fu">||</span><br /><span class="kw">infixl</span> <span class="dv">1</span>  <span class="fu">&gt;&gt;</span>, <span class="fu">&gt;&gt;=</span><br /><span class="kw">infixr</span> <span class="dv">1</span>  <span class="fu">=&lt;&lt;</span>  <br /><span class="kw">infixr</span> <span class="dv">0</span>  <span class="fu">$</span>, <span class="fu">$!</span>, <span class="ot">`seq`</span></code></pre>
+<ul>
+<li><p>If you can't remember, use <code>:i</code> in <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html">GHCI</a>:</p>
+<pre><code>Prelude&gt; :i &amp;&amp;
+(&amp;&amp;) :: Bool -&gt; Bool -&gt; Bool    -- Defined in GHC.Classes
+infixr 3 &amp;&amp;
+</code></pre>
+<ul>
+<li>If GHCI doesn't specify, means default: <code>infixl 9</code></li>
+</ul></li>
+</ul>
+<h1 id="hackage-and-cabal">Hackage and cabal</h1>
+<ul>
+<li><a href="http://hackage.haskell.org/packages/archive/pkg-list.html">Hackage</a> is a large collection of Haskell packages</li>
+<li><a href="http://www.haskell.org/ghc/docs/7.0-latest/html/Cabal/index.html">Cabal</a> is a tool for browsing hackage and installing packages
+<ul>
+<li>Cabal comes with the <a href="http://hackage.haskell.org/platform/">haskell platform</a></li>
+<li>Run <code>cabal update</code> to create <code>$HOME/.cabal</code>, download package database</li>
+<li><p>I highly recommend unconmenting and editing these two lines in <code>$HOME/.cabal/config</code></p>
+<pre><code>documentation: True
+library-profiling: True
+</code></pre></li>
+<li>May want to add <code>$HOME/.cabal/bin</code> to your path</li>
+</ul></li>
+<li><p>To install packages for the first lab, you will run</p>
+<pre><code>cabal install http-enumerator utf8-string tagsoup
+</code></pre>
+<ul>
+<li>Will install packages in <code>$HOME/.cabal</code>, and register them with GHC in <code>$HOME/.ghc</code></li>
+<li>If you ever want to start fresh, must delete both <code>$HOME/.cabal</code> and <code>$HOME/.ghc</code></li>
+</ul></li>
+</ul>
+<h1 id="modules-and-import-syntax">Modules and <code>import</code> syntax</h1>
+<ul>
+<li>Haskell groups top-level bindings into <em>modules</em>
+<ul>
+<li>The default module name is <code>Main</code>, because programs start at function <code>main</code> in <code>Main</code></li>
+<li>Except for <code>Main</code>, a module named <em>M</em> must reside in a file named <em>M</em><code>.hs</code></li>
+<li>Module names are capitalized; I generally lower-case file names of <code>Main</code> modules</li>
+</ul></li>
+<li><p>Let's add this to the top of our source file</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span>      <span class="co">-- redundant since Main is the default</span><br /><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Lazy.UTF8</span> <span class="kw">as</span> <span class="dt">L</span><br /><span class="kw">import</span> <span class="dt">Data.Char</span><br /><span class="kw">import</span> <span class="dt">Network.HTTP.Enumerator</span> (simpleHttp)<br /><span class="kw">import</span> <span class="dt">System.Environment</span></code></pre>
+<ul>
+<li><code>import</code> <em>module</em> - imports all symbols in <em>module</em></li>
+<li><code>import qualified</code> <em>module</em> <code>as</code> <em>ID</em> - prefixes imported symbols with <em>ID</em><code>.</code></li>
+<li><code>import</code> <em>module</em> <code>(</code><em>function1</em>[<code>,</code> <em>function2</em> ...]<code>)</code> - imports just the named functions</li>
+</ul></li>
+</ul>
+<h1 id="do-notation"><code>do</code> notation</h1>
+<ul>
+<li>Let's write a program to dump a web page</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> <span class="kw">do</span><br />  (url<span class="fu">:</span>_) <span class="ot">&lt;-</span> getArgs        <span class="co">-- Sets url to first command-line argument</span><br />  page <span class="ot">&lt;-</span> simpleHttp url    <span class="co">-- Sets page to contents as a ByteString</span><br />  <span class="fu">putStr</span> (L.toString page)  <span class="co">-- Converts ByteString to String and prints it</span></code></pre>
+<ul>
+<li>This task requires some impure (non-functional) actions
+<ul>
+<li>Extracting command-line args, Creating a TCP connection, Writing to stdout</li>
+</ul></li>
+<li>A <code>do</code> block lets you sequence IO actions. In a <code>do</code> block:
+<ul>
+<li><span style="color:blue"><em>pat</em> <code>&lt;-</code> <em>action</em></span> -- binds <em>pat</em> (variable or constructor pattern) to result of executing *<em>action</em></li>
+<li><span style="color:blue"><code>let</code> <em>pat</em> <code>=</code> <em>pure-value</em></span> -- binds <em>pat</em> to <em>pure-value</em> (no &quot;<code>in</code> ...&quot; required)</li>
+<li><span style="color:blue"><em>action</em></span> -- executes <em>action</em> and discards the result, or returns it if at end of block</li>
+</ul></li>
+<li>Note: GHCI parses input like a <code>do</code> block (i.e., can use <code>&lt;-</code>, need <code>let</code> for bindings)</li>
+</ul>
+<h1 id="what-are-the-types-of-io-actions">What are the types of IO actions?</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">main </span><span class="ot">::</span> <span class="dt">IO</span> ()<br /><span class="ot">getArgs </span><span class="ot">::</span> <span class="dt">IO</span> [<span class="dt">String</span>]<br /><span class="ot">simpleHttp </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">L.ByteString</span>   <span class="co">-- in reality more polymorphic </span><br /><span class="fu">putStr</span><span class="ot"> </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<ul>
+<li><code>IO</code> is a parameterized type (just as <code>Maybe</code> is parameterized)
+<ul>
+<li>&quot;<code>IO [String]</code>&quot; means IO action that, if executed, produces a value of type <code>[String]</code></li>
+<li>Unlike <code>Maybe</code>, we won't see any constructors for <code>IO</code>, which is somewhat magic</li>
+</ul></li>
+<li><p>What if we try to print the first command-line argument as follows?</p>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> <span class="fu">putStr</span> (<span class="fu">head</span> getArgs)</code></pre>
+<ul>
+<li>Oops, head expects type <code>[String]</code>, not <code>IO [String]</code></li>
+</ul></li>
+<li>How to de-construct an <code>IO [String]</code> to get a <code>[String]</code>
+<ul>
+<li>We can't use <code>case</code>, because we don't have a constructor for <code>IO</code><br> ... Besides, order of IO actions is important, while bindings are order-independent</li>
+<li>That's the point of the <code>&lt;-</code> operator in <code>do</code> blocks!</li>
+</ul></li>
+</ul>
+<h1 id="running-urldump">Running <code>urldump</code></h1>
+<pre><code>$ ghc --make urldump
+[1 of 1] Compiling Main             ( urldump.hs, urldump.o )
+Linking urldump ...
+$ ./urldump http://www.scs.stanford.edu/
+&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.01//EN&quot;
+...
+</code></pre>
+<ul>
+<li><p>What if you want to run it in GHCI?</p>
+<pre><code>$ ghci ./urldump.hs
+Prelude Main&gt;
+</code></pre>
+<ul>
+<li>No <code>*</code> before <code>Main</code> means no access to internal symbols (because compiled)</li>
+</ul>
+<pre><code>Prelude Main&gt; :load *urldump.hs
+[1 of 1] Compiling Main             ( urldump.hs, interpreted )
+Ok, modules loaded: Main.
+*Main&gt; withArgs [&quot;http://cs240h.scs.stanford.edu/&quot;] main
+</code></pre>
+<ul>
+<li>Alternate GHCI shortcut:</li>
+</ul>
+<pre><code>Prelude Main&gt; :main &quot;http://cs240h.scs.stanford.edu/&quot;
+</code></pre></li>
+</ul>
+<h1 id="the-return-function">The <code>return</code> function</h1>
+<ul>
+<li><p>Let's combine <code>simpleHttp</code> and <code>L.toString</code> into one function</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">simpleHttpStr </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">String</span><br />simpleHttpStr url <span class="fu">=</span> <span class="kw">do</span><br />  page <span class="ot">&lt;-</span> simpleHttp url<br />  <span class="fu">return</span> (L.toString page)</code></pre>
+<ul>
+<li>The return value of a <code>do</code> block is that of its last action</li>
+</ul></li>
+<li><p>Note: <strong><code>return</code> is not control flow statement</strong>, just a function</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">return</span><span class="ot"> </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a</code></pre>
+<ul>
+<li>Every action in an <code>IO</code> do block must have type <code>IO a</code> for some <code>a</code></li>
+<li><code>L.toString</code> returns a <code>String</code>, use <code>return</code> to make an <code>IO   String</code></li>
+<li>In a do block, &quot;<code>let x = e</code>&quot; is like &quot;<code>x &lt;- return e</code>&quot; (unless <code>e</code> contains symbol <code>x</code>)</li>
+</ul></li>
+</ul>
+<h1 id="point-free-io-composition">Point-free IO composition</h1>
+<ul>
+<li>Recall point-free function composition with &quot;<code>.</code>&quot; (fixity <code>infixr 9</code>)</li>
+<li><p>Function <code>&gt;&gt;=</code> (pronounced &quot;bind&quot;) allows point-free IO composition</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(&gt;&gt;=) </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br /><span class="kw">infixl</span> <span class="dv">1</span> <span class="fu">&gt;&gt;=</span></code></pre></li>
+<li><p>Let's re-write <code>urldump</code> in point-free style</p>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> getArgs <span class="fu">&gt;&gt;=</span> simpleHttpStr <span class="fu">.</span> <span class="fu">head</span></code></pre>
+<ul>
+<li>Note <code>&gt;&gt;=</code> composes left-to-right, while <code>.</code> goes right-to-left</li>
+</ul></li>
+<li><code>do</code> blocks are just syntactic sugar for calling <code>&gt;&gt;=</code>
+<ul>
+<li>Let's de-sugar our original <code>main</code>:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span><br />    getArgs <span class="fu">&gt;&gt;=</span> \(url<span class="fu">:</span>_) <span class="ot">-&gt;</span><br />    simpleHttp url <span class="fu">&gt;&gt;=</span> \page <span class="ot">-&gt;</span><br />    <span class="fu">putStr</span> (L.toString page)</code></pre></li>
+</ul>
+<h1 id="more-on-polymorphism">More on polymorphism</h1>
+<ul>
+<li>We've seen a bunch of polymorphic functions</li>
+<li>Here are some more handy ones from Prelude</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">id</span><span class="ot"> </span><span class="ot">::</span> a <span class="ot">-&gt;</span> a<br /><span class="fu">id</span> x <span class="fu">=</span> x</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">const</span><span class="ot"> </span><span class="ot">::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> a<br /><span class="fu">const</span> a _ <span class="fu">=</span> a</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">fst</span><span class="ot"> </span><span class="ot">::</span> (a, b) <span class="ot">-&gt;</span> a<br /><span class="fu">fst</span> (a, _) <span class="fu">=</span> a</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">snd</span><span class="ot"> </span><span class="ot">::</span> (a, b) <span class="ot">-&gt;</span> b<br /><span class="fu">snd</span> (_, b) <span class="fu">=</span> b</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">print</span> a <span class="fu">=</span> <span class="fu">putStrLn</span> (<span class="fu">show</span> a)   <span class="co">-- what's the type?  a -&gt; IO ()?</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">show</span> a <span class="fu">=</span> <span class="fu">???</span>                  <span class="co">-- how to implement?</span></code></pre>
+<h1 id="parametric-vs.-ad-hoc-polymorphism">Parametric vs. ad hoc polymorphism</h1>
+<ul>
+<li>There are actually <em>two</em> kinds of polymorphism at work here</li>
+<li><em>parametric polymorphism</em> -- does the same thing for every type
+<ul>
+<li>E.g., <code>id :: a -&gt; a</code> just passes the value through</li>
+<li>Works for every possible type</li>
+</ul></li>
+<li><em>ad hoc polymorphism</em> -- does different things on different types
+<ul>
+<li>E.g., <code>1 + 1</code> and <code>1.0 + 1.0</code> compute very different functions</li>
+<li>E.g., <code>show</code> converts value to <code>String</code>, depends entirely on input type</li>
+<li>Only works on types that support it (hence &quot;<code>deriving Show</code>&quot; in declarations)</li>
+</ul></li>
+</ul>
+<h1 id="classes-and-instances">Classes and Instances</h1>
+<ul>
+<li><p>Ad-hoc polymorphic functions are declared with <em>classes</em></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">MyShow</span> a <span class="kw">where</span><br /><span class="ot">    myShow </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">String</span></code></pre></li>
+<li><p>The actual method for each type is defined in an <em>instance</em> declaration</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Double</span> <span class="dt">Double</span><br /><span class="kw">instance</span> <span class="dt">MyShow</span> <span class="dt">Point</span> <span class="kw">where</span><br />    myShow (<span class="dt">Point</span> x y) <span class="fu">=</span> <span class="st">&quot;(&quot;</span> <span class="fu">++</span> <span class="fu">show</span> x <span class="fu">++</span> <span class="st">&quot;, &quot;</span> <span class="fu">++</span> <span class="fu">show</span> y <span class="fu">++</span> <span class="st">&quot;)&quot;</span></code></pre></li>
+<li><p>What's the type of a function that calls <code>myShow</code>? Ask GHCI:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">myPrint x <span class="fu">=</span> <span class="fu">putStrLn</span> (myShow x)</code></pre>
+<pre><code>*Main&gt; :t myPrint
+myPrint :: MyShow a =&gt; a -&gt; IO ()
+</code></pre></li>
+</ul>
+<h1 id="the-context-of-a-type-declaration">The Context of a type declaration</h1>
+<ul>
+<li>Type declarations can contain restrictions on type variables
+<ul>
+<li>Restrictions expressed with &quot;<code>(</code><em>class</em> <em>type-var</em>, ...<code>) =&gt;</code>&quot; at start of type, E.g.:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">myPrint </span><span class="ot">::</span> <span class="dt">MyShow</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">sortAndShow </span><span class="ot">::</span> (<span class="kw">Ord</span> a, <span class="dt">MyShow</span> a) <span class="ot">=&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">String</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">elem</span><span class="ot"> </span><span class="ot">::</span> (<span class="kw">Eq</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span><br /><span class="fu">elem</span> _ []     <span class="fu">=</span> <span class="kw">False</span><br /><span class="fu">elem</span> x (y<span class="fu">:</span>ys) <span class="fu">=</span> x<span class="fu">==</span>y <span class="fu">||</span> <span class="fu">elem</span> x ys</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">add </span><span class="ot">::</span> (<span class="kw">Num</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a<br />add a b <span class="fu">=</span> a <span class="fu">+</span> b</code></pre></li>
+<li>Can think of context as representing hidden <em>dictionary</em> arguments
+<ul>
+<li>When you call <code>myPrint</code>, you explicitly give it a value of type <code>a</code></li>
+<li>But also implicitly give it a function pointer for type <code>a</code>'s <code>MyShow</code> instance</li>
+</ul></li>
+</ul>
+<h1 id="superclasses-and-instance-contexts">Superclasses and instance contexts</h1>
+<ul>
+<li>One class may require all instances to be members of another
+<ul>
+<li>Class <code>Eq</code> contains the '==' and '/=' methods</li>
+<li>Class <code>Ord</code> contains <code>&lt;</code>, <code>&gt;=</code>, <code>&gt;</code>, <code>&lt;=</code>, etc.</li>
+<li>It doesn't make sense to have an <code>Ord</code> instance not also be an <code>Eq</code> instance</li>
+<li><code>Ord</code> declares <code>Eq</code> as a superclass, using a context</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Eq</span> a <span class="ot">=&gt;</span> <span class="kw">Ord</span> a <span class="kw">where</span><br />    (<span class="fu">&lt;</span>), (<span class="fu">&gt;=</span>), (<span class="fu">&gt;</span>),<span class="ot"> (&lt;=) </span><span class="ot">::</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span><br />    <span class="fu">....</span></code></pre></li>
+<li>Similarly, an instance may require a context
+<ul>
+<li>E.g., you can define <code>myShow</code> for a list of items if you know how to call <code>myShow</code> on each individual item:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> (<span class="dt">MyShow</span> a) <span class="ot">=&gt;</span> <span class="dt">MyShow</span> [a] <span class="kw">where</span><br />    myShow [] <span class="fu">=</span> <span class="st">&quot;[]&quot;</span><br />    myShow (x<span class="fu">:</span>xs) <span class="fu">=</span> myShow x <span class="fu">++</span> <span class="st">&quot;:&quot;</span> <span class="fu">++</span> myShow xs</code></pre></li>
+</ul>
+<h1 id="the-monad-class">The <code>Monad</code> class</h1>
+<ul>
+<li><code>return</code> and <code>&gt;&gt;=</code> are actually methods of a class called <code>Monad</code></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Monad</span> m <span class="kw">where</span><br /><span class="ot">    (&gt;&gt;=) </span><span class="ot">::</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b<br /><span class="ot">    return </span><span class="ot">::</span> a <span class="ot">-&gt;</span> m a<br /><span class="ot">    fail </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> m a   <span class="co">-- called when pattern binding fails</span></code></pre>
+<ul>
+<li>This has far-reaching consequences
+<ul>
+<li>You can use the syntactic sugar of <code>do</code> blocks for non-IO purposes (this turns out to be hugely powerful)</li>
+<li>Many monadic functions are polymorphic in the <code>Monad</code>--invent a new monad, and you can still use much existing code</li>
+</ul></li>
+</ul>
+<h1 id="the-maybe-monad">The <code>Maybe</code> monad</h1>
+<ul>
+<li>System libraries define a <code>Monad</code> instance for <code>Maybe</code></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span>  <span class="kw">Monad</span> <span class="dt">Maybe</span>  <span class="kw">where</span><br />    (<span class="kw">Just</span> x) <span class="fu">&gt;&gt;=</span> k <span class="fu">=</span> k x<br />    <span class="kw">Nothing</span> <span class="fu">&gt;&gt;=</span> _  <span class="fu">=</span> <span class="kw">Nothing</span><br />    <span class="fu">return</span> <span class="fu">=</span> <span class="kw">Just</span><br />    <span class="fu">fail</span> _ <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<ul>
+<li>Suppose you use <code>Nothing</code> to indicate failure
+<ul>
+<li>Might have a bunch of functions to extract fields from data</li>
+</ul></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">extractA </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Int</span><br /><span class="ot">extractB </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">String</span><br /><span class="fu">...</span><br /><span class="ot">parseForm </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">Form</span><br />parseForm raw <span class="fu">=</span> <span class="kw">do</span><br />    a <span class="ot">&lt;-</span> extractA raw<br />    b <span class="ot">&lt;-</span> extractB raw<br />    <span class="fu">...</span><br />    <span class="fu">return</span> (<span class="dt">Form</span> a b <span class="fu">...</span>)</code></pre>
+</body>
+</html>
