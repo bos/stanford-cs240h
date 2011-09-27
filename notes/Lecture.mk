@@ -1,4 +1,6 @@
 
+DESTDIR=../../www/notes
+
 MDFILE := $(word 1, $(basename $(wildcard *.md)))
 L ?= $(MDFILE)
 
@@ -16,6 +18,11 @@ $(L)-slides.html: $(L).md $(wildcard ../pandoc/slidy/*)
 show: $(L)-slides.html
 	xdg-open $<
 .PHONY: show
+
+install: $(L).md $(L).html $(L)-slides.html
+	cp $^ $(DESTDIR)/
+	git add $(patsubst %, $(DESTDIR)/%, $^)
+.PHONY: install
 
 clean:
 	rm -f $(L).html $(L)-slides.html *.o *.hi *~ \

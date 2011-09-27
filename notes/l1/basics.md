@@ -101,34 +101,34 @@
 # Getting started with Haskell
 
 * Install the [Haskell Platform][Platform], which includes the
-[GHC][GHCdoc] compiler.
+  [GHC][GHCdoc] compiler.
 * Create a file called `hello.hs` with the following contents:
 
-~~~ {.haskell}
-main = putStrLn "Hello, world!"
-~~~
+    ~~~ {.haskell}
+    main = putStrLn "Hello, world!"
+    ~~~
 
 * Compile your program to a native executable like this:
 
-~~~
-$ ghc --make hello
-[1 of 1] Compiling Main             ( hello.hs, hello.o )
-Linking hello ...
-$ ./hello
-Hello, world!
-~~~
+    ~~~
+    $ ghc --make hello
+    [1 of 1] Compiling Main             ( hello.hs, hello.o )
+    Linking hello ...
+    $ ./hello
+    Hello, world!
+    ~~~
 
 * Or run it in the [GHCI interpreter][GHCI] like this:
 
-~~~
-$ ghci hello.hs 
-GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
-...
-Ok, modules loaded: Main.
-*Main> main
-Hello, world!
-*Main> 
-~~~
+    ~~~
+    $ ghci hello.hs 
+    GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
+    ...
+    Ok, modules loaded: Main.
+    *Main> main
+    Hello, world!
+    *Main> 
+    ~~~
 
 
 # Bindings
@@ -231,9 +231,9 @@ Hello, world!
 * Each recursive call may require a stack frame
     * This Haskell code requires `n` stack frames
 
-	~~~ {.haskell}
-	factorial n = if n > 1 then n * factorial (n-1) else 1
-	~~~
+        ~~~ {.haskell}
+        factorial n = if n > 1 then n * factorial (n-1) else 1
+        ~~~
 
     * By contrast, our C factorial ran in constant space
 * Fortunately, Haskell supports optimized *tail recursion*
@@ -275,7 +275,6 @@ Hello, world!
 
     * Unlike `let`, a `where` clause scopes over multiple guarded
       definitions
-      
     * This is convenient for binding variables to use in guards
 
 
@@ -555,7 +554,6 @@ Note function `error :: String -> a` reports assertion failures
 # Hoogle
 
 * Let's find the source code for GHC's `length` function?
-
 * [Hoogle] is a search engine just for Haskell functions
     * Go to <http://www.haskell.org/hoogle/>
     * Click on *search plugin*
@@ -616,7 +614,6 @@ Note function `error :: String -> a` reports assertion failures
     ~~~
 
     * On previous slide, `countLowerCase`'s argument had name `str`
-
     * The new version doesn't name the argument, a style called
       *point-free*
 
@@ -629,7 +626,6 @@ Note function `error :: String -> a` reports assertion failures
 # Lambda abstraction
 
 * Sometimes you want to name the arguments but not the function
-
 * Haskell allows anonymous functions through *lambda abstraction*
     * The notation is `\`*variable(s)* `->` *body* (where `\` is
       pronounced "lambda")
@@ -662,9 +658,8 @@ Note function `error :: String -> a` reports assertion failures
     * Putting function in backticks makes it infix: `` 1 `add` 2 ``
 * For functions starting with one of `!#$%&*+./<=>?@\^|-~` or
   constructors starting "`:`"
-    * Infix application is the default
-    * Putting functions in parentheses makes them prefix, e.g., `(+) 1
-      2`
+    * Infix is default, Putting functions in parens makes them prefix,
+     e.g., `(+) 1 2`
 * For tuples, prefix constructors are `(,)`, `(,,)`, `(,,,)`, `(,,,,)`, etc.
 * Infix functions can be partially applied in a parenthesized
   *section*
@@ -672,6 +667,7 @@ Note function `error :: String -> a` reports assertion failures
     ~~~ {.haskell}
     stripPunctuation :: String -> String
     stripPunctuation = filter (`notElem` "!#$%&*+./<=>?@\\^|-~:")
+    -- Note above string the SECOND argument to notElem ^
     ~~~
 
 # Fixity
@@ -741,7 +737,7 @@ infixr 0  $, $!, `seq`
         ~~~
 
     * May want to add `$HOME/.cabal/bin` to your path
-* To install packages for the first lab, you will run
+* To install packages for the next examples, run
 
     ~~~
     cabal install http-enumerator utf8-string tagsoup
@@ -761,7 +757,7 @@ infixr 0  $, $!, `seq`
     * Except for `Main`, a module named *M* must reside in a file
       named *M*`.hs`
     * Module names are capitalized; I generally lower-case file names
-      of `Main` modules
+      for `Main` modules
 * Let's add this to the top of our source file
 
     ~~~~ {.haskell}

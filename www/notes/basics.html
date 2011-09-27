@@ -126,21 +126,16 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <h1 id="getting-started-with-haskell">Getting started with Haskell</h1>
 <ul>
 <li>Install the <a href="http://hackage.haskell.org/platform/">Haskell Platform</a>, which includes the <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html">GHC</a> compiler.</li>
-<li>Create a file called <code>hello.hs</code> with the following contents:</li>
-</ul>
-<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello, world!&quot;</span></code></pre>
-<ul>
-<li>Compile your program to a native executable like this:</li>
-</ul>
+<li><p>Create a file called <code>hello.hs</code> with the following contents:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> <span class="fu">putStrLn</span> <span class="st">&quot;Hello, world!&quot;</span></code></pre></li>
+<li><p>Compile your program to a native executable like this:</p>
 <pre><code>$ ghc --make hello
 [1 of 1] Compiling Main             ( hello.hs, hello.o )
 Linking hello ...
 $ ./hello
 Hello, world!
-</code></pre>
-<ul>
-<li>Or run it in the <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html">GHCI interpreter</a> like this:</li>
-</ul>
+</code></pre></li>
+<li><p>Or run it in the <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html">GHCI interpreter</a> like this:</p>
 <pre><code>$ ghci hello.hs 
 GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
 ...
@@ -148,7 +143,8 @@ Ok, modules loaded: Main.
 *Main&gt; main
 Hello, world!
 *Main&gt; 
-</code></pre>
+</code></pre></li>
+</ul>
 <h1 id="bindings">Bindings</h1>
 <ul>
 <li><p>Haskell uses the <code>=</code> sign to declare <em>bindings</em>:</p>
@@ -198,10 +194,8 @@ Hello, world!
 <ul>
 <li>Each recursive call may require a stack frame
 <ul>
-<li>This Haskell code requires <code>n</code> stack frames</li>
-</ul>
-<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> <span class="kw">if</span> n <span class="fu">&gt;</span> <span class="dv">1</span> <span class="kw">then</span> n <span class="fu">*</span> factorial (n<span class="fu">-</span><span class="dv">1</span>) <span class="kw">else</span> <span class="dv">1</span></code></pre>
-<ul>
+<li><p>This Haskell code requires <code>n</code> stack frames</p>
+<pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> <span class="kw">if</span> n <span class="fu">&gt;</span> <span class="dv">1</span> <span class="kw">then</span> n <span class="fu">*</span> factorial (n<span class="fu">-</span><span class="dv">1</span>) <span class="kw">else</span> <span class="dv">1</span></code></pre></li>
 <li>By contrast, our C factorial ran in constant space</li>
 </ul></li>
 <li>Fortunately, Haskell supports optimized <em>tail recursion</em>
@@ -227,8 +221,8 @@ Hello, world!
 <li><p>Bindings can also end with <code>where</code> clauses--like inverted <code>let</code></p>
 <pre class="sourceCode"><code class="sourceCode haskell">factorial n <span class="fu">=</span> loop <span class="dv">1</span> n<br />    <span class="kw">where</span> loop acc n' <span class="fu">|</span> n' <span class="fu">&gt;</span> <span class="dv">1</span>    <span class="fu">=</span> loop (acc <span class="fu">*</span> n') (n' <span class="fu">-</span> <span class="dv">1</span>)<br />                      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> acc</code></pre>
 <ul>
-<li><p>Unlike <code>let</code>, a <code>where</code> clause scopes over multiple guarded definitions</p></li>
-<li><p>This is convenient for binding variables to use in guards</p></li>
+<li>Unlike <code>let</code>, a <code>where</code> clause scopes over multiple guarded definitions</li>
+<li>This is convenient for binding variables to use in guards</li>
 </ul></li>
 </ul>
 <h1 id="tip-variable-names">Tip: variable names</h1>
@@ -376,7 +370,7 @@ Left True :: Either Bool b
 <p>Note function <code>error :: String -&gt; a</code> reports assertion failures</p>
 <h1 id="hoogle">Hoogle</h1>
 <ul>
-<li><p>Let's find the source code for GHC's <code>length</code> function?</p></li>
+<li>Let's find the source code for GHC's <code>length</code> function?</li>
 <li><a href="http://www.haskell.org/hoogle/">Hoogle</a> is a search engine just for Haskell functions
 <ul>
 <li>Go to <a href="http://www.haskell.org/hoogle/"><code class="url">http://www.haskell.org/hoogle/</code></a></li>
@@ -415,15 +409,15 @@ Left True :: Either Bool b
 <li><p>The &quot;<code>.</code>&quot; operator provides function composition</p>
 <pre class="sourceCode"><code class="sourceCode haskell">(f <span class="fu">.</span> g) x <span class="fu">=</span> f (g x)</code></pre>
 <ul>
-<li><p>On previous slide, <code>countLowerCase</code>'s argument had name <code>str</code></p></li>
-<li><p>The new version doesn't name the argument, a style called <em>point-free</em></p></li>
+<li>On previous slide, <code>countLowerCase</code>'s argument had name <code>str</code></li>
+<li>The new version doesn't name the argument, a style called <em>point-free</em></li>
 </ul></li>
 <li><p>Function composition can be used almost like Unix pipelines</p>
 <pre class="sourceCode"><code class="sourceCode haskell">process <span class="fu">=</span> countLowercase <span class="fu">.</span> toPigLatin <span class="fu">.</span> extractComments <span class="fu">.</span> unCompress</code></pre></li>
 </ul>
 <h1 id="lambda-abstraction">Lambda abstraction</h1>
 <ul>
-<li><p>Sometimes you want to name the arguments but not the function</p></li>
+<li>Sometimes you want to name the arguments but not the function</li>
 <li>Haskell allows anonymous functions through <em>lambda abstraction</em>
 <ul>
 <li>The notation is <code>\</code><em>variable(s)</em> <code>-&gt;</code> <em>body</em> (where <code>\</code> is pronounced &quot;lambda&quot;)</li>
@@ -448,12 +442,11 @@ Left True :: Either Bool b
 </ul></li>
 <li>For functions starting with one of <code>!#$%&amp;*+./&lt;=&gt;?@\^|-~</code> or constructors starting &quot;<code>:</code>&quot;
 <ul>
-<li>Infix application is the default</li>
-<li>Putting functions in parentheses makes them prefix, e.g., <code>(+) 1   2</code></li>
+<li>Infix is default, Putting functions in parens makes them prefix, e.g., <code>(+) 1 2</code></li>
 </ul></li>
 <li>For tuples, prefix constructors are <code>(,)</code>, <code>(,,)</code>, <code>(,,,)</code>, <code>(,,,,)</code>, etc.</li>
 <li><p>Infix functions can be partially applied in a parenthesized <em>section</em></p>
-<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">stripPunctuation </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span><br />stripPunctuation <span class="fu">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> <span class="st">&quot;!#$%&amp;*+./&lt;=&gt;?@\\^|-~:&quot;</span>)</code></pre></li>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">stripPunctuation </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span><br />stripPunctuation <span class="fu">=</span> <span class="fu">filter</span> (<span class="ot">`notElem`</span> <span class="st">&quot;!#$%&amp;*+./&lt;=&gt;?@\\^|-~:&quot;</span>)<br /><span class="co">-- Note above string the SECOND argument to notElem ^</span></code></pre></li>
 </ul>
 <h1 id="fixity">Fixity</h1>
 <ul>
@@ -503,7 +496,7 @@ library-profiling: True
 </code></pre></li>
 <li>May want to add <code>$HOME/.cabal/bin</code> to your path</li>
 </ul></li>
-<li><p>To install packages for the first lab, you will run</p>
+<li><p>To install packages for the next examples, run</p>
 <pre><code>cabal install http-enumerator utf8-string tagsoup
 </code></pre>
 <ul>
@@ -517,7 +510,7 @@ library-profiling: True
 <ul>
 <li>The default module name is <code>Main</code>, because programs start at function <code>main</code> in <code>Main</code></li>
 <li>Except for <code>Main</code>, a module named <em>M</em> must reside in a file named <em>M</em><code>.hs</code></li>
-<li>Module names are capitalized; I generally lower-case file names of <code>Main</code> modules</li>
+<li>Module names are capitalized; I generally lower-case file names for <code>Main</code> modules</li>
 </ul></li>
 <li><p>Let's add this to the top of our source file</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">module</span> <span class="dt">Main</span> <span class="kw">where</span>      <span class="co">-- redundant since Main is the default</span><br /><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Lazy.UTF8</span> <span class="kw">as</span> <span class="dt">L</span><br /><span class="kw">import</span> <span class="dt">Data.Char</span><br /><span class="kw">import</span> <span class="dt">Network.HTTP.Enumerator</span> (simpleHttp)<br /><span class="kw">import</span> <span class="dt">System.Environment</span></code></pre>
