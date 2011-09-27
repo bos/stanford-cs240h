@@ -126,7 +126,7 @@ contains many people willing to discuss Haskell and answer questions.
 * [Haskell Cafe](http://www.haskell.org/mailman/listinfo/haskell-cafe)
 is a mailing list for general Haskell-related discussion.
 
-* A several Haskell experts regularly answer questions on
+* Several Haskell experts regularly answer questions on
 [Stack Overflow](http://stackoverflow.com/questions/tagged/haskell).
 
 
