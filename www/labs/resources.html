@@ -50,13 +50,13 @@ library-profiling: True
 <pre><code>(add-to-list 'completion-ignored-extensions &quot;.hi&quot;)
 (or (fboundp 'haskell-mode)
     (let ((paths
-       '(&quot;~/haskell-mode-2.8/haskell-site-file&quot;
-         &quot;/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file&quot;)))
+           '(&quot;~/haskell-mode-2.8/haskell-site-file&quot;
+             &quot;/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file&quot;)))
       (while paths
-    (if (not (file-exists-p (concat (car paths) &quot;.el&quot;)))
-        (setq paths (cdr paths))
-      (load (car paths) t t)
-      (setq paths nil)))))
+        (if (not (file-exists-p (concat (car paths) &quot;.el&quot;)))
+            (setq paths (cdr paths))
+          (load (car paths) t t)
+          (setq paths nil)))))
 (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
 (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
 (add-hook 'haskell-mode-hook (lambda () (require 'inf-haskell)))

@@ -100,13 +100,13 @@ that don't show up in the documentation contents.
     (add-to-list 'completion-ignored-extensions ".hi")
     (or (fboundp 'haskell-mode)
         (let ((paths
-    	   '("~/haskell-mode-2.8/haskell-site-file"
-    	     "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")))
+               '("~/haskell-mode-2.8/haskell-site-file"
+                 "/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file")))
           (while paths
-    	(if (not (file-exists-p (concat (car paths) ".el")))
-    	    (setq paths (cdr paths))
-    	  (load (car paths) t t)
-    	  (setq paths nil)))))
+            (if (not (file-exists-p (concat (car paths) ".el")))
+                (setq paths (cdr paths))
+              (load (car paths) t t)
+              (setq paths nil)))))
     (add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
     (add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
     (add-hook 'haskell-mode-hook (lambda () (require 'inf-haskell)))
