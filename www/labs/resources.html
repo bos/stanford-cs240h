@@ -1,0 +1,73 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>CS240h Haskell resources</title>
+  <link rel="stylesheet" href="../style.css" type="text/css" />
+</head>
+<body>
+<div id="header">
+<h1 class="title"><a href="..">CS240h</a> Haskell resources</h1>
+</div>
+<p>The class <a href="../notes/">lecture notes</a> are full of hyperlinks. If you want more information on a topic covered in lecture, start by clicking through any links on the slides.</p>
+<h2 id="general-haskell-reference-documents">General Haskell reference documents</h2>
+<ul>
+<li><p><a href="http://book.realworldhaskell.org/"><em>Real World Haskell</em></a></p></li>
+<li><p><a href="http://www.haskell.org/tutorial/">A Gentle Introduction to Haskell</a> - Not particularly gentle despite the title, but covers the basics pretty thoroughly</p></li>
+<li><p><a href="http://www.haskell.org/onlinereport/haskell2010/">Haskell 2010 Language Report</a> - The normative language specification. We don't necessarily recommend reading it cover-to-cover, but when you want a definitive answer to something about the language, this is the pace to turn.</p></li>
+</ul>
+<h2 id="finding-haskell-code">Finding Haskell code</h2>
+<ul>
+<li><p><a href="http://hackage.haskell.org/packages/archive/pkg-list.html">Hackage</a> has a large collection of Haskell packages.</p></li>
+<li><a href="http://www.haskell.org/ghc/docs/7.0-latest/html/Cabal/index.html">Cabal</a> - The main tool for searching the Hackage database and installing packages. The <code>cabal</code> program ships with the <a href="http://hackage.haskell.org/platform/">Haskell Platform</a>. A few tips:
+<ul>
+<li>Cabal installs packages in <code>$HOME/.cabal</code> and tells GHC how to find them by modifying <code>$HOME/.ghc</code>. You must delete both directories if you want to start over with a &quot;clean slate&quot;. Bad things will happen if you delete <code>$HOME/.cabal</code> but not <code>$HOME/.ghc</code>.</li>
+<li>Before using cabal, you must run <code>cabal update</code> to initialize your package database and create a <code>$HOME/.cabal</code> directory.</li>
+<li><p>After running <code>cabal update</code> but before installing any packages, it is highly recommended that you edit <code>$HOME/.cabal/config</code> to set the following configuration options:</p>
+<pre><code>documentation: True
+library-profiling: True
+</code></pre>
+<p><code>documentation</code> will install documentation in your home directory. You may want to visit <code>$HOME/.cabal/share/doc/index.html</code> and bookmark that page in your browser.</p>
+<p><code>library-profiling</code> will allow you to profile your executables, but more importantly allows you to get something resembling a stack trace if you are trying to debug an unanticipated exception.</p></li>
+</ul></li>
+<li><p><a href="http://www.haskell.org/hoogle/">Hoogle</a> - the absolute must-bookmark site. Click <strong>Search plugin</strong> to create a bookmark, or manually add a link with a short search keyword (such as <code>ho</code>) to:</p>
+<pre><code>    http://www.haskell.org/hoogle/?hoogle=%s
+</code></pre></li>
+<li><p><a href="http://holumbus.fh-wedel.de/hayoo/hayoo.html">Hayoo</a> - similar to Hoogle. Searches are slower, but it indexes more packages. The URL for a keyword bookmark is</p>
+<pre><code>    http://holumbus.fh-wedel.de/hayoo/hayoo.html?query=%s
+</code></pre></li>
+</ul>
+<h2 id="ghc-information">GHC information</h2>
+<ul>
+<li><p>The main <a href="http://haskell.org/haskellwiki/GHC">GHC documentation site</a>.</p></li>
+<li><p>The <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html">GHC User's guide</a>, including a chapter on <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html">GHCI</a>.</p></li>
+<li><p>The <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/index.html">standard libraries</a> that ship with GHC, including the <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/index.html">base</a> and <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/ghc-prim-0.2.0.0/index.html">ghc-prim</a> packages. The documentation links to source code. If you fiddle with URLs, you also can find HTMLified <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/src/">source code</a> for modules such as <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/src/GHC-Base.html">GHC.Base</a> that don't show up in the documentation contents.</p></li>
+</ul>
+<h2 id="development-tools">Development tools</h2>
+<ul>
+<li><p>There is a <a href="http://projects.haskell.org/haskellmode-emacs/">Haskell mode</a> for emacs, but you have to install it separately. Some OSes have a package for it, some don't (in which case you can put it in your come directory). David uses the following configuration is his <code>.emacs</code> file:</p>
+<pre><code>(add-to-list 'completion-ignored-extensions &quot;.hi&quot;)
+(or (fboundp 'haskell-mode)
+    (let ((paths
+       '(&quot;~/haskell-mode-2.8/haskell-site-file&quot;
+         &quot;/usr/share/emacs/site-lisp/haskell-mode/haskell-site-file&quot;)))
+      (while paths
+    (if (not (file-exists-p (concat (car paths) &quot;.el&quot;)))
+        (setq paths (cdr paths))
+      (load (car paths) t t)
+      (setq paths nil)))))
+(add-hook 'haskell-mode-hook 'turn-on-haskell-doc-mode)
+(add-hook 'haskell-mode-hook 'turn-on-haskell-indent)
+(add-hook 'haskell-mode-hook (lambda () (require 'inf-haskell)))
+</code></pre>
+<p>It is convenient to run GHCI within emacs. Typing <code>C-c C-l</code> while editing a Haskell source file starts GHCI and loads the current file.</p></li>
+</ul>
+<h2 id="outside-places-to-get-help-with-haskell">Outside places to get help with Haskell</h2>
+<ul>
+<li><p>The <a href="http://www.haskell.org/haskellwiki/IRC_channel">#haskell IRC channel</a> contains many people willing to discuss Haskell and answer questions.</p></li>
+<li><p><a href="http://www.haskell.org/mailman/listinfo/haskell-cafe">Haskell Cafe</a> is a mailing list for general Haskell-related discussion.</p></li>
+<li><p>A several Haskell experts regularly answer questions on <a href="http://stackoverflow.com/questions/tagged/haskell">Stack Overflow</a>.</p></li>
+</ul>
+</body>
+</html>
