@@ -765,7 +765,8 @@ factorial n0 = loop 1 n0
 * Unfortunately, `acc` can contain a chain of thunks `n` long<br>
     * `(((1 * n) * (n - 1)) * (n - 2) ...)` -- Laziness means only
       evaluated when needed
-    * GHC is smart enough not to build up thunks only when optimization enabled
+    * GHC is smart enough not to build up thunks, but only when
+      optimizing
 
 * Can fix such problems using `$!` or `seq`
 
@@ -829,6 +830,8 @@ factorial n0 = loop 1 n0
     import System.Environment
     ~~~~
 
+    * "`module` *name* `where`" or "`module` *name*
+      `(`*exported-symbol*[`,` ...]`) where`" starts module
     * `import` *module* - imports all symbols in *module*
     * `import qualified` *module* `as` *ID* - prefixes imported symbols
       with *ID*`.`
@@ -857,8 +860,10 @@ main = do
     binds *pat* to *pure-value* (no "`in` ..." required)
     * <span style="color:blue">*action*</span> -- executes *action* and
       discards the result, or returns it if at end of block
-* Note:  GHCI parses input like a `do` block (i.e., can use `<-`, need
-  `let` for bindings)
+* GHCI parses input like a `do` block (i.e., can use `<-`, need `let`
+  for bindings)
+* `do`/`let`/`case` won't parse after prefix function (typically say
+  "`func $ do` ...")
 
 # What are the types of IO actions?
 
@@ -884,14 +889,26 @@ putStr :: String -> IO ()
 
 * How to de-construct an `IO [String]` to get a `[String]`
     * We can't use `case`, because we don't have a constructor for
-      `IO`<br> ... Besides, each deconstruction of an action like
-      `putStr` needs to make IO happen
+      `IO`<br> ... Besides, the order and number of deconstructions of
+      something like `putStr` matters
     * That's the point of the `<-` operator in `do` blocks!
 
 
-# Another way to see IO
+# Another way to see IO [[Peyton Jones]](http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf)
 
-![](io.svg)
+
+~~~ {.haskell}
+do page <- simpleHttp url
+   putStr (L.toString page)
+~~~
+
+<div style="text-align:center">![](io.svg)</div>
+
+* The `do` block is an action that can change the world when executed
+    * It works by threading the world through a bunch of sub-actions
+    * Pure functional code specifies which actions to execute under
+      what circumstances
+    * Only executing the actions (i.e., `main`) is impure
 
 
 # Running `urldump`
@@ -931,15 +948,15 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
 # The `return` function
 
 * Let's combine `simpleHttp` and `L.toString` into one function
+<div style="margin:0;text-align:center;">![](simpleHttpStr.svg)</div>
 
     ~~~~ {.haskell}
     simpleHttpStr :: String -> IO String
     simpleHttpStr url = do
       page <- simpleHttp url
-      return (L.toString page)
+      return (L.toString page)  -- return value of do block is last action
     ~~~~
 
-    * The return value of a `do` block is that of its last action
 * Note:  **`return` is not control flow statement**, just a function
 
     ~~~~ {.haskell}
