@@ -721,8 +721,8 @@ infixr 0  $, $!, `seq`
 
 # The "`infixr 0`" operators
 
-* <span style="color:blue">`$`</span> is defined to be identical to
-  function application, but with lowest precedence
+* <span style="color:blue">`$`</span> is function application, but
+  with lowest precedence
 
     ~~~~ {.haskell}
     ($) :: (a -> b) -> a -> b
@@ -735,13 +735,13 @@ infixr 0  $, $!, `seq`
         putStrLn $ "the value of " ++ key ++ " is " ++ show value
     ~~~~
 
-* <span style="color:blue">`seq :: a -> b -> b`</span> evaluates its
-  first argument and returns the second
+* <span style="color:blue">`seq :: a -> b -> b`</span> evaluates
+  first argument, and second
     * Means when you are done, first argument is a value, not a thunk
 
     ~~~~ {.haskell}
     main = let q = 1 `div` 0
-           in seq q $ putStrLn "Hello world!\n"   -- divide by zero error
+           in seq q $ putStrLn "Hello world!\n"  -- exception
     ~~~~
 
     * `seq` has to be built into the compiler
@@ -805,10 +805,9 @@ factorial n0 = loop 1 n0
     cabal install http-enumerator utf8-string tagsoup
     ~~~
 
-    * Will install packages in `$HOME/.cabal`, and register them with
-      GHC in `$HOME/.ghc`
-    * If you ever want to start fresh, must delete both `$HOME/.cabal`
-      and `$HOME/.ghc`
+    * Installs packages in `$HOME/.cabal`, and records them in
+      `$HOME/.ghc`
+    * To start fresh, must delete both `$HOME/.cabal` and `$HOME/.ghc`
 
 
 # Modules and `import` syntax
@@ -886,7 +885,7 @@ putStr :: String -> IO ()
     main = putStr (head getArgs)
     ~~~~
 
-    * Oops, head expects type `[String]`, not `IO [String]`
+    * Oops, `head` expects type `[String]`, while `getArgs` is an `IO [String]`
 
 * How to de-construct an `IO [String]` to get a `[String]`
     * We can't use `case`, because we don't have a constructor for
