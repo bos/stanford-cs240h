@@ -763,7 +763,7 @@ factorial n0 = loop 1 n0
                      | otherwise = acc
 ~~~
 
-* Unfortunately, `acc` could be a chain of thunks `n` long
+* Unfortunately, `acc` will contain a chain of thunks `n` long
     * `(((1 * n) * (n - 1)) * (n - 1) ...)` - laziness means only
       evaluated when needed
 
