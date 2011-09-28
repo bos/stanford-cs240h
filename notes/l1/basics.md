@@ -1189,11 +1189,54 @@ show a = ???                  -- how to implement?
 # The DMR continued
 
 * Answer: in this case, compiler is not actually that smart
-    * Heuristic: If it looks like a function, can infer ad hoc
+    * Heuristic: If it looks like a function, can infer *ad hoc*
       polymorphic types
-    * If it looks like anything else, function has to be monomorphic
+    * If it looks like anything else, no ad hoc polymorphism
+    * *parametric* polymorphic types can always be inferred (no hidden
+       arguments)
 * What looks like a function?
-    * `f x =` ..., `f x |` *guard* `=` ... `; |` *guard* `=` ... `;`
+    * Has to bind a single symbol (`f`), rather than a pattern (`(x,
+      y)`, `(Just x)`)
+    * Has to have at least one explicit argument (`f x =` ... ok, `f
+      =` ... not)
+* How are monomorphic types inferred?
+    * If bound symbol used elsewhere in module, infer type from use
+    * Otherwise, if type is of class `Num`, try `Integer` then
+      `Double` (this sequence can be changed with a
+      [`default` declaration][default])
+    * Otherwise, compilation fails because of an ambiguous type
+
+# The DMR take-away message
+
+* This code will compile
+
+    ~~~~ {.haskell}
+    -- Compiler infers: show1 :: (Show x) => x -> String
+    show1 x = show x
+    ~~~~
+
+* But neither of these will:
+
+    ~~~~ {.haskell}
+    show2 = show
+    ~~~~
+
+    ~~~~ {.haskell}
+    show3 = \x -> show x
+    ~~~~
+
+    * I'd rather you heard it from me than from GHC...
+
+* Relatively easy to work around DMR
+    * Add signatures to top-level functions (a good idea anyway)
+
+    ~~~~ {.haskell}
+    -- No problem, compiler knows you want ad hoc polymorphism
+    show2 :: (Show x) => x -> String
+    show2 = show
+    ~~~~
+
+    * Sometimes need to add signatures within `let` bindings
 
 # Superclasses and instance contexts
 
@@ -1376,3 +1419,4 @@ parseForm raw = do
 [DMR]: http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-930004.5.5
 [DMRWiki]: http://www.haskell.org/haskellwiki/Monomorphism_restriction
 [Awkward]: http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf
+[default]: http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-790004.3.4
