@@ -814,11 +814,11 @@ factorial n0 = loop 1 n0
 # Modules and `import` syntax
 
 * Haskell groups top-level bindings into *modules*
-    * The default module name is `Main`, because programs start at
-      function `main` in `Main`
+    * Default module name is `Main`, as programs start at function
+      `main` in `Main`
     * Except for `Main`, a module named *M* must reside in a file
       named *M*`.hs`
-    * Module names are capitalized; I generally lower-case file names
+    * Module names are capitalized; I use lower-case file names
       for `Main` modules
 * Let's add this to the top of our source file
 
@@ -830,8 +830,9 @@ factorial n0 = loop 1 n0
     import System.Environment
     ~~~~
 
-    * "`module` *name* `where`" or "`module` *name*
-      `(`*exported-symbol*[`,` ...]`) where`" starts module
+    * Start module with "`module` *name* `where`" or "`module` *name*
+      `(`*exported-symbol*[`,` ...]`) where`"
+      (non-exported symbols provide modularity)
     * `import` *module* - imports all symbols in *module*
     * `import qualified` *module* `as` *ID* - prefixes imported symbols
       with *ID*`.`
@@ -844,25 +845,25 @@ factorial n0 = loop 1 n0
 
 ~~~ {.haskell}
 main = do
-  (url:_) <- getArgs        -- Sets url to first command-line argument
-  page <- simpleHttp url    -- Sets page to contents as a ByteString
-  putStr (L.toString page)  -- Converts ByteString to String and prints it
+  (url:_) <- getArgs       -- Sets url to first command-line argument
+  page <- simpleHttp url   -- Sets page to contents as a ByteString
+  putStr (L.toString page) -- Converts ByteString to String and prints it
 ~~~
 
 * This task requires some impure (non-functional) actions
     * Extracting command-line args, creating a TCP connection, writing
       to stdout
 * A `do` block lets you sequence IO actions.  In a `do` block:
-    * <span style="color:blue">*pat* `<-` *action*</span> -- binds
+    * <span style="color:blue">*pat* `<-` *action*</span> - binds
       *pat* (variable or constructor pattern) to result of executing
-      **action*
-    * <span style="color:blue">`let` *pat* `=` *pure-value*</span> --
+      *action*
+    * <span style="color:blue">`let` *pat* `=` *pure-value*</span> -
     binds *pat* to *pure-value* (no "`in` ..." required)
-    * <span style="color:blue">*action*</span> -- executes *action* and
+    * <span style="color:blue">*action*</span> - executes *action* and
       discards the result, or returns it if at end of block
-* GHCI parses input like a `do` block (i.e., can use `<-`, need `let`
-  for bindings)
-* `do`/`let`/`case` won't parse after prefix function (typically say
+* GHCI input is like `do` block (i.e., can use `<-`, need `let` for
+  bindings)
+* `do`/`let`/`case` won't parse after prefix function (so say
   "`func $ do` ...")
 
 # What are the types of IO actions?
@@ -870,14 +871,14 @@ main = do
 ~~~~ {.haskell}
 main :: IO ()
 getArgs :: IO [String]
-simpleHttp :: String -> IO L.ByteString   -- in reality more polymorphic 
+simpleHttp :: String -> IO L.ByteString -- (really more polymorphic)
 putStr :: String -> IO ()
 ~~~~
 
 * `IO` is a parameterized type (just as `Maybe` is parameterized)
-    * "`IO [String]`" means IO action that, if executed, produces a
-      value of type `[String]`
-    * Unlike `Maybe`, we won't see any constructors for `IO`, which is
+    * "`IO [String]`" means IO action that produces a
+      `[String]` if executed
+    * Unlike `Maybe`, we won't use a constructor for `IO`, which is
       somewhat magic
 * What if we try to print the first command-line argument as follows?
 
@@ -889,7 +890,7 @@ putStr :: String -> IO ()
 
 * How to de-construct an `IO [String]` to get a `[String]`
     * We can't use `case`, because we don't have a constructor for
-      `IO`<br> ... Besides, the order and number of deconstructions of
+      `IO`... Besides, the order and number of deconstructions of
       something like `putStr` matters
     * That's the point of the `<-` operator in `do` blocks!
 
@@ -922,8 +923,8 @@ do page <- simpleHttp url
 
 * The `do` block builds a compound action from other actions
     * It sequences how actions will be applied to the real world
-    * When executed, applies actions of type `IO a` to the world to
-      extract values of type `a`
+    * When executed, applies `IO a` actions to the world,
+      extracting values of type `a`
     * What action to execute next can depend on the value of the
       extracted `a`
 
@@ -1287,11 +1288,14 @@ class Monad m where
     return :: a -> m a
     fail :: String -> m a   -- called when pattern binding fails
     fail s = error s        -- default is to throw exception
+
+    (>>) :: m a -> m b -> m a
+    m >> k = m >>= \_ -> k
 ~~~~
 
 * This has far-reaching consequences
     * You can use the syntactic sugar of `do` blocks for non-IO
-      purposes (this turns out to be hugely powerful)
+      purposes
     * Many monadic functions are polymorphic in the `Monad`--invent a
       new monad, and you can still use much existing code
 
