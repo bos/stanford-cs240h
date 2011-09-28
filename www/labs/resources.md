@@ -17,6 +17,15 @@ pretty thoroughly
 recommend reading it cover-to-cover, but when you want a definitive
 answer to something about the language, this is the pace to turn.
 
+* [Tackling the awkward squad](http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf) 
+\- Good introduction to the IO Monad, concurrency, exceptions, and
+FFI.  Quite accessible if you skip the sections on semantics.
+
+* The
+  [Typeclassopedia](http://www.haskell.org/wikiupload/e/e9/Typeclassopedia.pdf)
+  is a good overview of various classes such as `Monoid`, `Functor`,
+  `Monad`, `Applicative`, etc., and their relationships.
+
 ## Finding Haskell code
 
 * [Hackage](http://hackage.haskell.org/packages/archive/pkg-list.html)
@@ -103,7 +112,7 @@ that don't show up in the documentation contents.
   [Haskell mode](http://projects.haskell.org/haskellmode-emacs/) for
   emacs, but you have to install it separately.  Some OSes have a
   package for it, some don't (in which case you can put it in your
-  come directory).  David uses the following configuration is his
+  home directory).  David uses the following configuration is his
   `.emacs` file:
 
     ~~~~

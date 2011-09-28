@@ -16,6 +16,8 @@
 <li><p><a href="http://book.realworldhaskell.org/"><em>Real World Haskell</em></a></p></li>
 <li><p><a href="http://www.haskell.org/tutorial/">A Gentle Introduction to Haskell</a> - Not particularly gentle despite the title, but covers the basics pretty thoroughly</p></li>
 <li><p><a href="http://www.haskell.org/onlinereport/haskell2010/">Haskell 2010 Language Report</a> - The normative language specification. We don't necessarily recommend reading it cover-to-cover, but when you want a definitive answer to something about the language, this is the pace to turn.</p></li>
+<li><p><a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf">Tackling the awkward squad</a> - Good introduction to the IO Monad, concurrency, exceptions, and FFI. Quite accessible if you skip the sections on semantics.</p></li>
+<li><p>The <a href="http://www.haskell.org/wikiupload/e/e9/Typeclassopedia.pdf">Typeclassopedia</a> is a good overview of various classes such as <code>Monoid</code>, <code>Functor</code>, <code>Monad</code>, <code>Applicative</code>, etc., and their relationships.</p></li>
 </ul>
 <h2 id="finding-haskell-code">Finding Haskell code</h2>
 <ul>
@@ -50,7 +52,7 @@ library-profiling: True
 </ul>
 <h2 id="development-tools">Development tools</h2>
 <ul>
-<li><p>There is a <a href="http://projects.haskell.org/haskellmode-emacs/">Haskell mode</a> for emacs, but you have to install it separately. Some OSes have a package for it, some don't (in which case you can put it in your come directory). David uses the following configuration is his <code>.emacs</code> file:</p>
+<li><p>There is a <a href="http://projects.haskell.org/haskellmode-emacs/">Haskell mode</a> for emacs, but you have to install it separately. Some OSes have a package for it, some don't (in which case you can put it in your home directory). David uses the following configuration is his <code>.emacs</code> file:</p>
 <pre><code>(add-to-list 'completion-ignored-extensions &quot;.hi&quot;)
 (or (fboundp 'haskell-mode)
     (let ((paths

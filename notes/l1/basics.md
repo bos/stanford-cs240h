@@ -983,8 +983,8 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
       `a`
     * `L.toString` returns a `String`, use `return` to make an `IO
       String`
-    * In a do block, "`let x = e`" is like "`x <- return e`" (unless
-      `e` contains symbol `x`)
+    * In a `do` block, "`let x = e`" is like "`x <- return e`" (except
+      recursive)
 
 
 # Point-free IO composition
@@ -1014,6 +1014,30 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
         putStr (L.toString page)
     ~~~~
 
+# Lazy IO
+
+* Some simple file IO functions may be handy for first lab
+
+    ~~~~ {.haskell}
+    type FilePath = String -- makes FilePath synonym for String
+    getContents :: IO String          -- read all stdin
+    readFile :: FilePath -> IO String -- read (whole) file
+    writeFile :: FilePath -> String -> IO ()  -- write file
+    ~~~~
+
+* E.g., `main = readFile "input" >>= writeFile "output"`
+
+    * Surprisingly, this program does not require unbounded memory
+    * Rather, input is read lazily as the list of Characters is
+      evaluated
+* How lazy IO works
+    * A list has two values, the head and the tail, each possibly a
+      thunk
+    * At some point evaluating thunk actually triggers file IO
+    * Function `unsafeInterleaveIO` creates thunks that execute `IO`
+      actions
+    * Lazy IO is great for scripts, bad for servers; more in Iteratee
+      lecture
 
 
 # More on polymorphism
@@ -1064,7 +1088,8 @@ show a = ???                  -- how to implement?
 
 # Classes and Instances
 
-* Ad-hoc polymorphic functions are declared with *classes*
+* Ad-hoc polymorphic functions are called *methods* and declared with
+  *classes*
 
     ~~~~ {.haskell}
     class MyShow a where
@@ -1080,10 +1105,13 @@ show a = ???                  -- how to implement?
         myShow (Point x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
     ~~~~
 
+    * A class declaration can also include default definitions for
+      methods
+
 * What's the type of a function that calls `myShow`?  Ask GHCI:
 
     ~~~~ {.haskell}
-    myPrint x = putStrLn (myShow x)
+    myPrint x = putStrLn $ myShow x
     ~~~~
 
     ~~~~
@@ -1135,6 +1163,7 @@ show a = ???                  -- how to implement?
     ~~~~ {.haskell}
     class Eq a => Ord a where
         (<), (>=), (>), (<=) :: a -> a -> Bool
+        a <= b = a == b || a < b  -- default methods can use superclasses
         ....
     ~~~~
 
@@ -1148,10 +1177,104 @@ show a = ???                  -- how to implement?
         myShow (x:xs) = myShow x ++ ":" ++ myShow xs
     ~~~~
 
+# Classes of parameterized types
+
+* Some classes are for parameterized types
+    * `Functor` is a class for parameterized types onto which you can
+      map functions:
+
+        ~~~~ {.haskell}
+        class Functor f where
+            fmap :: (a -> b) -> f a -> f b
+        ~~~~
+
+    * Notice there are no values of type `f`, rather types `f a` and `f b`
+    * An example of a `Functor` is `Maybe`:
+
+        ~~~~ {.haskell}
+        instance Functor Maybe where
+            fmap _ Nothing  = Nothing
+            fmap f (Just a) = Just (f a)
+        ~~~~
+
+        ~~~~
+        GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
+        Prelude> fmap (+ 1) Nothing
+        Nothing
+        Prelude> fmap (+ 1) $ Just 2
+        Just 3
+        ~~~~
+
+# More `Functor`s
+
+* Lists are a `Functor`
+
+    * `[]` can be used as a prefix type ("`[] Int`" means "`[Int]`")
+      and can be used to declare instances
+
+    ~~~~ {.haskell}
+    map :: (a -> b) -> [a] -> [b]
+    map _ []     = []
+    map f (x:xs) = f x : map f xs
+
+    instance Functor [] where
+        fmap = map
+    ~~~~
+
+* `IO` is a `Functor`
+
+    ~~~~ {.haskell}
+    instance Functor IO where
+        fmap f x = x >>= return . f
+    ~~~~
+
+    * So we could have said:
+
+        ~~~~ {.haskell}
+	simpleHttpStr url = fmap L.toString $ simpleHttp url
+        ~~~~
+
+        or, simpler still:
+
+        ~~~~ {.haskell}
+	simpleHttpStr = fmap L.toString . simpleHttp
+        ~~~~
+
+# Kinds
+
+* What happens if you try to make an instance of `Functor` for `Int`?
+
+    ~~~~ {.haskell}
+    instance Functor Int where       -- compilation error
+        fmap _ _ = error "anything"
+    ~~~~
+
+    * Error: yields `fmap :: (a -> b) -> Int a -> Int b`, yet `Int` is
+    not parameterized
+* The compiler must keep track of all the different kinds of types
+    * One kind of type, such as `Int`, `Double`, and `()`, directly
+      describes values
+    * Another kind of type, such as `Maybe`, `[]`, and `IO` needs 
+      another type parameter to describe values
+    * Yet another kind of type, such as `Either` and `(,)`, requires
+      *two* parameters
+    * Parameterized types are sometimes called *type constructors*
+* Kinds are named using symbols &#x2217; and &#x2192;, a lot like
+  curried function types
+    * &#x2217; represents the kind of type that represents values
+      (like `Int`, `Double`, and `()`)
+    * &#x2217; &#x2192; &#x2217; represents the kind of type with one
+      parameter of type &#x2217; (e.g., `Maybe`, `IO`, etc.)
+    * &#x2217; &#x2192; &#x2217; &#x2192; &#x2217; represents type
+      constructors with two arguments of kind #x2217; (e.g., `Either`)
+    * In general, *a* &#x2192; *b* means a type constructor that,
+      applied to kind *a*, yields kind *b*
+
 
 
 # The `Monad` class
 
+* **The entire first two lectures have been working up to this slide**
 * `return` and `>>=` are actually methods of a class called `Monad`
 
 ~~~~ {.haskell}
@@ -1159,6 +1282,7 @@ class Monad m where
     (>>=) :: m a -> (a -> m b) -> m b
     return :: a -> m a
     fail :: String -> m a   -- called when pattern binding fails
+    fail s = error s        -- default is to throw exception
 ~~~~
 
 * This has far-reaching consequences
@@ -1194,6 +1318,7 @@ parseForm raw = do
     return (Form a b ...)
 ~~~~
 
+# Algebraic data types
 
 
 [RWH]: http://book.realworldhaskell.org/
