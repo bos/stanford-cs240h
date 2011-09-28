@@ -184,7 +184,7 @@
 
     ~~~ {.haskell}
     safeDiv x y =
-        let q = x / y          -- safe as q never evaluated if y == 0
+        let q = div x y        -- safe as q never evaluated if y == 0
         in if y == 0 then 0 else q
     main = print (safeDiv 1 0) -- prints 0
     ~~~
@@ -719,6 +719,67 @@ infixr 0  $, $!, `seq`
 
     * If GHCI doesn't specify, means default: `infixl 9`
 
+# The "`infixr 0`" operators
+
+* <span style="color:blue">`$`</span> is defined to be identical to
+  function application, but with lowest precedence
+
+    ~~~~ {.haskell}
+    ($) :: (a -> b) -> a -> b
+    f $ x = f x
+    infixr 0 $
+    ~~~~
+
+    * Turns out to be quite useful for avoiding parentheses, E.g.:
+
+    ~~~~ {.haskell}
+        putStrLn $ "the value of " ++ key ++ " is " ++ show value
+    ~~~~
+
+* <span style="color:blue">`seq :: a -> b -> b`</span> evaluates its
+  first argument and returns the second
+    * Means when you are done, first argument is a value, not a thunk
+
+    ~~~~ {.haskell}
+    main = let q = 1 `div` 0
+           in seq q $ putStrLn "Hello world!\n"   -- divide by zero error
+    ~~~~
+
+    * `seq` has to be built into the compiler
+
+* <span style="color:blue">`$!`</span> combines `$` and `seq`
+
+    ~~~~ {.haskell}
+    f $! x  = x `seq` f x
+    ~~~~
+
+# Accumulators revisited
+
+* We used an accumulator to avoid `n0` stack frames in `factorial`:
+
+~~~ {.haskell}
+factorial n0 = loop 1 n0
+    where loop acc n | n > 1     = loop (acc * n) (n - 1)
+                     | otherwise = acc
+~~~
+
+* Unfortunately, `acc` could be a chain of thunks `n` long
+    * `(((1 * n) * (n - 1)) * (n - 1) ...)` - laziness means only
+      evaluated when needed
+
+* Can fix such problems using `$!` or `seq`
+
+~~~ {.haskell}
+factorial n0 = loop 1 n0
+    where loop acc n | n > 1     = (loop $! acc * n) (n - 1)
+                     | otherwise = acc
+~~~
+
+~~~ {.haskell}
+factorial n0 = loop 1 n0
+    where loop acc n | n > 1     = acc `seq` loop (acc * n) (n - 1)
+                     | otherwise = acc
+~~~
 
 # Hackage and cabal
 
