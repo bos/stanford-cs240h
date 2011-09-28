@@ -727,7 +727,6 @@ infixr 0  $, $!, `seq`
     ~~~~ {.haskell}
     ($) :: (a -> b) -> a -> b
     f $ x = f x
-    infixr 0 $
     ~~~~
 
     * Turns out to be quite useful for avoiding parentheses, E.g.:
@@ -763,9 +762,10 @@ factorial n0 = loop 1 n0
                      | otherwise = acc
 ~~~
 
-* Unfortunately, `acc` will contain a chain of thunks `n` long
-    * `(((1 * n) * (n - 1)) * (n - 1) ...)` - laziness means only
+* Unfortunately, `acc` can contain a chain of thunks `n` long<br>
+    * `(((1 * n) * (n - 1)) * (n - 2) ...)` -- Laziness means only
       evaluated when needed
+    * GHC is smart enough not to build up thunks only when optimization enabled
 
 * Can fix such problems using `$!` or `seq`
 
@@ -847,7 +847,7 @@ main = do
 ~~~
 
 * This task requires some impure (non-functional) actions
-    * Extracting command-line args, Creating a TCP connection, Writing
+    * Extracting command-line args, creating a TCP connection, writing
       to stdout
 * A `do` block lets you sequence IO actions.  In a `do` block:
     * <span style="color:blue">*pat* `<-` *action*</span> -- binds
@@ -884,9 +884,14 @@ putStr :: String -> IO ()
 
 * How to de-construct an `IO [String]` to get a `[String]`
     * We can't use `case`, because we don't have a constructor for
-      `IO`<br> ... Besides, order of IO actions is important, while
-      bindings are order-independent
+      `IO`<br> ... Besides, each deconstruction of an action like
+      `putStr` needs to make IO happen
     * That's the point of the `<-` operator in `do` blocks!
+
+
+# Another way to see IO
+
+![](io.svg)
 
 
 # Running `urldump`

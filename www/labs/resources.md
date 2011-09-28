@@ -87,6 +87,16 @@ for modules such as
 [GHC.Base](http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/src/GHC-Base.html)
 that don't show up in the documentation contents.
 
+* Tip for debugging uncaught exceptions:  Compile your program with
+
+    ~~~~
+    ghc -rtsopts=all -prof -auto-all --make ...
+    ~~~~
+
+    Then, when you run your program from the command line, give it the
+    extra arguments `+RTS -xc -RTS`.  It should dump a stack trace to
+    stderr when an exception occurred.
+
 ## Development tools
 
 * There is a

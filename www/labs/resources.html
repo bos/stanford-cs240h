@@ -43,6 +43,10 @@ library-profiling: True
 <li><p>The main <a href="http://haskell.org/haskellwiki/GHC">GHC documentation site</a>.</p></li>
 <li><p>The <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html">GHC User's guide</a>, including a chapter on <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html">GHCI</a>.</p></li>
 <li><p>The <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/index.html">standard libraries</a> that ship with GHC, including the <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/index.html">base</a> and <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/ghc-prim-0.2.0.0/index.html">ghc-prim</a> packages. The documentation links to source code. If you fiddle with URLs, you also can find HTMLified <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/src/">source code</a> for modules such as <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/src/GHC-Base.html">GHC.Base</a> that don't show up in the documentation contents.</p></li>
+<li><p>Tip for debugging uncaught exceptions: Compile your program with</p>
+<pre><code>ghc -rtsopts=all -prof -auto-all --make ...
+</code></pre>
+<p>Then, when you run your program from the command line, give it the extra arguments <code>+RTS -xc -RTS</code>. It should dump a stack trace to stderr when an exception occurred.</p></li>
 </ul>
 <h2 id="development-tools">Development tools</h2>
 <ul>
