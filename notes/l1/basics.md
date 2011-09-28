@@ -329,6 +329,9 @@
     x = (1 :: Integer) + (1 :: Integer) :: Integer
     ~~~
 
+    * `::` has lower precedence than any function operators (including
+      `+`)
+
 
 # More on types
 
@@ -1007,7 +1010,9 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
     ~~~~
 
     * Note `>>=` composes left-to-right, while `.` goes right-to-left
-* `do` blocks are just syntactic sugar for calling `>>=`
+* `do` blocks are just
+  [syntactic sugar](http://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-470003.14)
+  for calling `>>=`
     * Let's de-sugar our original `main`:
 
     ~~~~ {.haskell}
@@ -1146,7 +1151,7 @@ show a = ???                  -- how to implement?
 
     ~~~~ {.haskell}
     add :: (Num a) => a -> a -> a
-    add a b = a + b
+    add arg1 arg2 = arg1 + arg2
     ~~~~
 
 * Can think of context as representing hidden *dictionary* arguments
@@ -1160,7 +1165,7 @@ show a = ???                  -- how to implement?
 * Let's say you want to cache result of super-expensive function
 
     ~~~~ {.haskell}
-    superExpensive val = len $ veryExpensive val
+    superExpensive val = len $ veryExpensive (val :: Int)
         where len [] = 0
               len (x:xs) = 1 + len xs
     cachedResult = superExpensive 5
@@ -1390,30 +1395,157 @@ class Monad m where
 
 * System libraries define a `Monad` instance for `Maybe`
 
-~~~~ {.haskell}
-instance  Monad Maybe  where
-    (Just x) >>= k = k x
-    Nothing >>= _  = Nothing
-    return = Just
-    fail _ = Nothing
-~~~~
+    ~~~~ {.haskell}
+    instance  Monad Maybe  where
+        (Just x) >>= k = k x
+        Nothing >>= _  = Nothing
+        return = Just
+        fail _ = Nothing
+    ~~~~
 
-* Suppose you use `Nothing` to indicate failure
+* You can use `Nothing` to indicate failure
     * Might have a bunch of functions to extract fields from data
 
-~~~~ {.haskell}
-extractA :: String -> Maybe Int
-extractB :: String -> Maybe String
-...
-parseForm :: String -> Maybe Form
-parseForm raw = do
-    a <- extractA raw
-    b <- extractB raw
+    ~~~~ {.haskell}
+    extractA :: String -> Maybe Int
+    extractB :: String -> Maybe String
     ...
-    return (Form a b ...)
-~~~~
+    parseForm :: String -> Maybe Form
+    parseForm raw = do
+        a <- extractA raw
+        b <- extractB raw
+        ...
+        return (Form a b ...)
+    ~~~~
+
+    * Threads success/failure state through system as `IO` threaded
+      World
+    * Since Haskell is lazy, stops computing at first `Nothing`
 
 # Algebraic data types
+
+* Some data types have a large number of fields
+
+    ~~~~ {.haskell}
+    -- Argument to createProcess function
+    data CreateProcess = CreateProcess CmdSpec (Maybe FilePath)
+        (Maybe [(String,String)]) StdStream StdStream StdStream Bool
+    ~~~~
+
+    * Quickly gets rather unwieldy
+
+* Algebraic data types let you label fields (like C `struct`s)
+
+    ~~~~ {.haskell}
+    data CreateProcess = CreateProcess {
+      cmdspec   :: CmdSpec,
+      cwd       :: Maybe FilePath,
+      env       :: Maybe [(String,String)],
+      std_in    :: StdStream,
+      std_out   :: StdStream,
+      std_err   :: StdStream,
+      close_fds :: Bool
+    }
+    ~~~~
+
+* Let's make an algebraic version of our `Point` class
+
+    ~~~~ {.haskell}
+    data Point = Point { xCoord :: Double, yCoord :: Double }
+    ~~~~
+
+# Algebraic types - initialization and matching
+
+~~~~ {.haskell}
+data Point = Point { xCoord :: Double, yCoord :: Double }
+~~~~
+
+* Can initialize an Algebraic type by naming fields
+
+    ~~~~ {.haskell}
+    myPoint = Point { xCoord = 1.0, yCoord = 1.0 }
+    ~~~~
+
+    * Uninitialized fields get value `undefined` - a thunk that throws
+      an exception
+
+* Can also pattern-match on any subset of fields
+
+    ~~~~ {.haskell}
+    -- Note the pattern binding assigns the variable on the right of =
+    getX Point{ xCoord = x } = x
+    ~~~~
+
+    * [*As-patterns*](http://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-590003.17.1)
+      are handy to bind a variable and pattern simultaneously (with
+      `@`):
+
+        ~~~~ {.haskell}
+	getX' p@Point{ xCoord = x }
+                | x < 100 = x
+                | otherwise = error $ show p ++ " out of range"
+        ~~~~
+
+        ~~~~ {.haskell}
+        -- Also works with non-algebraic patterns
+	getX' p@(Point x _) = ...
+	processString s@('$':_) = ...
+	processString s         = ...
+        ~~~~
+
+
+# Algebraic types - access and update
+
+* Can use field labels as access functions
+
+    ~~~~ {.haskell}
+    getX point = xCoord point
+    ~~~~
+
+    * `xCoord` works anywhere you can use a function of type `Point ->
+      Double`
+    * One consequence: field labels share the same namespace as
+      top-level bindings, and must be unique
+
+* There is a special syntax for updating one or more fields
+
+    ~~~~ {.haskell}
+    setX point x = point { xCoord = x }
+    setXY point x y = point { xCoord = x, yCoord = y }
+    ~~~~
+
+    * Obviously doesn't update destructively, but returns new,
+      modified `Point`
+
+    * Very handy to maintain state in tail recursive functions and
+      `Monads`
+
+# A few Miscellaneous points
+
+* A `!` before a data field type makes it *strict* - i.e., can't be
+  thunk
+
+    ~~~~ {.haskell}
+    data State = State !Int Int
+
+    data AlgState = AlgState { accumulator :: !Int
+                             , otherValue :: Int }
+    ~~~~
+
+    * In both cases above, the first `Int` cannot hold a thunk, but
+      only a value
+
+    * When initializing an algebraic datatype, it is mandatory to
+      initialize all strict fields (since they cannot hold the
+      `undefined` thunk).
+
+* [`Data.Map`](http://hackage.haskell.org/packages/archive/containers/latest/doc/html/Data-Map.html) 
+maintains efficient, functional lookup tables
+    * The tables cannot be mutated, but can be updated and used in
+      recursive functions
+
+* [`words`](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Data-List.html#v:words)
+  breaks a `String` up into a list of whitespace-separated words
 
 
 [RWH]: http://book.realworldhaskell.org/
