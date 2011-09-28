@@ -895,7 +895,7 @@ putStr :: String -> IO ()
     * That's the point of the `<-` operator in `do` blocks!
 
 
-# Another way to see IO [[Peyton Jones]](http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf)
+# Another way to see IO [[Peyton Jones]][Awkward]
 
 ~~~ {.haskell}
 do page <- simpleHttp url
@@ -911,8 +911,7 @@ do page <- simpleHttp url
     * Only the special `main` action is ever executed
 
 
-
-# Another way to see IO [[Peyton Jones]](http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf)
+# Another way to see IO [[Peyton Jones]][Awkward]
 
 ~~~ {.haskell}
 do page <- simpleHttp url
@@ -1041,6 +1040,8 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
     * At some point evaluating thunk actually triggers file IO
     * Function `unsafeInterleaveIO` creates thunks that execute `IO`
       actions
+      (c.f. more widely used `unsafePerformIO`, described in
+      [[Peyton Jones]][Awkward])
     * Lazy IO is great for scripts, bad for servers; more in Iteratee
       lecture
 
@@ -1155,6 +1156,45 @@ show a = ???                  -- how to implement?
     * But also implicitly give it a function pointer for type `a`'s
       `MyShow` instance
 
+# The [Dreaded][DMRWiki] [Monomorphism Restriction][DMR]
+
+* Let's say you want to cache result of super-expensive function
+
+    ~~~~ {.haskell}
+    superExpensive val = len $ veryExpensive val
+        where len [] = 0
+              len (x:xs) = 1 + len xs
+    cachedResult = superExpensive 5
+    ~~~~
+
+    * `cachedResult` will start as thunk, be executed once, then
+      contain value
+
+* Let's think about the types
+
+    ~~~~
+    *Main> :t superExpensive
+    superExpensive :: Num a => Int -> a
+    *Main> :t cachedResult
+    cachedResult :: Integer
+    ~~~~
+
+    * \+ and 0 are overloaded, so `superExpensive` can return any
+      `Num` you want
+    * Why don't we have `cachedResult :: (Num a) => a`?
+    * Recall context restrictions are like hidden arguments... so
+      would make `cachedResult` into a function, undermining our
+      caching goal!
+    * But how is compiler smart enough to save us here?
+
+# The DMR continued
+
+* Answer: in this case, compiler is not actually that smart
+    * Heuristic: If it looks like a function, can infer ad hoc
+      polymorphic types
+    * If it looks like anything else, function has to be monomorphic
+* What looks like a function?
+    * `f x =` ..., `f x |` *guard* `=` ... `; |` *guard* `=` ... `;`
 
 # Superclasses and instance contexts
 
@@ -1334,5 +1374,6 @@ parseForm raw = do
 [GHCdoc]: http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html
 [GHCI]: http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html
 [Hoogle]: http://www.haskell.org/hoogle/
-
-
+[DMR]: http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-930004.5.5
+[DMRWiki]: http://www.haskell.org/haskellwiki/Monomorphism_restriction
+[Awkward]: http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf
