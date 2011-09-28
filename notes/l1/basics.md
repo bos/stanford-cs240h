@@ -1201,13 +1201,15 @@ show a = ???                  -- how to implement?
       =` ... not)
 * How are monomorphic types inferred?
     * If bound symbol used elsewhere in module, infer type from use
-    * Otherwise, if type is of class `Num`, try `Integer` then
-      `Double` (this sequence can be changed with a
+    * If still ambiguous and type is of class `Num`, try `Integer`
+      then `Double` (this sequence can be changed with a
       [`default` declaration][default])
-    * Otherwise, compilation fails because of an ambiguous type
+    * If still ambiguous, compilation fails
 
 # The DMR take-away message
 
+* Think of type restrictions as implicit dictionary arguments
+    * Compiler won't saddle non-function with implicit arguments
 * This code will compile
 
     ~~~~ {.haskell}
@@ -1219,44 +1221,44 @@ show a = ???                  -- how to implement?
 
     ~~~~ {.haskell}
     show2 = show
-    ~~~~
-
-    ~~~~ {.haskell}
     show3 = \x -> show x
     ~~~~
 
     * I'd rather you heard it from me than from GHC...
 
 * Relatively easy to work around DMR
-    * Add signatures to top-level functions (a good idea anyway)
+    * Add type signatures to functions--a good idea anyway for
+      top-level bindings, and sometimes necessary for `let` bindings
 
-    ~~~~ {.haskell}
-    -- No problem, compiler knows you want ad hoc polymorphism
-    show2 :: (Show x) => x -> String
-    show2 = show
-    ~~~~
-
-    * Sometimes need to add signatures within `let` bindings
+        ~~~~ {.haskell}
+        -- No problem, compiler knows you want ad hoc polymorphism
+        show2 :: (Show x) => x -> String
+        show2 = show
+        ~~~~
 
 # Superclasses and instance contexts
 
 * One class may require all instances to be members of another
-    * Class `Eq` contains the '==' and '/=' methods
-    * Class `Ord` contains `<`, `>=`, `>`, `<=`, etc.
+    * Class `Eq` contains '==' and '/=' methods, while
+    `Ord` contains `<`, `>=`, `>`, `<=`, etc.
     * It doesn't make sense to have an `Ord` instance not also be an
       `Eq` instance
     * `Ord` declares `Eq` as a superclass, using a context
 
-    ~~~~ {.haskell}
-    class Eq a => Ord a where
-        (<), (>=), (>), (<=) :: a -> a -> Bool
-        a <= b = a == b || a < b  -- default methods can use superclasses
-        ....
-    ~~~~
+        ~~~~ {.haskell}
+        class Eq a => Ord a where
+            (<), (>=), (>), (<=) :: a -> a -> Bool
+            a <= b = a == b || a < b -- default methods can use superclasses
+            ....
+        ~~~~
 
+    * Don't need to write superclass restrictions in contexts--any
+      function with an `Ord` dictionary can lookup the `Eq` dictionary
+    * Incidentally, can add `deriving (Eq, Ord)` to `data`
+      declarations
 * Similarly, an instance may require a context
-    * E.g., you can define `myShow` for a list of items if you know
-      how to call `myShow` on each individual item:
+    * E.g., define `myShow` for a list of items whose type is of class
+      `MyShow`
 
     ~~~~ {.haskell}
     instance (MyShow a) => MyShow [a] where
@@ -1266,31 +1268,34 @@ show a = ???                  -- how to implement?
 
 # Classes of parameterized types
 
-* Some classes are for parameterized types
-    * `Functor` is a class for parameterized types onto which you can
-      map functions:
+* Can also have classes of parameterized types
 
-        ~~~~ {.haskell}
-        class Functor f where
-            fmap :: (a -> b) -> f a -> f b
-        ~~~~
+* `Functor` is a class for parameterized types onto which you can map
+      functions:
 
-    * Notice there are no values of type `f`, rather types `f a` and `f b`
-    * An example of a `Functor` is `Maybe`:
+    ~~~~ {.haskell}
+    class Functor f where
+        fmap :: (a -> b) -> f a -> f b
+    ~~~~
 
-        ~~~~ {.haskell}
-        instance Functor Maybe where
-            fmap _ Nothing  = Nothing
-            fmap f (Just a) = Just (f a)
-        ~~~~
+    * Notice there are no arguments/results of type `f`, rather types
+      `f a` and `f b`
 
-        ~~~~
-        GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
-        Prelude> fmap (+ 1) Nothing
-        Nothing
-        Prelude> fmap (+ 1) $ Just 2
-        Just 3
-        ~~~~
+* An example of a `Functor` is `Maybe`:
+
+    ~~~~ {.haskell}
+    instance Functor Maybe where
+        fmap _ Nothing  = Nothing
+        fmap f (Just a) = Just (f a)
+    ~~~~
+
+    ~~~~
+    GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
+    Prelude> fmap (+ 1) Nothing
+    Nothing
+    Prelude> fmap (+ 1) $ Just 2
+    Just 3
+    ~~~~
 
 # More `Functor`s
 
@@ -1332,28 +1337,28 @@ show a = ???                  -- how to implement?
 * What happens if you try to make an instance of `Functor` for `Int`?
 
     ~~~~ {.haskell}
-    instance Functor Int where       -- compilation error
-        fmap _ _ = error "anything"
+    instance Functor Int where         -- compilation error
+        fmap _ _ = error "placeholder"
     ~~~~
 
-    * Error: yields `fmap :: (a -> b) -> Int a -> Int b`, yet `Int` is
-    not parameterized
+    * Get `fmap :: (a -> b) -> Int a -> Int b`, but `Int` not
+    parameterized
 * The compiler must keep track of all the different kinds of types
-    * One kind of type, such as `Int`, `Double`, and `()`, directly
+    * One kind of type (e.g., `Int`, `Double`, `()`) directly
       describes values
-    * Another kind of type, such as `Maybe`, `[]`, and `IO` needs 
-      another type parameter to describe values
-    * Yet another kind of type, such as `Either` and `(,)`, requires
-      *two* parameters
+    * Another kind of type (`Maybe`, `[]`, `IO`) requires a type
+      parameter
+    * Yet another kind of type (`Either`, `(,)`), requires *two
+      parameters*
     * Parameterized types are sometimes called *type constructors*
-* Kinds are named using symbols &#x2217; and &#x2192;, a lot like
-  curried function types
-    * &#x2217; represents the kind of type that represents values
-      (like `Int`, `Double`, and `()`)
-    * &#x2217; &#x2192; &#x2217; represents the kind of type with one
-      parameter of type &#x2217; (e.g., `Maybe`, `IO`, etc.)
-    * &#x2217; &#x2192; &#x2217; &#x2192; &#x2217; represents type
-      constructors with two arguments of kind #x2217; (e.g., `Either`)
+* Kinds named using symbols &#x2217; and &#x2192;, much like curried
+  functions
+    * &#x2217; is the kind of type that represents values (`Int`,
+      `Double`, `()`, etc.)
+    * &#x2217; &#x2192; &#x2217; is the kind of type with one
+      parameter of type &#x2217; (`Maybe`, `IO`, etc.)
+    * &#x2217; &#x2192; &#x2217; &#x2192; &#x2217; is a type
+      constructor with two arguments of kind &#x2217; (`Either`)
     * In general, *a* &#x2192; *b* means a type constructor that,
       applied to kind *a*, yields kind *b*
 
