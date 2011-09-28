@@ -896,20 +896,36 @@ putStr :: String -> IO ()
 
 # Another way to see IO [[Peyton Jones]](http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf)
 
+~~~ {.haskell}
+do page <- simpleHttp url
+   putStr (L.toString page)
+~~~
+
+<div style="text-align:center">![](io1.svg)</div>
+
+* `simpleHttp` and `putStr` return `IO` *actions* that can change the
+  world
+    * Pure code can manipulate such actions, but can't actually
+      execute them
+    * Only the special `main` action is ever executed
+
+
+
+# Another way to see IO [[Peyton Jones]](http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf)
 
 ~~~ {.haskell}
 do page <- simpleHttp url
    putStr (L.toString page)
 ~~~
 
-<div style="text-align:center">![](io.svg)</div>
+<div style="text-align:center">![](io2.svg)</div>
 
-* The `do` block is an action that can change the world when executed
-    * It works by threading the world through a bunch of sub-actions
-    * Pure functional code specifies which actions to execute under
-      what circumstances
-    * Only executing the actions (i.e., `main`) is impure
-
+* The `do` block builds a compound action from other actions
+    * It sequences how actions will be applied to the real world
+    * When executed, applies actions of type `IO a` to the world to
+      extract values of type `a`
+    * What action to execute next can depend on the value of the
+      extracted `a`
 
 # Running `urldump`
 

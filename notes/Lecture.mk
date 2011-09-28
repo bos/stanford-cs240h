@@ -20,7 +20,7 @@ show: $(L)-slides.html
 .PHONY: show
 
 install: $(L).md $(L).html $(L)-slides.html
-	cp $^ $(DESTDIR)/
+	cp $^ $(wildcard *.svg) $(DESTDIR)/
 	git add $(patsubst %, $(DESTDIR)/%, $^)
 .PHONY: install
 
