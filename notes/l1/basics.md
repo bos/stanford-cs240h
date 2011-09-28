@@ -963,6 +963,10 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
 
 # The `return` function
 
+<!-- might need to check out
+https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
+-->
+
 * Let's combine `simpleHttp` and `L.toString` into one function
 <div style="margin:0;text-align:center;">![](simpleHttpStr.svg)</div>
 
