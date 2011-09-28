@@ -9,10 +9,10 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="829.48663"
-   height="154.42252"
+   width="831.21899"
+   height="161.88243"
    preserveAspectRatio="xMinYMin meet"
-   viewBox="0 0 829 154"
+   viewBox="0 0 831 162"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.2 r9819"
@@ -25,15 +25,15 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4747601"
-     inkscape:cx="364.77413"
-     inkscape:cy="12.049714"
+     inkscape:cx="364.01289"
+     inkscape:cy="19.520186"
      inkscape:current-layer="layer1"
      id="namedview6"
      showgrid="false"
      inkscape:window-width="1600"
      inkscape:window-height="868"
-     inkscape:window-x="0"
-     inkscape:window-y="0"
+     inkscape:window-x="212"
+     inkscape:window-y="101"
      inkscape:window-maximized="0"
      inkscape:snap-bbox="true"
      inkscape:snap-bbox-midpoints="true"
@@ -240,6 +240,24 @@
          transform="matrix(-0.8,0,0,-0.8,-10,0)"
          inkscape:connector-curvature="0" />
     </marker>
+    <filter
+       inkscape:collect="always"
+       id="filter3997"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.9626492"
+         id="feGaussianBlur3999" />
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4005"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="1.9655983"
+         id="feGaussianBlur4007" />
+    </filter>
   </defs>
   <metadata
      id="metadata8">
@@ -257,7 +275,21 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(151.10454,405.79675)">
+     transform="translate(150.34375,405.78619)">
+    <path
+       sodipodi:nodetypes="ccccccc"
+       transform="matrix(0.99941333,0,0,0.99941333,-149.10571,-403.79792)"
+       inkscape:connector-curvature="0"
+       id="path4003"
+       d="m 69.841868,155.17556 0,-93.07412 693.165212,0 0,46.99265 -252.41556,0 0,46.08147 z"
+       style="fill:#360000;fill-opacity:1;stroke:none;filter:url(#filter4005)" />
+    <path
+       style="fill:#ff8f8f;fill-opacity:1;stroke:none"
+       d="m 69.841868,155.17556 0,-93.07412 693.165212,0 0,46.99265 -252.41556,0 0,46.08147 z"
+       id="path3159"
+       inkscape:connector-curvature="0"
+       transform="matrix(0.99941333,0,0,0.99941333,-151.10454,-405.79675)"
+       sodipodi:nodetypes="ccccccc" />
     <path
        inkscape:connector-curvature="0"
        id="path3082"

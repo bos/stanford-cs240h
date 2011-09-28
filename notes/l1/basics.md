@@ -973,7 +973,7 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
     simpleHttpStr :: String -> IO String
     simpleHttpStr url = do
       page <- simpleHttp url
-      return (L.toString page)  -- return value of do block is last action
+      return (L.toString page)  -- result of do block is last action
     ~~~~
 
 * Note:  **`return` is not control flow statement**, just a function
