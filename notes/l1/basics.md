@@ -184,7 +184,7 @@
 
     ~~~ {.haskell}
     safeDiv x y =
-        let q = x / y          -- safe as q never evaluated if y == 0
+        let q = div x y        -- safe as q never evaluated if y == 0
         in if y == 0 then 0 else q
     main = print (safeDiv 1 0) -- prints 0
     ~~~
@@ -328,6 +328,9 @@
     x :: Integer
     x = (1 :: Integer) + (1 :: Integer) :: Integer
     ~~~
+
+    * `::` has lower precedence than any function operators (including
+      `+`)
 
 
 # More on types
@@ -719,6 +722,68 @@ infixr 0  $, $!, `seq`
 
     * If GHCI doesn't specify, means default: `infixl 9`
 
+# The "`infixr 0`" operators
+
+* <span style="color:blue">`$`</span> is function application, but
+  with lowest precedence
+
+    ~~~~ {.haskell}
+    ($) :: (a -> b) -> a -> b
+    f $ x = f x
+    ~~~~
+
+    * Turns out to be quite useful for avoiding parentheses, E.g.:
+
+    ~~~~ {.haskell}
+        putStrLn $ "the value of " ++ key ++ " is " ++ show value
+    ~~~~
+
+* <span style="color:blue">`seq :: a -> b -> b`</span> evaluates
+  first argument, and second
+    * Means when you are done, first argument is a value, not a thunk
+
+    ~~~~ {.haskell}
+    main = let q = 1 `div` 0
+           in seq q $ putStrLn "Hello world!\n"  -- exception
+    ~~~~
+
+    * `seq` has to be built into the compiler
+
+* <span style="color:blue">`$!`</span> combines `$` and `seq`
+
+    ~~~~ {.haskell}
+    f $! x  = x `seq` f x
+    ~~~~
+
+# Accumulators revisited
+
+* We used an accumulator to avoid `n0` stack frames in `factorial`:
+
+~~~ {.haskell}
+factorial n0 = loop 1 n0
+    where loop acc n | n > 1     = loop (acc * n) (n - 1)
+                     | otherwise = acc
+~~~
+
+* Unfortunately, `acc` can contain a chain of thunks `n` long<br>
+    * `(((1 * n) * (n - 1)) * (n - 2) ...)` -- Laziness means only
+      evaluated when needed
+    * GHC is smart enough not to build up thunks, but only when
+      optimizing
+
+* Can fix such problems using `$!` or `seq`
+
+~~~ {.haskell}
+factorial n0 = loop 1 n0
+    where loop acc n | n > 1     = (loop $! acc * n) (n - 1)
+                     | otherwise = acc
+~~~
+
+~~~ {.haskell}
+factorial n0 = loop 1 n0
+    where loop acc n | n > 1     = acc `seq` loop (acc * n) (n - 1)
+                     | otherwise = acc
+~~~
 
 # Hackage and cabal
 
@@ -743,20 +808,19 @@ infixr 0  $, $!, `seq`
     cabal install http-enumerator utf8-string tagsoup
     ~~~
 
-    * Will install packages in `$HOME/.cabal`, and register them with
-      GHC in `$HOME/.ghc`
-    * If you ever want to start fresh, must delete both `$HOME/.cabal`
-      and `$HOME/.ghc`
+    * Installs packages in `$HOME/.cabal`, and records them in
+      `$HOME/.ghc`
+    * To start fresh, must delete both `$HOME/.cabal` and `$HOME/.ghc`
 
 
 # Modules and `import` syntax
 
 * Haskell groups top-level bindings into *modules*
-    * The default module name is `Main`, because programs start at
-      function `main` in `Main`
+    * Default module name is `Main`, as programs start at function
+      `main` in `Main`
     * Except for `Main`, a module named *M* must reside in a file
       named *M*`.hs`
-    * Module names are capitalized; I generally lower-case file names
+    * Module names are capitalized; I use lower-case file names
       for `Main` modules
 * Let's add this to the top of our source file
 
@@ -768,6 +832,9 @@ infixr 0  $, $!, `seq`
     import System.Environment
     ~~~~
 
+    * Start module with "`module` *name* `where`" or "`module` *name*
+      `(`*exported-symbol*[`,` ...]`) where`"
+      (non-exported symbols provide modularity)
     * `import` *module* - imports all symbols in *module*
     * `import qualified` *module* `as` *ID* - prefixes imported symbols
       with *ID*`.`
@@ -780,38 +847,40 @@ infixr 0  $, $!, `seq`
 
 ~~~ {.haskell}
 main = do
-  (url:_) <- getArgs        -- Sets url to first command-line argument
-  page <- simpleHttp url    -- Sets page to contents as a ByteString
-  putStr (L.toString page)  -- Converts ByteString to String and prints it
+  (url:_) <- getArgs       -- Sets url to first command-line argument
+  page <- simpleHttp url   -- Sets page to contents as a ByteString
+  putStr (L.toString page) -- Converts ByteString to String and prints it
 ~~~
 
 * This task requires some impure (non-functional) actions
-    * Extracting command-line args, Creating a TCP connection, Writing
+    * Extracting command-line args, creating a TCP connection, writing
       to stdout
 * A `do` block lets you sequence IO actions.  In a `do` block:
-    * <span style="color:blue">*pat* `<-` *action*</span> -- binds
+    * <span style="color:blue">*pat* `<-` *action*</span> - binds
       *pat* (variable or constructor pattern) to result of executing
-      **action*
-    * <span style="color:blue">`let` *pat* `=` *pure-value*</span> --
+      *action*
+    * <span style="color:blue">`let` *pat* `=` *pure-value*</span> -
     binds *pat* to *pure-value* (no "`in` ..." required)
-    * <span style="color:blue">*action*</span> -- executes *action* and
+    * <span style="color:blue">*action*</span> - executes *action* and
       discards the result, or returns it if at end of block
-* Note:  GHCI parses input like a `do` block (i.e., can use `<-`, need
-  `let` for bindings)
+* GHCI input is like `do` block (i.e., can use `<-`, need `let` for
+  bindings)
+* `do`/`let`/`case` won't parse after prefix function (so say
+  "`func $ do` ...")
 
 # What are the types of IO actions?
 
 ~~~~ {.haskell}
 main :: IO ()
 getArgs :: IO [String]
-simpleHttp :: String -> IO L.ByteString   -- in reality more polymorphic 
+simpleHttp :: String -> IO L.ByteString -- (really more polymorphic)
 putStr :: String -> IO ()
 ~~~~
 
 * `IO` is a parameterized type (just as `Maybe` is parameterized)
-    * "`IO [String]`" means IO action that, if executed, produces a
-      value of type `[String]`
-    * Unlike `Maybe`, we won't see any constructors for `IO`, which is
+    * "`IO [String]`" means IO action that produces a
+      `[String]` if executed
+    * Unlike `Maybe`, we won't use a constructor for `IO`, which is
       somewhat magic
 * What if we try to print the first command-line argument as follows?
 
@@ -819,14 +888,46 @@ putStr :: String -> IO ()
     main = putStr (head getArgs)
     ~~~~
 
-    * Oops, head expects type `[String]`, not `IO [String]`
+    * Oops, `head` expects type `[String]`, while `getArgs` is an `IO [String]`
 
 * How to de-construct an `IO [String]` to get a `[String]`
     * We can't use `case`, because we don't have a constructor for
-      `IO`<br> ... Besides, order of IO actions is important, while
-      bindings are order-independent
+      `IO`... Besides, the order and number of deconstructions of
+      something like `putStr` matters
     * That's the point of the `<-` operator in `do` blocks!
 
+
+# Another way to see IO [[Peyton Jones]][Awkward]
+
+~~~ {.haskell}
+do page <- simpleHttp url
+   putStr (L.toString page)
+~~~
+
+<div style="text-align:center">![](io1.svg)</div>
+
+* `simpleHttp` and `putStr` return `IO` *actions* that can change the
+  world
+    * Pure code can manipulate such actions, but can't actually
+      execute them
+    * Only the special `main` action is ever executed
+
+
+# Another way to see IO [[Peyton Jones]][Awkward]
+
+~~~ {.haskell}
+do page <- simpleHttp url
+   putStr (L.toString page)
+~~~
+
+<div style="text-align:center">![](io2.svg)</div>
+
+* The `do` block builds a compound action from other actions
+    * It sequences how actions will be applied to the real world
+    * When executed, applies `IO a` actions to the world,
+      extracting values of type `a`
+    * What action to execute next can depend on the value of the
+      extracted `a`
 
 # Running `urldump`
 
@@ -864,16 +965,20 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
 
 # The `return` function
 
+<!-- might need to check out
+https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
+-->
+
 * Let's combine `simpleHttp` and `L.toString` into one function
+<div style="margin:0;text-align:center;">![](simpleHttpStr.svg)</div>
 
     ~~~~ {.haskell}
     simpleHttpStr :: String -> IO String
     simpleHttpStr url = do
       page <- simpleHttp url
-      return (L.toString page)
+      return (L.toString page)  -- result of do block is last action
     ~~~~
 
-    * The return value of a `do` block is that of its last action
 * Note:  **`return` is not control flow statement**, just a function
 
     ~~~~ {.haskell}
@@ -884,8 +989,8 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
       `a`
     * `L.toString` returns a `String`, use `return` to make an `IO
       String`
-    * In a do block, "`let x = e`" is like "`x <- return e`" (unless
-      `e` contains symbol `x`)
+    * In a `do` block, "`let x = e`" is like "`x <- return e`" (except
+      recursive)
 
 
 # Point-free IO composition
@@ -905,7 +1010,9 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
     ~~~~
 
     * Note `>>=` composes left-to-right, while `.` goes right-to-left
-* `do` blocks are just syntactic sugar for calling `>>=`
+* `do` blocks are just
+  [syntactic sugar](http://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-470003.14)
+  for calling `>>=`
     * Let's de-sugar our original `main`:
 
     ~~~~ {.haskell}
@@ -915,6 +1022,32 @@ Prelude Main> :main "http://cs240h.scs.stanford.edu/"
         putStr (L.toString page)
     ~~~~
 
+# Lazy IO
+
+* Some simple file IO functions may be handy for first lab
+
+    ~~~~ {.haskell}
+    type FilePath = String -- makes FilePath synonym for String
+    getContents :: IO String          -- read all stdin
+    readFile :: FilePath -> IO String -- read (whole) file
+    writeFile :: FilePath -> String -> IO ()  -- write file
+    ~~~~
+
+* E.g., `main = readFile "input" >>= writeFile "output"`
+
+    * Surprisingly, this program does not require unbounded memory
+    * Rather, input is read lazily as the list of Characters is
+      evaluated
+* How lazy IO works
+    * A list has two values, the head and the tail, each possibly a
+      thunk
+    * At some point evaluating thunk actually triggers file IO
+    * Function `unsafeInterleaveIO` creates thunks that execute `IO`
+      actions
+      (c.f. more widely used `unsafePerformIO`, described in
+      [[Peyton Jones]][Awkward])
+    * Lazy IO is great for scripts, bad for servers; more in Iteratee
+      lecture
 
 
 # More on polymorphism
@@ -965,7 +1098,8 @@ show a = ???                  -- how to implement?
 
 # Classes and Instances
 
-* Ad-hoc polymorphic functions are declared with *classes*
+* Ad-hoc polymorphic functions are called *methods* and declared with
+  *classes*
 
     ~~~~ {.haskell}
     class MyShow a where
@@ -981,10 +1115,13 @@ show a = ???                  -- how to implement?
         myShow (Point x y) = "(" ++ show x ++ ", " ++ show y ++ ")"
     ~~~~
 
+    * A class declaration can also include default definitions for
+      methods
+
 * What's the type of a function that calls `myShow`?  Ask GHCI:
 
     ~~~~ {.haskell}
-    myPrint x = putStrLn (myShow x)
+    myPrint x = putStrLn $ myShow x
     ~~~~
 
     ~~~~
@@ -1014,7 +1151,7 @@ show a = ???                  -- how to implement?
 
     ~~~~ {.haskell}
     add :: (Num a) => a -> a -> a
-    add a b = a + b
+    add arg1 arg2 = arg1 + arg2
     ~~~~
 
 * Can think of context as representing hidden *dictionary* arguments
@@ -1023,25 +1160,110 @@ show a = ???                  -- how to implement?
     * But also implicitly give it a function pointer for type `a`'s
       `MyShow` instance
 
+# The [Dreaded][DMRWiki] [Monomorphism Restriction][DMR]
+
+* Let's say you want to cache result of super-expensive function
+
+    ~~~~ {.haskell}
+    superExpensive val = len $ veryExpensive (val :: Int)
+        where len [] = 0
+              len (x:xs) = 1 + len xs
+    cachedResult = superExpensive 5
+    ~~~~
+
+    * `cachedResult` will start as thunk, be executed once, then
+      contain value
+
+* Let's think about the types
+
+    ~~~~
+    *Main> :t superExpensive
+    superExpensive :: Num a => Int -> a
+    *Main> :t cachedResult
+    cachedResult :: Integer
+    ~~~~
+
+    * \+ and 0 are overloaded, so `superExpensive` can return any
+      `Num` you want
+    * Why don't we have `cachedResult :: (Num a) => a`?
+    * Recall context restrictions are like hidden arguments... so
+      would make `cachedResult` into a function, undermining our
+      caching goal!
+    * But how is compiler smart enough to save us here?
+
+# The DMR continued
+
+* Answer: in this case, compiler is not actually that smart
+    * Heuristic: If it looks like a function, can infer *ad hoc*
+      polymorphic types
+    * If it looks like anything else, no ad hoc polymorphism
+    * *parametric* polymorphic types can always be inferred (no hidden
+       arguments)
+* What looks like a function?
+    * Has to bind a single symbol (`f`), rather than a pattern (`(x,
+      y)`, `(Just x)`)
+    * Has to have at least one explicit argument (`f x =` ... ok, `f
+      =` ... not)
+* How are monomorphic types inferred?
+    * If bound symbol used elsewhere in module, infer type from use
+    * If still ambiguous and type is of class `Num`, try `Integer`
+      then `Double` (this sequence can be changed with a
+      [`default` declaration][default])
+    * If still ambiguous, compilation fails
+
+# The DMR take-away message
+
+* Think of type restrictions as implicit dictionary arguments
+    * Compiler won't saddle non-function with implicit arguments
+* This code will compile
+
+    ~~~~ {.haskell}
+    -- Compiler infers: show1 :: (Show x) => x -> String
+    show1 x = show x
+    ~~~~
+
+* But neither of these will:
+
+    ~~~~ {.haskell}
+    show2 = show
+    show3 = \x -> show x
+    ~~~~
+
+    * I'd rather you heard it from me than from GHC...
+
+* Relatively easy to work around DMR
+    * Add type signatures to functions--a good idea anyway for
+      top-level bindings, and sometimes necessary for `let` bindings
+
+        ~~~~ {.haskell}
+        -- No problem, compiler knows you want ad hoc polymorphism
+        show2 :: (Show x) => x -> String
+        show2 = show
+        ~~~~
 
 # Superclasses and instance contexts
 
 * One class may require all instances to be members of another
-    * Class `Eq` contains the '==' and '/=' methods
-    * Class `Ord` contains `<`, `>=`, `>`, `<=`, etc.
+    * Class `Eq` contains '==' and '/=' methods, while
+    `Ord` contains `<`, `>=`, `>`, `<=`, etc.
     * It doesn't make sense to have an `Ord` instance not also be an
       `Eq` instance
     * `Ord` declares `Eq` as a superclass, using a context
 
-    ~~~~ {.haskell}
-    class Eq a => Ord a where
-        (<), (>=), (>), (<=) :: a -> a -> Bool
-        ....
-    ~~~~
+        ~~~~ {.haskell}
+        class Eq a => Ord a where
+            (<), (>=), (>), (<=) :: a -> a -> Bool
+            a <= b = a == b || a < b -- default methods can use superclasses
+            ....
+        ~~~~
 
+    * Don't need to write superclass restrictions in contexts--any
+      function with an `Ord` dictionary can lookup the `Eq` dictionary
+    * Incidentally, can add `deriving (Eq, Ord)` to `data`
+      declarations
 * Similarly, an instance may require a context
-    * E.g., you can define `myShow` for a list of items if you know
-      how to call `myShow` on each individual item:
+    * E.g., define `myShow` for a list of items whose type is of class
+      `MyShow`
 
     ~~~~ {.haskell}
     instance (MyShow a) => MyShow [a] where
@@ -1049,10 +1271,107 @@ show a = ???                  -- how to implement?
         myShow (x:xs) = myShow x ++ ":" ++ myShow xs
     ~~~~
 
+# Classes of parameterized types
+
+* Can also have classes of parameterized types
+
+* `Functor` is a class for parameterized types onto which you can map
+      functions:
+
+    ~~~~ {.haskell}
+    class Functor f where
+        fmap :: (a -> b) -> f a -> f b
+    ~~~~
+
+    * Notice there are no arguments/results of type `f`, rather types
+      `f a` and `f b`
+
+* An example of a `Functor` is `Maybe`:
+
+    ~~~~ {.haskell}
+    instance Functor Maybe where
+        fmap _ Nothing  = Nothing
+        fmap f (Just a) = Just (f a)
+    ~~~~
+
+    ~~~~
+    GHCi, version 7.0.3: http://www.haskell.org/ghc/  :? for help
+    Prelude> fmap (+ 1) Nothing
+    Nothing
+    Prelude> fmap (+ 1) $ Just 2
+    Just 3
+    ~~~~
+
+# More `Functor`s
+
+* Lists are a `Functor`
+
+    * `[]` can be used as a prefix type ("`[] Int`" means "`[Int]`")
+      and can be used to declare instances
+
+    ~~~~ {.haskell}
+    map :: (a -> b) -> [a] -> [b]
+    map _ []     = []
+    map f (x:xs) = f x : map f xs
+
+    instance Functor [] where
+        fmap = map
+    ~~~~
+
+* `IO` is a `Functor`
+
+    ~~~~ {.haskell}
+    instance Functor IO where
+        fmap f x = x >>= return . f
+    ~~~~
+
+    * So we could have said:
+
+        ~~~~ {.haskell}
+	simpleHttpStr url = fmap L.toString $ simpleHttp url
+        ~~~~
+
+        or, simpler still:
+
+        ~~~~ {.haskell}
+	simpleHttpStr = fmap L.toString . simpleHttp
+        ~~~~
+
+# Kinds
+
+* What happens if you try to make an instance of `Functor` for `Int`?
+
+    ~~~~ {.haskell}
+    instance Functor Int where         -- compilation error
+        fmap _ _ = error "placeholder"
+    ~~~~
+
+    * Get `fmap :: (a -> b) -> Int a -> Int b`, but `Int` not
+    parameterized
+* The compiler must keep track of all the different kinds of types
+    * One kind of type (e.g., `Int`, `Double`, `()`) directly
+      describes values
+    * Another kind of type (`Maybe`, `[]`, `IO`) requires a type
+      parameter
+    * Yet another kind of type (`Either`, `(,)`), requires *two
+      parameters*
+    * Parameterized types are sometimes called *type constructors*
+* Kinds named using symbols &#x2217; and &#x2192;, much like curried
+  functions
+    * &#x2217; is the kind of type that represents values (`Int`,
+      `Double`, `()`, etc.)
+    * &#x2217; &#x2192; &#x2217; is the kind of type with one
+      parameter of type &#x2217; (`Maybe`, `IO`, etc.)
+    * &#x2217; &#x2192; &#x2217; &#x2192; &#x2217; is a type
+      constructor with two arguments of kind &#x2217; (`Either`)
+    * In general, *a* &#x2192; *b* means a type constructor that,
+      applied to kind *a*, yields kind *b*
+
 
 
 # The `Monad` class
 
+* **The entire first two lectures have been working up to this slide**
 * `return` and `>>=` are actually methods of a class called `Monad`
 
 ~~~~ {.haskell}
@@ -1060,11 +1379,15 @@ class Monad m where
     (>>=) :: m a -> (a -> m b) -> m b
     return :: a -> m a
     fail :: String -> m a   -- called when pattern binding fails
+    fail s = error s        -- default is to throw exception
+
+    (>>) :: m a -> m b -> m a
+    m >> k = m >>= \_ -> k
 ~~~~
 
 * This has far-reaching consequences
     * You can use the syntactic sugar of `do` blocks for non-IO
-      purposes (this turns out to be hugely powerful)
+      purposes
     * Many monadic functions are polymorphic in the `Monad`--invent a
       new monad, and you can still use much existing code
 
@@ -1072,29 +1395,157 @@ class Monad m where
 
 * System libraries define a `Monad` instance for `Maybe`
 
-~~~~ {.haskell}
-instance  Monad Maybe  where
-    (Just x) >>= k = k x
-    Nothing >>= _  = Nothing
-    return = Just
-    fail _ = Nothing
-~~~~
+    ~~~~ {.haskell}
+    instance  Monad Maybe  where
+        (Just x) >>= k = k x
+        Nothing >>= _  = Nothing
+        return = Just
+        fail _ = Nothing
+    ~~~~
 
-* Suppose you use `Nothing` to indicate failure
+* You can use `Nothing` to indicate failure
     * Might have a bunch of functions to extract fields from data
 
-~~~~ {.haskell}
-extractA :: String -> Maybe Int
-extractB :: String -> Maybe String
-...
-parseForm :: String -> Maybe Form
-parseForm raw = do
-    a <- extractA raw
-    b <- extractB raw
+    ~~~~ {.haskell}
+    extractA :: String -> Maybe Int
+    extractB :: String -> Maybe String
     ...
-    return (Form a b ...)
+    parseForm :: String -> Maybe Form
+    parseForm raw = do
+        a <- extractA raw
+        b <- extractB raw
+        ...
+        return (Form a b ...)
+    ~~~~
+
+    * Threads success/failure state through system as `IO` threaded
+      World
+    * Since Haskell is lazy, stops computing at first `Nothing`
+
+# Algebraic data types
+
+* Some data types have a large number of fields
+
+    ~~~~ {.haskell}
+    -- Argument to createProcess function
+    data CreateProcess = CreateProcess CmdSpec (Maybe FilePath)
+        (Maybe [(String,String)]) StdStream StdStream StdStream Bool
+    ~~~~
+
+    * Quickly gets rather unwieldy
+
+* Algebraic data types let you label fields (like C `struct`s)
+
+    ~~~~ {.haskell}
+    data CreateProcess = CreateProcess {
+      cmdspec   :: CmdSpec,
+      cwd       :: Maybe FilePath,
+      env       :: Maybe [(String,String)],
+      std_in    :: StdStream,
+      std_out   :: StdStream,
+      std_err   :: StdStream,
+      close_fds :: Bool
+    }
+    ~~~~
+
+* Let's make an algebraic version of our `Point` class
+
+    ~~~~ {.haskell}
+    data Point = Point { xCoord :: Double, yCoord :: Double }
+    ~~~~
+
+# Algebraic types - initialization and matching
+
+~~~~ {.haskell}
+data Point = Point { xCoord :: Double, yCoord :: Double }
 ~~~~
 
+* Can initialize an Algebraic type by naming fields
+
+    ~~~~ {.haskell}
+    myPoint = Point { xCoord = 1.0, yCoord = 1.0 }
+    ~~~~
+
+    * Uninitialized fields get value `undefined` - a thunk that throws
+      an exception
+
+* Can also pattern-match on any subset of fields
+
+    ~~~~ {.haskell}
+    -- Note the pattern binding assigns the variable on the right of =
+    getX Point{ xCoord = x } = x
+    ~~~~
+
+    * [*As-patterns*](http://www.haskell.org/onlinereport/haskell2010/haskellch3.html#x8-590003.17.1)
+      are handy to bind a variable and pattern simultaneously (with
+      `@`):
+
+        ~~~~ {.haskell}
+	getX' p@Point{ xCoord = x }
+                | x < 100 = x
+                | otherwise = error $ show p ++ " out of range"
+        ~~~~
+
+        ~~~~ {.haskell}
+        -- Also works with non-algebraic patterns
+	getX' p@(Point x _) = ...
+	processString s@('$':_) = ...
+	processString s         = ...
+        ~~~~
+
+
+# Algebraic types - access and update
+
+* Can use field labels as access functions
+
+    ~~~~ {.haskell}
+    getX point = xCoord point
+    ~~~~
+
+    * `xCoord` works anywhere you can use a function of type `Point ->
+      Double`
+    * One consequence: field labels share the same namespace as
+      top-level bindings, and must be unique
+
+* There is a special syntax for updating one or more fields
+
+    ~~~~ {.haskell}
+    setX point x = point { xCoord = x }
+    setXY point x y = point { xCoord = x, yCoord = y }
+    ~~~~
+
+    * Obviously doesn't update destructively, but returns new,
+      modified `Point`
+
+    * Very handy to maintain state in tail recursive functions and
+      `Monads`
+
+# A few Miscellaneous points
+
+* A `!` before a data field type makes it *strict* - i.e., can't be
+  thunk
+
+    ~~~~ {.haskell}
+    data State = State !Int Int
+
+    data AlgState = AlgState { accumulator :: !Int
+                             , otherValue :: Int }
+    ~~~~
+
+    * In both cases above, the first `Int` cannot hold a thunk, but
+      only a value
+
+    * When initializing an algebraic datatype, it is mandatory to
+      initialize all strict fields (since they cannot hold the
+      `undefined` thunk).
+
+* [`Data.Map`](http://hackage.haskell.org/packages/archive/containers/latest/doc/html/Data-Map.html) 
+maintains efficient, functional lookup tables
+    * The tables cannot be mutated, but can be updated and used in
+      recursive functions
+
+* [`words`](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Data-List.html#v:words)
+  breaks a `String` up into a list of whitespace-separated words
 
 
 [RWH]: http://book.realworldhaskell.org/
@@ -1102,5 +1553,7 @@ parseForm raw = do
 [GHCdoc]: http://www.haskell.org/ghc/docs/latest/html/users_guide/index.html
 [GHCI]: http://www.haskell.org/ghc/docs/latest/html/users_guide/ghci.html
 [Hoogle]: http://www.haskell.org/hoogle/
-
-
+[DMR]: http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-930004.5.5
+[DMRWiki]: http://www.haskell.org/haskellwiki/Monomorphism_restriction
+[Awkward]: http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf
+[default]: http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-790004.3.4
