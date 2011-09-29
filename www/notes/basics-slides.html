@@ -1265,7 +1265,7 @@ myPrint :: MyShow a =&gt; a -&gt; IO ()
 </ul>
 </div>
 <div class="slide">
-<h1 id="the-dreaded-monomorphism-restriction">The <a href="http://www.haskell.org/haskellwiki/Monomorphism_restriction">Dreaded</a> <a href="http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-930004.5.5">Monomorphism Restriction</a></h1>
+<h1 id="the-dreaded-monomorphism-restriction-dmr">The <a href="http://www.haskell.org/haskellwiki/Monomorphism_restriction">Dreaded</a> <a href="http://www.haskell.org/onlinereport/haskell2010/haskellch4.html#x10-930004.5.5">Monomorphism Restriction</a> (DMR)</h1>
 <ul>
 <li><p>Let's say you want to cache result of super-expensive function</p>
 <pre class="sourceCode"><code class="sourceCode haskell">superExpensive val <span class="fu">=</span> len <span class="fu">$</span> veryExpensive (<span class="ot">val </span><span class="ot">::</span> <span class="dt">Int</span>)<br />    <span class="kw">where</span> len [] <span class="fu">=</span> <span class="dv">0</span><br />          len (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dv">1</span> <span class="fu">+</span> len xs<br />cachedResult <span class="fu">=</span> superExpensive <span class="dv">5</span></code></pre>
@@ -1292,7 +1292,7 @@ cachedResult :: Integer
 <li>Answer: in this case, compiler is not actually that smart
 <ul>
 <li>Heuristic: If it looks like a function, can infer <em>ad hoc</em> polymorphic types</li>
-<li>If it looks like anything else, no ad hoc polymorphism</li>
+<li>If it looks like anything else, no <em>ad hoc</em> polymorphism unless explicitly declared</li>
 <li><em>parametric</em> polymorphic types can always be inferred (no hidden arguments)</li>
 </ul></li>
 <li>What looks like a function?
