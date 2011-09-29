@@ -1034,7 +1034,6 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
     ~~~~
 
 * E.g., `main = readFile "input" >>= writeFile "output"`
-
     * Surprisingly, this program does not require unbounded memory
     * Rather, input is read lazily as the list of Characters is
       evaluated
@@ -1275,7 +1274,6 @@ show a = ???                  -- how to implement?
 # Classes of parameterized types
 
 * Can also have classes of parameterized types
-
 * `Functor` is a class for parameterized types onto which you can map
       functions:
 
