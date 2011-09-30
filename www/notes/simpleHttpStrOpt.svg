@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 829.49 154.42" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <defs id="defs4">
+  <marker id="Arrow1Lend" refY="0" refX="0" orient="auto">
+   <path id="path3774" style="marker-start:none;" d="M0,0,5-5-12.5,0,5,5,0,0z" fill-rule="evenodd" transform="matrix(-0.8,0,0,-0.8,-10,0)" stroke="#000" stroke-width="1pt"/>
+  </marker>
+  <filter id="filter3800" color-interpolation-filters="sRGB">
+   <feGaussianBlur id="feGaussianBlur3802" stdDeviation="1.8265386"/>
+  </filter>
+  <filter id="filter3880" color-interpolation-filters="sRGB">
+   <feGaussianBlur id="feGaussianBlur3882" stdDeviation="1.4388599"/>
+  </filter>
+  <filter id="filter3880-7" color-interpolation-filters="sRGB">
+   <feGaussianBlur id="feGaussianBlur3882-5" stdDeviation="1.4388599"/>
+  </filter>
+ </defs>
+ <metadata id="metadata8">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1" transform="translate(151.10454,405.79675)">
+  <path id="path3082" stroke-linejoin="miter" style="marker-end:url(#Arrow1Lend);" d="m608.83-319.23,68.798,0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1.51355684" fill="none"/>
+  <g id="g3461" transform="translate(-91.54031,-2.7123055)">
+   <rect id="rect3463" transform="matrix(0.72851338,0,0,0.70297391,5.3238475,-61.052437)" ry="0" height="121.73" filter="url(#filter3800)" width="243.58" y="-392.99" x="363.66" fill="#560000"/>
+   <rect id="rect3465" ry="0" height="85.57" width="177.45" y="-338.72" x="268.8" fill="#ffd5d5"/>
+   <path id="path3467" stroke-linejoin="miter" style="marker-end:url(#Arrow1Lend);" d="m392.56-376.31-35.26,0.75678,0,34.399" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1.51355684" fill="none"/>
+   <path id="path3469" stroke-linejoin="miter" style="marker-end:url(#Arrow1Lend);" d="m447.02-274.22,68.798,0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1.51355684" fill="none"/>
+   <text id="text3471" style="letter-spacing:0px;text-anchor:end;word-spacing:0px;text-align:end;" font-weight="500" xml:space="preserve" transform="scale(1.0180032,0.98231518)" font-style="normal" font-stretch="normal" font-size="20.03763199px" font-variant="normal" y="-377.46988" x="445.14551" font-family="URW Palladio L" line-height="125%" fill="#000000"><tspan id="tspan3473" x="445.14551" y="-377.46988">World</tspan></text>
+   <text id="text3475" style="letter-spacing:0px;text-anchor:start;word-spacing:0px;text-align:start;" line-height="125%" font-weight="500" transform="scale(1.0180032,0.98231514)" font-style="normal" font-stretch="normal" font-size="20.03763199px" font-variant="normal" y="-272.22958" x="514.60242" font-family="URW Palladio L" xml:space="preserve" fill="#000000"><tspan id="tspan3477" y="-272.22958" x="514.60242">World&apos;</tspan></text>
+   <path id="path3479" stroke-linejoin="miter" style="marker-end:url(#Arrow1Lend);" d="m447.02-316.52,68.798,0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1.51355684" fill="none"/>
+  </g>
+  <text id="text3875" style="letter-spacing:0px;text-anchor:middle;word-spacing:0px;text-align:center;" font-weight="normal" xml:space="preserve" transform="scale(1.0180032,0.98231514)" font-style="normal" font-stretch="normal" font-size="10.01881695px" font-variant="normal" y="-375.10294" x="667.91394" font-family="Sans" line-height="125%" fill="#000000"><tspan id="tspan3877" x="667.91394" y="-375.10294"/></text>
+  <g id="g4990" transform="matrix(0.72851338,0,0,0.70297391,261.20178,-169.20484)">
+   <rect id="rect3056" style="enable-background:accumulate;color:#000000;" fill-rule="nonzero" height="40.685" filter="url(#filter3880)" width="247.09" y="-233.76" x="231.08" fill="#00040a"/>
+   <rect id="rect4972" style="enable-background:accumulate;color:#000000;" fill-rule="nonzero" height="40.685" width="247.09" y="-235.76" x="229.08" fill="#d5e5ff"/>
+   <text id="text3012" style="letter-spacing:0px;text-anchor:middle;word-spacing:0px;text-align:center;" line-height="125%" font-weight="normal" font-size="28px" font-style="normal" font-stretch="normal" font-variant="normal" y="-209.18755" x="352.16174" font-family="Courier New" xml:space="preserve" fill="#000000"><tspan id="tspan4986" y="-209.18755" x="352.16174">toString</tspan></text>
+  </g>
+  <g id="g3260" transform="translate(-0.07456942,8.5107031)">
+   <g id="g3078" fill-rule="nonzero" transform="translate(31.191513,-72.41624)">
+    <rect id="rect3056-9" style="enable-background:accumulate;color:#000000;" transform="matrix(0.72851338,0,0,0.70297391,-277.74155,-66.950306)" height="40.685" filter="url(#filter3880-7)" width="247.09" y="-233.76" x="231.08" fill="#00040a"/>
+    <rect id="rect4972-2" style="enable-background:accumulate;color:#000000;" height="28.6" width="180.01" y="-232.68" x="-110.85" fill="#d5e5ff"/>
+   </g>
+   <text id="text3088" style="letter-spacing:0px;text-anchor:middle;word-spacing:0px;text-align:center;" font-weight="normal" xml:space="preserve" transform="scale(1.0180032,0.98231516)" font-style="normal" font-stretch="normal" font-size="20.0376339px" font-variant="normal" y="-290.14514" x="11.151199" font-family="Courier New" line-height="125%" fill="#000000"><tspan id="tspan3090" x="11.151202" y="-290.14514">simpleHttp</tspan></text>
+  </g>
+  <path id="path3186-9" stroke-linejoin="miter" style="marker-end:url(#Arrow1Lend);" d="m-150.35-280.88,68.798,0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1.51355684" fill="none"/>
+  <path id="path3186-9-6" stroke-linejoin="miter" style="marker-end:url(#Arrow1Lend);" d="m102.27-282.29,68.798,0" stroke="#000" stroke-linecap="butt" stroke-miterlimit="4" stroke-dasharray="none" stroke-width="1.51355684" fill="none"/>
+  <text id="text3481" style="letter-spacing:0px;text-anchor:middle;word-spacing:0px;text-align:center;" font-weight="normal" transform="scale(1.0180032,0.98231516)" font-style="normal" line-height="125%" font-stretch="normal" xml:space="preserve" font-size="20.0376339px" font-variant="normal" y="-301.79523" x="261.05792" font-family="Courier New" fill="#000000"><tspan id="tspan3483" y="-301.79523" x="261.05792">IO ByteString</tspan></text>
+ </g>
+</svg>

@@ -598,10 +598,9 @@ library-profiling: True
 </ul>
 <h1 id="another-way-to-see-io-peyton-jones">Another way to see IO <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf">[Peyton Jones]</a></h1>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">do</span> page <span class="ot">&lt;-</span> simpleHttp url<br />   <span class="fu">putStr</span> (L.toString page)</code></pre>
-<div style="text-align:center">
-<img src="io1.svg" />
+<div class="figure">
+<img src="io1.svg" /><p class="caption"></p>
 </div>
-
 <ul>
 <li><code>simpleHttp</code> and <code>putStr</code> return <code>IO</code> <em>actions</em> that can change the world
 <ul>
@@ -611,10 +610,9 @@ library-profiling: True
 </ul>
 <h1 id="another-way-to-see-io-peyton-jones-1">Another way to see IO <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/marktoberdorf/mark.pdf">[Peyton Jones]</a></h1>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">do</span> page <span class="ot">&lt;-</span> simpleHttp url<br />   <span class="fu">putStr</span> (L.toString page)</code></pre>
-<div style="text-align:center">
-<img src="io2.svg" />
+<div class="figure">
+<img src="io2.svg" /><p class="caption"></p>
 </div>
-
 <ul>
 <li>The <code>do</code> block builds a compound action from other actions
 <ul>
@@ -656,12 +654,19 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 -->
 
 <ul>
-<li>Let's combine <code>simpleHttp</code> and <code>L.toString</code> into one function
-<div style="margin:0;text-align:center;">
-<img src="simpleHttpStr.svg" />
+<li>Let's combine <code>simpleHttp</code> and <code>L.toString</code> into one function</li>
+</ul>
+<div class="figure">
+<img src="simpleHttpStr.svg" /><p class="caption"></p>
 </div>
-
-<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">simpleHttpStr </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">String</span><br />simpleHttpStr url <span class="fu">=</span> <span class="kw">do</span><br />  page <span class="ot">&lt;-</span> simpleHttp url<br />  <span class="fu">return</span> (L.toString page)  <span class="co">-- result of do block is last action</span></code></pre></li>
+<pre><code>~~~~ {.haskell}
+simpleHttpStr :: String -&gt; IO String
+simpleHttpStr url = do
+  page &lt;- simpleHttp url
+  return (L.toString page)  -- result of do block is last action
+~~~~
+</code></pre>
+<ul>
 <li><p>Note: <strong><code>return</code> is not control flow statement</strong>, just a function</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">return</span><span class="ot"> </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a</code></pre>
 <ul>
@@ -690,7 +695,7 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 <ul>
 <li><p>Some simple file IO functions may be handy for first lab</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="fu">FilePath</span> <span class="fu">=</span> <span class="dt">String</span> <span class="co">-- makes FilePath synonym for String</span><br /><span class="fu">getContents</span><span class="ot"> </span><span class="ot">::</span> <span class="dt">IO</span> <span class="dt">String</span>          <span class="co">-- read all stdin</span><br /><span class="fu">readFile</span><span class="ot"> </span><span class="ot">::</span> <span class="fu">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">String</span> <span class="co">-- read (whole) file</span><br /><span class="fu">writeFile</span><span class="ot"> </span><span class="ot">::</span> <span class="fu">FilePath</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()  <span class="co">-- write file</span></code></pre></li>
-<li><p>E.g., <code>main = readFile &quot;input&quot; &gt;&gt;= writeFile &quot;output&quot;</code></p>
+<li>E.g., <code>main = readFile &quot;input&quot; &gt;&gt;= writeFile &quot;output&quot;</code>
 <ul>
 <li>Surprisingly, this program does not require unbounded memory</li>
 <li>Rather, input is read lazily as the list of Characters is evaluated</li>
@@ -838,7 +843,7 @@ cachedResult :: Integer
 </ul>
 <h1 id="classes-of-parameterized-types">Classes of parameterized types</h1>
 <ul>
-<li><p>Can also have classes of parameterized types</p></li>
+<li>Can also have classes of parameterized types</li>
 <li><p><code>Functor</code> is a class for parameterized types onto which you can map functions:</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Functor</span> f <span class="kw">where</span><br /><span class="ot">    fmap </span><span class="ot">::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre>
 <ul>

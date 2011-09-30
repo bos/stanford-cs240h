@@ -904,7 +904,7 @@ do page <- simpleHttp url
    putStr (L.toString page)
 ~~~
 
-<div style="text-align:center">![](io1.svg)</div>
+![](io1.svg)
 
 * `simpleHttp` and `putStr` return `IO` *actions* that can change the
   world
@@ -920,7 +920,7 @@ do page <- simpleHttp url
    putStr (L.toString page)
 ~~~
 
-<div style="text-align:center">![](io2.svg)</div>
+![](io2.svg)
 
 * The `do` block builds a compound action from other actions
     * It sequences how actions will be applied to the real world
@@ -970,7 +970,8 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 -->
 
 * Let's combine `simpleHttp` and `L.toString` into one function
-<div style="margin:0;text-align:center;">![](simpleHttpStr.svg)</div>
+
+![](simpleHttpStr.svg)
 
     ~~~~ {.haskell}
     simpleHttpStr :: String -> IO String
@@ -1034,7 +1035,6 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
     ~~~~
 
 * E.g., `main = readFile "input" >>= writeFile "output"`
-
     * Surprisingly, this program does not require unbounded memory
     * Rather, input is read lazily as the list of Characters is
       evaluated
@@ -1275,7 +1275,6 @@ show a = ???                  -- how to implement?
 # Classes of parameterized types
 
 * Can also have classes of parameterized types
-
 * `Functor` is a class for parameterized types onto which you can map
       functions:
 

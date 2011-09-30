@@ -101,6 +101,10 @@ div.slide {
   background-color: transparent;
 }
 
+div.slide > div.figure {
+  text-align: center
+}
+
 div.background {
   display: none;
 }

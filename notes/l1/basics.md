@@ -904,7 +904,7 @@ do page <- simpleHttp url
    putStr (L.toString page)
 ~~~
 
-<div style="text-align:center">![](io1.svg)</div>
+![](io1.svg)
 
 * `simpleHttp` and `putStr` return `IO` *actions* that can change the
   world
@@ -920,7 +920,7 @@ do page <- simpleHttp url
    putStr (L.toString page)
 ~~~
 
-<div style="text-align:center">![](io2.svg)</div>
+![](io2.svg)
 
 * The `do` block builds a compound action from other actions
     * It sequences how actions will be applied to the real world
@@ -970,7 +970,8 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 -->
 
 * Let's combine `simpleHttp` and `L.toString` into one function
-<div style="margin:0;text-align:center;">![](simpleHttpStr.svg)</div>
+
+![](simpleHttpStr.svg)
 
     ~~~~ {.haskell}
     simpleHttpStr :: String -> IO String
