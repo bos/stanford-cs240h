@@ -654,19 +654,11 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 -->
 
 <ul>
-<li>Let's combine <code>simpleHttp</code> and <code>L.toString</code> into one function</li>
-</ul>
+<li><p>Let's combine <code>simpleHttp</code> and <code>L.toString</code> into one function</p>
 <div class="figure">
 <img src="simpleHttpStr.svg" /><p class="caption"></p>
 </div>
-<pre><code>~~~~ {.haskell}
-simpleHttpStr :: String -&gt; IO String
-simpleHttpStr url = do
-  page &lt;- simpleHttp url
-  return (L.toString page)  -- result of do block is last action
-~~~~
-</code></pre>
-<ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">simpleHttpStr </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">String</span><br />simpleHttpStr url <span class="fu">=</span> <span class="kw">do</span><br />  page <span class="ot">&lt;-</span> simpleHttp url<br />  <span class="fu">return</span> (L.toString page)  <span class="co">-- result of do block is last action</span></code></pre></li>
 <li><p>Note: <strong><code>return</code> is not control flow statement</strong>, just a function</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">return</span><span class="ot"> </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a</code></pre>
 <ul>

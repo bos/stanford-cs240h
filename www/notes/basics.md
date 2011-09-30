@@ -971,7 +971,7 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 
 * Let's combine `simpleHttp` and `L.toString` into one function
 
-![](simpleHttpStr.svg)
+    ![](simpleHttpStr.svg)
 
     ~~~~ {.haskell}
     simpleHttpStr :: String -> IO String
