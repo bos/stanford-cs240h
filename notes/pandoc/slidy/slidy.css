@@ -19,6 +19,11 @@ body
   font-size: 14pt;
 }
 
+code
+{
+  font-family: "DejaVu Sans Mono", monospace;
+}
+
 div.toolbar {
   position: fixed; z-index: 200;
   top: auto; bottom: 0; left: 0; right: 0;
