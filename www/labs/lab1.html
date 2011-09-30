@@ -1,20 +1,41 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <meta name="generator" content="pandoc" />
-  <title>CS240H Lab 1</title>
-</head>
-<body>
-<h1 class="title">CS240H Lab 1</h1>
 <h1 id="word-frequency-histogram">Word frequency histogram</h1>
 <p>Write a standalone program that will display (using ASCII art) a histogram of word frequencies from one or more text files (or from <code>stdin</code>).</p>
-<p>Your program should be insensitive to case, so it should consider &quot;FOO&quot; and &quot;foo&quot; as &quot;the same&quot;.</p>
+<h2 id="specification">Specification</h2>
+<ol style="list-style-type: decimal">
+<li><p>Input format.</p>
+<p>Input format is simply plain UTF8 encoded text. Either supplied by one or more file specified as command line arguments or as standard input if no command line arguments are specified.</p></li>
+<li><p>How to break up words.</p>
+<p>Punctuation that isn't part of a word should be disregarded. Punctuation part of a word is significant. Words should be considered case insensitive</p>
+<p>ie. &quot;Dogs don't sit on children, they sit on cats.&quot; =&gt; [&quot;dogs&quot;, &quot;don't&quot;, &quot;sit&quot;, &quot;on&quot;, &quot;children&quot;, &quot;the&quot;, &quot;sit&quot;, &quot;on&quot;, &quot;cats&quot;]</p>
+<p>ie. &quot;Dogs DOGS Child ChIlD Hello&quot; =&gt; [(&quot;dogs&quot;, 2), (&quot;child&quot;, 2), (&quot;hello&quot;, 1)]</p>
+<p>We aren't trying to be tricky here so we won't be giving you strange text files to parse with things like 'H!??@!LLO' in it.</p></li>
+<li><p>Output format.</p>
+<p>Should output the words in decreasing order of frequency. Format should be as follows:</p>
+<pre><code>the   ##########################
+dog   ########################
+sat   #######################
+child ##################
+a     #############
+one   ######
+ok    #
+</code></pre>
+Notice that:
+<ul>
+<li>the frequency bar for each word starts at the same column.</li>
+<li>A line should not be longer then 80 characters, so size your bars appropriately</li>
+<li>A linear scale should be used</li>
+<li>Don't worry about rounding</li>
+<li>A word with a bar length of 0 should not be printed</li>
+</ul></li>
+<li><p>Don't use unsafePerformIO or other such unsafe functions.</p></li>
+</ol>
+<h2 id="submission">Submission</h2>
 <p>You should submit your work in the form of a URL to a publicly accessible <code>git</code> repository, which should include the source and a <code>README</code> file that tells us:</p>
 <ol style="list-style-type: decimal">
 <li><p>Who you are.</p></li>
 <li><p>How to build and run your program.</p></li>
 </ol>
+<h2 id="bonus-points">Bonus Points</h2>
 <p>We will award monetary bonuses in the form of <a href="http://en.wikipedia.org/wiki/Quatloo">Quatloos</a>, the currency of the planet Triskelion, to those who achieve one or more of the following accomplishments:</p>
 <ul>
 <li><p>If we can build your project using the standard <code>cabal</code> build tool.</p></li>
@@ -23,5 +44,3 @@
 <li><p>You submit a program that we can measure as performing awesomely on a (respectably large) data set of our choosing. Criteria for awesomeness will include such things as performance and memory footprint.</p></li>
 </ul>
 <p>The winner of the most quatloos gets a special edition JPEG of a pony.</p>
-</body>
-</html>
