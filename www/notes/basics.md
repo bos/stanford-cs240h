@@ -1160,7 +1160,7 @@ show a = ???                  -- how to implement?
     * But also implicitly give it a function pointer for type `a`'s
       `MyShow` instance
 
-# The [Dreaded][DMRWiki] [Monomorphism Restriction][DMR]
+# The [Dreaded][DMRWiki] [Monomorphism Restriction][DMR] (DMR)
 
 * Let's say you want to cache result of super-expensive function
 
@@ -1196,9 +1196,10 @@ show a = ???                  -- how to implement?
 * Answer: in this case, compiler is not actually that smart
     * Heuristic: If it looks like a function, can infer *ad hoc*
       polymorphic types
-    * If it looks like anything else, no ad hoc polymorphism
+    * If it looks like anything else, no *ad hoc* polymorphism unless
+      explicitly declared
     * *parametric* polymorphic types can always be inferred (no hidden
-       arguments)
+      arguments)
 * What looks like a function?
     * Has to bind a single symbol (`f`), rather than a pattern (`(x,
       y)`, `(Just x)`)
