@@ -1,9 +1,11 @@
 
-# Haskell data representation
-
-* Let's make a na&#xef;ve implementation of Haskell values in C
+# Na&#xef;ve Haskell data representation
 
 * A value requires a constructor, plus arguments
+
+    * At runtime, need to determine a value's constructor, but not
+      it's type<br/> (Compiler type-checks program, no runtime type
+      checks)
 
     ~~~~ {.c}
     struct Val {
@@ -54,7 +56,7 @@
 
 # Function and thunk values
 
-* `Val`s with `ValInfo` tag `FUNC` use `func` field
+* A `Val` whose `ValInfo` has `tag == FUNC` uses the `func` field
 
     ~~~~ {.c}
         Val *(*func) (const Val *closure, const Val *arg);
@@ -72,7 +74,7 @@
 
     * Use `f->args` for list head of previously curried arguments
 
-* `Val`s with `ValInfo` tag `THUNK` use `thunk` field
+* A `Val`s with `tag == THUNK` uses the `thunk` field
 
     ~~~~ {.c}
         Exception *(*thunk) (Val *closure);
@@ -83,9 +85,13 @@
        returns `NULL`, or
     * Returns a non-`NULL` `Exception *`
 
-# Boxed and unboxed types
+# Unboxed types
 
-* `Val` is kind of like a *box* containing values
+* Unfortunately, now `Int` has even more overhead
+    * To use, must check `i->info->tag` then access `i->info->constr`
+    * Each number needs a distinct `ValInfo` structure
+
+* Idea: Have special *unboxed* types that don't use `struct Val`
 
     ~~~~ {.c}
     union Arg {
@@ -95,9 +101,67 @@
 
     typedef struct Val {
       const struct ValInfo *info;
-      union Arg *args[];
+      union Arg *args[];  /* each arg now boxed or unboxed */
     } Val;
     ~~~~
+
+    * Unboxed types have no constructor and cannot be thunks
+    * Can fit in a single register or take the place of a `Val *` arg
+    * Extend `GCInfo` to identify which args are and are not boxed
+
+
+# Unboxed types in GHC
+
+* GHC exposes unboxed types (even though not part of Haskell)
+    * Symbols use `#` character--must enable with `-XMagicHash` option
+    * Have use unboxed types (`Int#`) and primitive operations
+      (`+#`)
+    * List unboxed types/ops with GHCI command "`:browse GHC.Prim`"
+    * Also have unboxed constants--`2#`, `'a'#`, `2##` (unsigned),
+      `2.0##`
+
+* What is `Int` really?
+    * Single-constructor data type, with a single, unboxed argument
+
+    ~~~~
+    Prelude> :set -XMagicHash
+    Prelude> :m +GHC.Types GHC.Prim
+    Prelude GHC.Types GHC.Prim> :i Int
+    data Int = I# Int#      -- Defined in GHC.Types
+    ...
+    Prelude GHC.Types GHC.Prim> case 1 of I# u -> I# (u +# 2#)
+    3
+    ~~~~
+
+# Restrictions on unboxed types
+
+* Cannot instantiate type variables with unboxed types
+
+    ~~~~ {.haskell}
+    {-# LANGUAGE MagicHash #-}
+    import GHC.Prim
+
+    data FastPoint = FastPoint Double# Double#  -- ok
+    fp = FastPoint 2.0## 2.0##                  -- ok
+
+    -- Error: cannot pass unboxed type to polymorphic function
+    fp' = FastPoint 2.0## (id 2.0##)
+
+    -- Error: cannot use unboxed type as type paremeter
+    noInt :: Maybe Int#
+    noInt = Nothing
+    ~~~~
+
+* Enforced by making unboxed types a different kind of type
+
+    ~~~~
+    Prelude GHC.Types GHC.Prim> :kind Int#
+    Int# :: #
+    ~~~~
+
+    * Recall type variables have kinds with stars (&#x2217;, &#x2217;
+      &#x2192; &#x2217;, etc.), never `#`
+
 
 # `ByteString`s
 
