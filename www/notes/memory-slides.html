@@ -758,7 +758,7 @@ Int# :: #
 </ul>
 </div>
 <div class="slide">
-<h1 id="the-unpack-pragma">The <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/pragmas.html#unpack-pragma">UNPACK</a> pragma</h1>
+<h1 id="the-unpack-pragma">The <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/pragmas.html#unpack-pragma"><code>UNPACK</code></a> pragma</h1>
 <ul>
 <li><code>newtype</code> almost always better than <code>data</code> when it applies</li>
 <li><p>What about a multi-field data type?</p>
@@ -812,7 +812,7 @@ Int# :: #
 <div class="slide">
 <h1 id="more-storable-types">More <code>Storable</code> types</h1>
 <ul>
-<li><code>Foreign.C</code> contains wrappers for C type
+<li><code>Foreign.C</code> contains wrappers for C types
 <ul>
 <li><code>CInt</code>, <code>CUInt</code>, <code>CChar</code>, <code>CDouble</code>, <code>CIntPtr</code> etc.</li>
 </ul></li>
@@ -824,7 +824,7 @@ Int# :: #
 <li><p>Example: extract all the bytes from a <code>Storable</code> object</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">toBytes </span><span class="ot">::</span> (<span class="dt">Storable</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [<span class="dt">Word8</span>]<br />toBytes a <span class="fu">=</span> unsafePerformIO <span class="fu">$</span><br />    with a <span class="fu">$</span> \pa <span class="ot">-&gt;</span> go (castPtr pa) (pa <span class="ot">`plusPtr`</span> sizeOf a)<br />    <span class="kw">where</span> go p e <span class="fu">|</span> p <span class="fu">&lt;</span> e <span class="fu">=</span> <span class="kw">do</span> b <span class="ot">&lt;-</span> peek p<br />                              bs <span class="ot">&lt;-</span> go (p <span class="ot">`plusPtr`</span> <span class="dv">1</span>) e<br />                              <span class="fu">return</span> (b<span class="fu">:</span>bs)<br />                 <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="fu">return</span> []</code></pre>
 <ul>
-<li><code>unsafePerformIO</code> might be okay here since <code>tobytes</code> pure</li>
+<li><code>unsafePerformIO</code> might be okay here since <code>toBytes</code> pure</li>
 <li>Notice how <code>plusPtr</code> lets us change from <code>Ptr a</code> to <code>Ptr Word8</code></li>
 </ul></li>
 </ul>
@@ -858,6 +858,7 @@ Int# :: #
 <li>Note use of <code>FunPtr</code> -- this is type wrapper for C function pointer
 <ul>
 <li>Need foreign function interface to create these</li>
+<li><a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Marshal-Alloc.html#v:finalizerFree"><code>finalizerFree</code></a> symbol conveniently provides function pointer for <code>free</code></li>
 </ul></li>
 </ul>
 </div>

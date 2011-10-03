@@ -435,7 +435,7 @@ Exception *seq_thunk (Void *c)
     testS = case uSInt of SInt _ -> True      -- undefined
     ~~~~
 
-# The [UNPACK][UNPACK] pragma
+# The [`UNPACK`][UNPACK] pragma
 
 * `newtype` almost always better than `data` when it applies
 * What about a multi-field data type?
@@ -519,7 +519,7 @@ Exception *seq_thunk (Void *c)
 
 # More `Storable` types
 
-* `Foreign.C` contains wrappers for C type
+* `Foreign.C` contains wrappers for C types
     * `CInt`, `CUInt`, `CChar`, `CDouble`, `CIntPtr` etc.
 * `Data.Int` and `Data.Word` have all sizes of machine integer
     * `Int8`, `Int16`, `Int32`, `Int64` -- signed integers
@@ -537,7 +537,7 @@ Exception *seq_thunk (Void *c)
                      | otherwise = return []
     ~~~~
 
-    * `unsafePerformIO` might be okay here since `tobytes` pure
+    * `unsafePerformIO` might be okay here since `toBytes` pure
     * Notice how `plusPtr` lets us change from `Ptr a` to `Ptr Word8`
 
 # `malloc` and `mallocForeignPtr`
@@ -588,6 +588,8 @@ Exception *seq_thunk (Void *c)
     * Can add multiple finalizers, will run in reverse order
 * Note use of `FunPtr` -- this is type wrapper for C function pointer
     * Need foreign function interface to create these
+    * [`finalizerFree`][finalizerFree] symbol conveniently provides
+      function pointer for `free`
 
 
 # [Foreign function interface][FFI] (FFI)
@@ -766,3 +768,4 @@ Exception *seq_thunk (Void *c)
 [template-hsc.h]: http://darcs.haskell.org/cgi-bin/gitweb.cgi?p=hsc2hs.git;a=blob;f=template-hsc.h;hb=HEAD
 [bytestring]: http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/index.html
 [ByteString.Lazy]: http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/Data-ByteString-Lazy.html
+[finalizerFree]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Marshal-Alloc.html#v:finalizerFree
