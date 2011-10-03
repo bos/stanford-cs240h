@@ -290,7 +290,7 @@
 ~~~~ {.haskell}
 Val *seq_2 (Val *a, Val *b)
 { /* assume seq_1 put first arg in a */
-  val = xmalloc (offsetof (Val, args[2]));
+  val = gc_malloc (offsetof (Val, args[2]));
   val->info = &seq_info;
   val->args[0] = a->args[0];
   val->args[1] = b->args[0];
