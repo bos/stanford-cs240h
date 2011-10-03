@@ -592,8 +592,9 @@ Exception *seq_thunk (Void *c)
     * `ccall` says use C calling convention (also `cplusplus` and few
       others)
     * `unsafe` promises the C function will not call back into
-      Haskell<br/>Faster than `safe`, but gives undefined results if
-      call triggers GC
+      Haskell
+    * `unafe` faster than `safe`, but gives undefined results if call
+      triggers GC
 * Spec for import string: `"`[`static`] [*c-header*] [`&`][*c-name*]`"`
     * `static` required only if *c-name* is `dynamic` or `wrapper`
     * *c-header* is a single `.h` file with the declaration
@@ -603,19 +604,60 @@ Exception *seq_thunk (Void *c)
 
 # FFI types
 
-* FFI functions must take/return only "basic foreign types"
+* FFI function arguments must be *basic foreign types*
     * `Char`, `Int`, `Double`, `Float`, `Bool`, `Int8`, `Int16`,
       `Int32`, `Int64`, `Word8`, `Word16`, `Word32`, `Word64`, `Ptr`
       `a`, `FunPtr a`, and `StablePtr a`
+    * Also accepts any `type` or `newtype` wrappers for basic types
+      (`CInt`, `CChar`, etc.)<br/>
+      [Documentation incorrectly says `data CInt`, but `:i` in GHCI
+      reveals truth.]
+* FFI function results can be
+    * Any valid argument type
+    * `()` (for functions returning `void`)
+    * `IO a` where `a` is either of the above two
+* Place result `IO` if function has side effects or non-determinism
+    * Okay to omit if it is a pure C function:
 
-* blah
+        ~~~~ {.haskell}
+        foreign import ccall unsafe "arpa/inet.h ntohl"
+            ntohl :: Word32 -> Word32
+        ~~~~
 
-	~~~~ {.haskell}
-	foreign import ccall unsafe "ntohl" ntohl :: Word32 -> Word32
-	foreign import ccall unsafe "htonl" htonl :: Word32 -> Word32
-	~~~~
+    * Haskell can't check C purity, so omitting `IO` can cause
+      problems
 
-# `hsc2hs`
+# [`hsc2hs`][hsc2hs]
+
+* How to access C data structures?
+
+    ~~~~ {.c}
+    struct mystruct {
+      char *name;
+      int value;
+    };
+    ~~~~
+
+    * Might model with opaque placeholder type
+
+    ~~~~ {.haskell}
+    data MyStruct        -- no constructors, just a placeholder
+
+    getValue :: Ptr MyStruct -> IO CInt
+    getValue ptr = peek $ ptr `plusPtr` 8  -- assumes char * 8 bytes
+    ~~~~
+
+* [`hsc2hs`][hsc2hs] is pre-processor that lets you compute C values
+
+    ~~~~ {.haskell}
+    getValue ptr = peek $ ptr `plusPtr`
+                   #{offset struct mystruct, value}
+    ~~~~
+
+    * Super-simple implementation just uses C macros & `printf`
+    * Find the file [`template-hsc.h`][template-hsc.h] on your system
+      to see defs of `#` commands
+    * Can also define your own macros
 
 # `ByteString`s
 
@@ -626,3 +668,5 @@ Exception *seq_thunk (Void *c)
 [UNPACK]: http://www.haskell.org/ghc/docs/latest/html/users_guide/pragmas.html#unpack-pragma
 [with]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Marshal-Utils.html#v:with
 [FFI]: http://www.haskell.org/onlinereport/haskell2010/haskellch8.html
+[hsc2hs]: http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html
+[template-hsc.h]: http://darcs.haskell.org/cgi-bin/gitweb.cgi?p=hsc2hs.git;a=blob;f=template-hsc.h;hb=HEAD
