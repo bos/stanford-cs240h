@@ -468,6 +468,7 @@ Exception *seq_thunk (Void *c)
     ~~~~ {.haskell}
     class Storable a where
         sizeOf :: a -> Int
+        alignment :: a -> Int
         peek :: Ptr a -> IO a
         poke :: Ptr a -> a -> IO ()
         ...
@@ -505,13 +506,15 @@ Exception *seq_thunk (Void *c)
     ~~~~
 
 
-# Example: `toBytes`
+# More `Storable` types
 
-* `Data.Int` and `Data.Word` many sizes of integer
+* `Foreign.C` contains wrappers for C type
+    * `CInt`, `CUInt`, `CChar`, `CDouble`, `CIntPtr` etc.
+* `Data.Int` and `Data.Word` have all sizes of machine integer
     * `Int8`, `Int16`, `Int32`, `Int64` -- signed integers
     * `Word8`, `Word16`, `Word32`, `Word64` -- unsigned integers
 
-* Let's extract all the bytes from a `Storable` object
+* Example: extract all the bytes from a `Storable` object
 
     ~~~~ {.haskell}
     toBytes :: (Storable a) => a -> [Word8]
@@ -523,11 +526,10 @@ Exception *seq_thunk (Void *c)
                      | otherwise = return []
     ~~~~
 
-    * `unsafePerformIO`--usually bad--might be okay here since
-      `tobytes` pure
+    * `unsafePerformIO` might be okay here since `tobytes` pure
     * Notice how `plusPtr` lets us change from `Ptr a` to `Ptr Word8`
 
-# `malloc`
+# `malloc` and `mallocForeignPtr`
 
 * Can also allocate longer-lived memory with `malloc`
 
@@ -535,7 +537,50 @@ Exception *seq_thunk (Void *c)
     malloc :: Storable a => IO (Ptr a)
     mallocBytes :: Int -> IO (Ptr a)
     free :: Ptr a -> IO ()
+    realloc :: Storable b => Ptr a -> IO (Ptr b)
+    reallocBytes :: Ptr a -> Int -> IO (Ptr a)
     ~~~~
+
+    * Disadvantage:  bad programming can lead to memory
+      leaks/corruption
+
+* `ForeignPtr` lets you delegate deallocation to garbage collector
+
+    ~~~~ {.haskell}
+    mallocForeignPtr :: Storable a => IO (ForeignPtr a)
+    mallocForeignPtrBytes :: Int -> IO (ForeignPtr a)
+    ~~~~
+
+# Working with `ForeignPtr`s
+
+* To use `ForeignPtr`, must convert it to `Ptr`
+    * Problem: How does GC know `ForeignPtr` in scope when using
+      `Ptr`?
+    * Solution: use `Ptr` within function that keeps reference to
+      `ForeignPtr`
+
+    ~~~~ {.haskell}
+    withForeignPtr :: ForeignPtr a -> (Ptr a -> IO b) -> IO b
+    ~~~~
+
+* Can also convert `Ptr`s to `ForeignPtr`s
+
+    ~~~~ {.haskell}
+    newForeignPtr :: FinalizerPtr a -> Ptr a
+                  -> IO (ForeignPtr a)
+    newForeignPtr_ :: Ptr a -> IO (ForeignPtr a)
+    addForeignPtrFinalizer :: FinalizerPtr a -> ForeignPtr a
+                           -> IO ()
+    ~~~~
+
+    * Can add multiple finalizers, will run in reverse order
+
+# FFI
+
+~~~~ {.haskell}
+foreign import ccall unsafe "ntohl" ntohl :: Word32 -> Word32
+foreign import ccall unsafe "htonl" htonl :: Word32 -> Word32
+~~~~
 
 # `hsc2hs`
 
