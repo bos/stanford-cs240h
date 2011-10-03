@@ -139,7 +139,7 @@
     {
       for (;;) {
         if ((*vp)->info->tag == IND)
-          (*vp) = (*vp)->arg[0].boxed;
+          *vp = (*vp)->arg[0].boxed;
         else if ((*vp)->info->tag == THUNK) {
           Exception *e = (*vp)->info->thunk (*vp);
           if (e)
@@ -170,7 +170,7 @@
     * `const3_2` creates a `Val` where `arg[0]` is the second argument
       (`b`), `arg[1]` is `closure`, and `info->func` is `const3_3`
     * `const3_3` has access to all arguments and actually implements
-      `const`
+      `const3`
 
 * Shared arguments have common arg tails, only evaluated once
 
@@ -358,8 +358,7 @@ Exception *seq_thunk (Void *c)
 
 * `case` statement pattern matching can force thunks
     * An *irrefutable* pattern is one that always matches
-    * A pattern consisting of a single variable or `_` is
-      *irrefutable*
+    * A pattern consisting of a single variable or `_` is irrefutable
     * Any non-irrefutable pattern forces evaluation of the argument
     * Matching happens top-to-bottom, and left-to-right within
       alternatives
