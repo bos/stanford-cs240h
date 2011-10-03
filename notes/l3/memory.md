@@ -432,6 +432,20 @@ Exception *seq_thunk (Void *c)
     data TwoInts = TwoInts !Int !Int
     ~~~~
 
+    * Fields are strict, we know they'll have `CONSTRNO` `ValInfo`
+    * Why not stick the `Int#`s directly into the `args` of a
+      `TwoInts` `Val`?
+    * GHC provides an `UNPACK` pragma to do just this
+
+        ~~~~ {.haskell}
+        data TwoInts = TwoInts {-# UNPACK #-} !Int {-# UNPACK #-} !Int
+        ~~~~
+
+    * Works for any strict field with a single-constructor datatype
+* Unlike `newtype`, `UNPACK` is not always a win
+    * If you pass field as argument, will need to re-box it
+* `-funbox-strict-fields` flag unpacks *all* strict fields
+
 # `ByteString`s
 
 # `Ptr`
