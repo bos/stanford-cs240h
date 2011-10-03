@@ -312,8 +312,6 @@ Exception *seq_thunk (Void *c)
 }
 ~~~~
 
-# `case` statements revisited
-
 # Strictness revisited
 
 * Recall strictness flag on fields in data declarations
@@ -356,6 +354,32 @@ Exception *seq_thunk (Void *c)
     type StrictMaybeInt = Maybe !Int      -- error
     ~~~~
 
+# `case` statements revisited
+
+* `case` statement pattern matching can force thunks
+    * An *irrefutable* pattern is one that always matches
+    * A pattern consisting of a single variable or `_` is
+      *irrefutable*
+    * Matching happens left-to-right, then top-to-bottom
+    * Matching against a non-irrefutable pattern forces evaluation
+* Function pattern matching is the same as (desuggared into) `case`
+    * `undefined :: a` is `Prelude` symbol with value $\bot$, handy
+      for testing
+
+    ~~~~ {.haskell}
+    f ('a':'b':rest) = rest
+    f _              = "ok"
+    test1 = f (undefined:[])   -- error
+    test2 = f ('a':undefined)  -- error
+    test3 = f ('x':undefined)  -- "ok" (didn't force tail)
+    ~~~~
+
+* Adding `~` before a pattern makes it irrefutable
+
+    ~~~~ {.haskell}
+    three = (\ ~(h:t) -> 3) undefined  -- evaluates to 3
+    ~~~~
+
 # `newtype` declarations
 
 * We've seen two ways to introduce new types
@@ -388,8 +412,6 @@ Exception *seq_thunk (Void *c)
 
 * The `NTInt` constructor is a "fake" compile-time-only construct
     * A case statement deconstructing a `newtype` compiles to nothing
-    * `undefined :: a` is a symbol with value $\bot$ in `Prelude`,
-      handy for testing
 
     ~~~~ {.haskell}
     newtype NTInt = NTInt Int deriving (Show)
@@ -403,6 +425,13 @@ Exception *seq_thunk (Void *c)
 
 # The [UNPACK][UNPACK] pragma
 
+* `newtype` almost always better than `data` when it applies
+* What about a multi-field data type?
+
+    ~~~~ {.haskell}
+    data TwoInts = TwoInts !Int !Int
+    ~~~~
+
 # `ByteString`s
 
 # `Ptr`
@@ -410,5 +439,5 @@ Exception *seq_thunk (Void *c)
 # `hsc2hs`
 
 [GHC.Prim]: http://www.haskell.org/ghc/docs/latest/html/libraries/ghc-prim-0.2.0.0/GHC-Prim.html
-[MagicHash]: http://www.haskell.org/ghc/docs/7.0-latest/html/users_guide/syntax-extns.html#magic-hash
-[UNPACK]: http://www.haskell.org/ghc/docs/7.0-latest/html/users_guide/pragmas.html#unpack-pragma
+[MagicHash]: http://www.haskell.org/ghc/docs/latest/html/users_guide/syntax-extns.html#magic-hash
+[UNPACK]: http://www.haskell.org/ghc/docs/latest/html/users_guide/pragmas.html#unpack-pragma
