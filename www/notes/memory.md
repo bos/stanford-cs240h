@@ -11,7 +11,7 @@
     struct Val {
       unsigned long constrno; /* constructor # */
       struct Val *args[];     /* flexible array */
-    }
+    };
     ~~~~
 
     * For a type like `[Int]`, `constrno` might be 0 for `[]` and 1

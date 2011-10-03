@@ -461,7 +461,7 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
 <ul>
 <li>At runtime, need to determine a value's constructor, but not it's type<br/> (Compiler already type-checked program, so no runtime type checks)</li>
 </ul>
-<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> Val {<br />  <span class="dt">unsigned</span> <span class="dt">long</span> constrno; <span class="co">/* constructor # */</span><br />  <span class="kw">struct</span> Val *args[];     <span class="co">/* flexible array */</span><br />}</code></pre>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> Val {<br />  <span class="dt">unsigned</span> <span class="dt">long</span> constrno; <span class="co">/* constructor # */</span><br />  <span class="kw">struct</span> Val *args[];     <span class="co">/* flexible array */</span><br />};</code></pre>
 <ul>
 <li>For a type like <code>[Int]</code>, <code>constrno</code> might be 0 for <code>[]</code> and 1 for <code>(:)</code>, where <code>[]</code> has 0-sized <code>args</code> and <code>(:)</code> has 2-element <code>args</code></li>
 <li>For a type like <code>Int</code>, <code>constrno</code> can be the actual integer, with no <code>args</code></li>
