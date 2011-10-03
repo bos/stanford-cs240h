@@ -410,6 +410,18 @@ Exception *seq_thunk (Void *c)
     data SInt = SInt !Int deriving (Show)
     ~~~~
 
+# `newtype` semantics
+
+* What's the semantic difference between these two declarations?
+
+    ~~~~ {.haskell}
+    newtype NTInt = NTInt Int deriving (Show)
+    ~~~~
+
+    ~~~~ {.haskell}
+    data SInt = SInt !Int deriving (Show)
+    ~~~~
+
 * The `NTInt` constructor is a "fake" compile-time-only construct
     * A case statement deconstructing a `newtype` compiles to nothing
 

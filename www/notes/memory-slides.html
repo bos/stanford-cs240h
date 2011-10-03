@@ -742,6 +742,14 @@ Int# :: #
 <li><p>What's the semantic difference between these two declarations?</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">NTInt</span> <span class="fu">=</span> <span class="dt">NTInt</span> <span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SInt</span> <span class="fu">=</span> <span class="dt">SInt</span> <span class="fu">!</span><span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre></li>
+</ul>
+</div>
+<div class="slide">
+<h1 id="newtype-semantics-1"><code>newtype</code> semantics</h1>
+<ul>
+<li><p>What's the semantic difference between these two declarations?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">NTInt</span> <span class="fu">=</span> <span class="dt">NTInt</span> <span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SInt</span> <span class="fu">=</span> <span class="dt">SInt</span> <span class="fu">!</span><span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre></li>
 <li>The <code>NTInt</code> constructor is a &quot;fake&quot; compile-time-only construct
 <ul>
 <li>A case statement deconstructing a <code>newtype</code> compiles to nothing</li>
