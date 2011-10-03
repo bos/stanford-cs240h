@@ -95,14 +95,15 @@
     ~~~~
 
     * Compiler will only emit code for local function `addn` once
-    * But logically there is one `addn` function per invocation of `add`
+    * But logically, there is a separate `addn` function (with a
+      different `n`) for each invocation of `add`
     * Each `addn` instance is a different `Val`, but all share same
       `ValInfo`
     * Use `args[0]` in each `Val` to specify value of `n`
 
 # Thunk values
 
-* A `Val` with `tag == THUNK` uses the `thunk` field
+* A `Val` with `tag == THUNK` uses the `thunk` field in `ValInfo`
 
     ~~~~ {.c}
         Exception *(*thunk) (Val *closure);
@@ -114,7 +115,7 @@
 * To evaluate a thunk:
 
     ~~~~ {.c}
-            v->thunk->func (v);
+            v->info->thunk (v);
     ~~~~
 
 * Two big differences between thunks and functions
@@ -128,10 +129,10 @@
 # Forcing
 
 * Turning a thunk into a non-thunk is known as *forcing* it
-* What if a thunk's return value is bigger than thunk?
+* What if a thunk's return value doesn't fit in thunk's `args`?
     * This is why we have the `IND` `ValInfo` tag--Allocate new `Val`,
       place indirect forwarding pointer in old `Val`
-* A possible implementation of forcing that walks `IND` pointers
+* A possible implementation of forcing that walks `IND` pointers:
 
     ~~~~ {.c}
     Exception *force (Val **vp)
@@ -154,7 +155,7 @@
 # Currying
 
 * Let's use simple implementation of currying (GHC very complex)
-* Idea: `closure->args` is list head of previously curried arguments
+* Set `closure->args` to head of list of previously curried args
 
     ~~~~ {.haskell}
     const3 :: a -> b -> c -> a
@@ -163,11 +164,10 @@
 
     * Compiler emits 3 `ValInfo`s and 3 functions for `const3`
     * Top-level binding's `ValInfo` has `func = const3_1`
-    * `const3_1` creates `Val` with first argument in `arg[0]` and
-      uses the second `ValInfo`, which has `func = const3_2`
-    * `const3_2` creates a `Val` where `arg[0]` contains the second
-      argument, `arg[1]` points to first `Val`, and `func` is
-      `const3_3`
+    * `const3_1` creates `Val` where `arg[0]` is first argument (`a`)
+      and `info->func = const3_2`
+    * `const3_2` creates a `Val` where `arg[0]` is the second argument
+      (`b`), `arg[1]` is `closure`, and `info->func` is `const3_3`
     * `const3_3` has access to all arguments and actually implements
       `const`
 
@@ -258,30 +258,23 @@
     * Recall type variables have kinds with stars (&#x2217;, &#x2217;
       &#x2192; &#x2217;, etc.), never `#`
 
-# Strictness revisited
+# `seq` revisited
 
 * Recall `seq :: a -> b -> b`
-    * If `seq a b` is forced, then first `a` is forced, then `b`
-
-* Recall strictness flag on fields in data declarations
+    * Means if `seq a b` is forced, then `a` must first be forced,
+      before `b` is forced
+* Consider the following code:
 
     ~~~~ {.haskell}
-    data IntWrapper = IntWrapper !Int
+    infiniteLoop :: Char
+    infiniteLoop = infiniteLoop
+
+    seqTest1 = infiniteLoop `seq` "Hello" -- loops forever
+
+    seqTest2 = str `seq` length str       -- returns 6
+        where str = infiniteLoop:"Hello"
     ~~~~
 
-    * `Int` has `!` before it, meaning it must be strict
-    * Strict means the `Int`'s `ValInfo` cannot have `tag` `THUNK` or `IND`
-* Accessing a strict `Int` touches only one cache-line
-    * Recall `data Int = I# Int#` has only one constructor
-    * Plus strict flag means `tag == CONSTRNO`, so know what's in
-      `ValInfo`
-    * Plus `Int#` is unboxed
-    * Thus, once `IntWrapper` forced, immediately safe to access `Int`
-      as
-
-        ~~~~ {.c}
-            myIntWrapper.arg[0]->arg[0].unboxed
-        ~~~~
 
 # Example: `seq` implementation
 
@@ -309,6 +302,28 @@ Exception *seq_thunk (Void *c)
   return e;
 }
 ~~~~
+
+# Strictness revisited
+
+* Recall strictness flag on fields in data declarations
+
+    ~~~~ {.haskell}
+    data IntWrapper = IntWrapper !Int
+    ~~~~
+
+    * `Int` has `!` before it, meaning it must be strict
+    * Strict means the `Int`'s `ValInfo` cannot have `tag` `THUNK` or `IND`
+* Accessing a strict `Int` touches only one cache-line
+    * Recall `data Int = I# Int#` has only one constructor
+    * Plus strict flag means `tag == CONSTRNO`, so know what's in
+      `ValInfo`
+    * Plus `Int#` is unboxed
+    * Thus, once `IntWrapper` forced, immediately safe to access `Int`
+      as
+
+        ~~~~ {.c}
+            myIntWrapper.arg[0]->arg[0].unboxed
+        ~~~~
 
 
 # `ByteString`s
