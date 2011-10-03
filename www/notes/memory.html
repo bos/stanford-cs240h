@@ -1,0 +1,483 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+/*]]>*/
+  </style>
+</head>
+<body>
+<h1 id="na&#239;ve-haskell-data-representation">Naïve Haskell data representation</h1>
+<ul>
+<li><p>A value requires a constructor, plus arguments</p>
+<ul>
+<li>At runtime, need to determine a value's constructor, but not it's type<br/> (Compiler already type-checked program, so no runtime type checks)</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> Val {<br />  <span class="dt">unsigned</span> <span class="dt">long</span> constrno; <span class="co">/* constructor # */</span><br />  <span class="kw">struct</span> Val *args[];     <span class="co">/* flexible array */</span><br />}</code></pre>
+<ul>
+<li>For a type like <code>[Int]</code>, <code>constrno</code> might be 0 for <code>[]</code> and 1 for <code>(:)</code>, where <code>[]</code> has 0-sized <code>args</code> and <code>(:)</code> has 2-element <code>args</code></li>
+<li>For a type like <code>Int</code>, <code>constrno</code> can be the actual integer, with no <code>args</code></li>
+<li>For a single-constructor type (e.g., <code>Point</code>) <code>constrno</code> not used</li>
+</ul></li>
+<li>Problems with our approach so far
+<ul>
+<li>No way to represent exceptions or thunks</li>
+<li>Garbage collector needs to know how many elements are in <code>args</code></li>
+<li>Small values such as <code>Int</code>s always require chasing a pointer</li>
+</ul></li>
+</ul>
+<h1 id="metadata-for-values">Metadata for values</h1>
+<ul>
+<li><p>Let's add a level of indirection to describe values</p>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">typedef</span> <span class="kw">struct</span> Val {<br />  <span class="dt">const</span> <span class="kw">struct</span> ValInfo *info;<br />  <span class="kw">struct</span> Val *args[];<br />} Val;<br /><br /><span class="kw">struct</span> ValInfo {<br />  <span class="kw">struct</span> GCInfo gcInfo;  <span class="co">/* for garbage collector */</span><br />  <span class="kw">enum</span> { THUNK, CONSTRNO, FUNC, IND } tag;<br />  <span class="kw">union</span> {<br />    Exception *(*thunk) (Val *closure);<br />    <span class="dt">unsigned</span> <span class="dt">int</span> constrno;<br />    Val *(*func) (<span class="dt">const</span> Val *closure, <span class="dt">const</span> Val *arg);<br />  };<br />};</code></pre>
+<ul>
+<li><code>gcInfo</code> says how many <code>Val *</code>s are in <code>args</code> and where they are</li>
+<li><code>tag == CONSTRNO</code> means <code>constrno</code> valid, used as on last slide</li>
+<li><code>tag == IND</code> means <code>args[0]</code> is an indirect <em>forwarding pointer</em> to another <code>Val</code> and union is unused; useful if size of <code>args</code> grows</li>
+</ul></li>
+</ul>
+<h1 id="function-values">Function values</h1>
+<ul>
+<li><p>A <code>Val</code> whose <code>ValInfo</code> has <code>tag == FUNC</code> uses the <code>func</code> field</p>
+<pre class="sourceCode"><code class="sourceCode c">    Val *(*func) (<span class="dt">const</span> Val *closure, <span class="dt">const</span> Val *arg);</code></pre></li>
+<li><code>closure</code> is the <code>Val</code> whose <code>ValInfo</code> contains <code>func</code>
+<ul>
+<li>Provides an environment so <code>ValInfo</code>/<code>func</code> can be re-used</li>
+</ul></li>
+<li><code>arg</code> is the function argument</li>
+<li>Assume all functions take one argument
+<ul>
+<li>Logically this is fine since we have currying</li>
+<li>For performance, real compilers must optimize multi-argument case</li>
+</ul></li>
+<li><p>To apply function <code>f</code> to argument <code>a</code>, where both are type <code>Val *</code>:</p>
+<pre class="sourceCode"><code class="sourceCode c">        f-&gt;info-&gt;func (f, a);</code></pre></li>
+</ul>
+<h1 id="closures">Closures</h1>
+<ul>
+<li><p>Top-level bindings don't need closures</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">addOne </span><span class="ot">::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span><br />addOne x <span class="fu">=</span> x <span class="fu">+</span> <span class="dv">1</span></code></pre>
+<ul>
+<li>The <code>Val</code> for function <code>addOne</code> can have zero-length <code>args</code></li>
+</ul></li>
+<li><p>Local bindings may need environment values in <code>closure</code></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">add </span><span class="ot">::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Int</span>)<br />add n <span class="fu">=</span> \m <span class="ot">-&gt;</span> addn m<br />    <span class="kw">where</span> addn m <span class="fu">=</span> n <span class="fu">+</span> m</code></pre>
+<ul>
+<li>Compiler will only emit code for local function <code>addn</code> once</li>
+<li>But logically, there is a separate <code>addn</code> function (with a different <code>n</code>) for each invocation of <code>add</code></li>
+<li>Each <code>addn</code> instance is a different <code>Val</code>, but all share same <code>ValInfo</code></li>
+<li>Use <code>args[0]</code> in each <code>Val</code> to specify value of <code>n</code></li>
+</ul></li>
+</ul>
+<h1 id="thunk-values">Thunk values</h1>
+<ul>
+<li><p>A <code>Val</code> with <code>tag == THUNK</code> uses the <code>thunk</code> field in <code>ValInfo</code></p>
+<pre class="sourceCode"><code class="sourceCode c">    Exception *(*thunk) (Val *closure);</code></pre>
+<ul>
+<li><em>Updates</em> <code>v</code> (turns it into non-thunk) or returns a non-<code>NULL</code> <code>Exception *</code></li>
+</ul></li>
+<li><p>To evaluate a thunk:</p>
+<pre class="sourceCode"><code class="sourceCode c">        v-&gt;info-&gt;thunk (v);</code></pre></li>
+<li>Two big differences between thunks and functions
+<ul>
+<li>A function takes an argument, while a thunk does not</li>
+<li>A function value is immutable, while a thunk updates itself</li>
+</ul></li>
+<li>Note also that a thunk may throw an exception
+<ul>
+<li>Functions can, too, but for simplicity let's implement it by having the function return a thunk that throws an exception</li>
+</ul></li>
+</ul>
+<h1 id="forcing">Forcing</h1>
+<ul>
+<li>Turning a thunk into a non-thunk is known as <em>forcing</em> it</li>
+<li>What if a thunk's return value doesn't fit in thunk's <code>args</code>?
+<ul>
+<li>This is why we have the <code>IND</code> <code>ValInfo</code> tag--Allocate new <code>Val</code>, place indirect forwarding pointer in old <code>Val</code></li>
+</ul></li>
+<li><p>A possible implementation of forcing that walks <code>IND</code> pointers:</p>
+<pre class="sourceCode"><code class="sourceCode c">Exception *force (Val **vp)<br />{<br />  <span class="kw">for</span> (;;) {<br />    <span class="kw">if</span> ((*vp)-&gt;info-&gt;tag == IND)<br />      *vp = (*vp)-&gt;arg[<span class="dv">0</span>].boxed;<br />    <span class="kw">else</span> <span class="kw">if</span> ((*vp)-&gt;info-&gt;tag == THUNK) {<br />      Exception *e = (*vp)-&gt;info-&gt;thunk (*vp);<br />      <span class="kw">if</span> (e)<br />        <span class="kw">return</span> e;<br />    }<br />    <span class="kw">else</span><br />      <span class="kw">return</span> NULL;<br />  }<br />}</code></pre></li>
+</ul>
+<h1 id="currying">Currying</h1>
+<ul>
+<li>Let's use simple implementation of currying (GHC very complex)</li>
+<li><p>Set <code>closure-&gt;args</code> to head of list of previously curried args</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">const3 </span><span class="ot">::</span> a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c <span class="ot">-&gt;</span> a<br />const3 a b c <span class="fu">=</span> a</code></pre>
+<ul>
+<li>Compiler emits 3 <code>ValInfo</code>s and 3 functions for <code>const3</code></li>
+<li>Top-level binding's <code>ValInfo</code> has <code>func = const3_1</code></li>
+<li><code>const3_1</code> creates <code>Val</code> where <code>arg[0]</code> is first argument (<code>a</code>) and <span style="white-space: nowrap;"><code>info-&gt;func =   const3_2</code></span></li>
+<li><code>const3_2</code> creates a <code>Val</code> where <code>arg[0]</code> is the second argument (<code>b</code>), <code>arg[1]</code> is <code>closure</code>, and <code>info-&gt;func</code> is <code>const3_3</code></li>
+<li><code>const3_3</code> has access to all arguments and actually implements <code>const3</code></li>
+</ul></li>
+<li><p>Shared arguments have common arg tails, only evaluated once</p>
+<pre class="sourceCode"><code class="sourceCode haskell">    <span class="kw">let</span> f <span class="fu">=</span> const3 (superExpensive <span class="dv">5</span>) <span class="co">-- evaluated once</span><br />    <span class="kw">in</span> (f <span class="dv">1</span> <span class="dv">2</span>, f <span class="dv">3</span> <span class="dv">4</span>)</code></pre></li>
+</ul>
+<h1 id="unboxed-types">Unboxed types</h1>
+<ul>
+<li>Unfortunately, now <code>Int</code> has even more overhead
+<ul>
+<li>To use, must check <code>i-&gt;info-&gt;tag</code> then access <code>i-&gt;info-&gt;constr</code></li>
+<li>Moreover, each number needs a distinct <code>ValInfo</code> structure</li>
+</ul></li>
+<li><p>Idea: Have special <em>unboxed</em> types that don't use <code>struct Val</code></p>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">union</span> Arg {<br />  <span class="kw">struct</span> Val *boxed;     <span class="co">/* most values are boxed */</span><br />  <span class="dt">unsigned</span> <span class="dt">long</span> unboxed; <span class="co">/* &quot;primitive&quot; values */</span><br />};<br /><br /><span class="kw">typedef</span> <span class="kw">struct</span> Val {<br />  <span class="dt">const</span> <span class="kw">struct</span> ValInfo *info;<br />  <span class="kw">union</span> Arg *args[];  <span class="co">/* args can be boxed or unboxed */</span><br />} Val;</code></pre>
+<ul>
+<li>Unboxed types have no constructor and cannot be thunks</li>
+<li>Can fit in a single register or take the place of a <code>Val *</code> arg</li>
+<li>Must extend <code>GCInfo</code> to identify which args are and are not boxed</li>
+</ul></li>
+</ul>
+<h1 id="unboxed-types-in-ghc">Unboxed types in GHC</h1>
+<ul>
+<li>GHC exposes unboxed types (even though not part of Haskell)
+<ul>
+<li>Symbols use <code>#</code> character--must enable with <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/syntax-extns.html#magic-hash"><code>-XMagicHash</code></a> option</li>
+<li>Have unboxed types (<code>Int#</code>) and primitive operations on them (<code>+#</code>)</li>
+<li>See <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/ghc-prim-0.2.0.0/GHC-Prim.html">GHC.Prim</a> or type &quot;<code>:browse GHC.Prim</code>&quot; in GHCI</li>
+<li>Also have <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/syntax-extns.html#magic-hash">unboxed constants</a>--<code>2#</code>, <code>'a'#</code>, <code>2##</code> (unsigned), <code>2.0##</code></li>
+</ul></li>
+<li>What is <code>Int</code> really?
+<ul>
+<li>Single-constructor data type, with a single, unboxed argument</li>
+</ul>
+<pre><code>Prelude&gt; :set -XMagicHash
+Prelude&gt; :m +GHC.Types GHC.Prim
+Prelude GHC.Types GHC.Prim&gt; :i Int
+data Int = I# Int#      -- Defined in GHC.Types
+...
+Prelude GHC.Types GHC.Prim&gt; case 1 of I# u -&gt; I# (u +# 2#)
+3
+</code></pre>
+<ul>
+<li>Lets <code>Int</code> contain thunk, but avoids pointer dereference once evaluated</li>
+</ul></li>
+</ul>
+<h1 id="restrictions-on-unboxed-types">Restrictions on unboxed types</h1>
+<ul>
+<li><p>Cannot instantiate type variables with unboxed types</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE MagicHash #-}</span><br /><span class="kw">import</span> <span class="dt">GHC.Prim</span><br /><br /><span class="kw">data</span> <span class="dt">FastPoint</span> <span class="fu">=</span> <span class="dt">FastPoint</span> <span class="dt">Double</span><span class="fu">#</span> <span class="dt">Double</span><span class="fu">#</span>  <span class="co">-- ok</span><br />fp <span class="fu">=</span> <span class="dt">FastPoint</span> <span class="dv">2</span><span class="fu">.</span><span class="dv">0</span><span class="fu">##</span> <span class="dv">2</span><span class="fu">.</span><span class="dv">0</span><span class="fu">##</span>                  <span class="co">-- ok</span><br /><br /><span class="co">-- Error: can't pass unboxed type to polymorphic function</span><br />fp' <span class="fu">=</span> <span class="dt">FastPoint</span> <span class="dv">2</span><span class="fu">.</span><span class="dv">0</span><span class="fu">##</span> (<span class="fu">id</span> <span class="dv">2</span><span class="fu">.</span><span class="dv">0</span><span class="fu">##</span>)<br /><br /><span class="co">-- Error: can't use unboxed type as type paremeter</span><br /><span class="ot">noInt </span><span class="ot">::</span> <span class="dt">Maybe</span> <span class="dt">Int</span><span class="fu">#</span><br />noInt <span class="fu">=</span> <span class="kw">Nothing</span></code></pre></li>
+<li><p>Enforced by making unboxed types a different kind of type</p>
+<pre><code>Prelude GHC.Types GHC.Prim&gt; :kind Int#
+Int# :: #
+</code></pre>
+<ul>
+<li>Recall type variables have kinds with stars (∗, ∗ → ∗, etc.), never <code>#</code></li>
+</ul></li>
+</ul>
+<h1 id="seq-revisited"><code>seq</code> revisited</h1>
+<ul>
+<li>Recall <code>seq :: a -&gt; b -&gt; b</code>
+<ul>
+<li>If <code>seq a b</code> is forced, then first <code>a</code> is forced, then <code>b</code> is forced and returned</li>
+</ul></li>
+<li><p>Consider the following code:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">infiniteLoop <span class="fu">=</span><span class="ot"> infiniteLoop </span><span class="ot">::</span> <span class="dt">Char</span>   <span class="co">-- loops forever</span><br /><br />seqTest1 <span class="fu">=</span> infiniteLoop <span class="ot">`seq`</span> <span class="st">&quot;Hello&quot;</span> <span class="co">-- loops forever</span><br /><br />seqTest2 <span class="fu">=</span> str <span class="ot">`seq`</span> <span class="fu">length</span> str       <span class="co">-- returns 6</span><br />    <span class="kw">where</span> str <span class="fu">=</span> infiniteLoop<span class="fu">:</span><span class="st">&quot;Hello&quot;</span></code></pre>
+<ul>
+<li><code>seqTest1</code> hangs forever, while <code>seqTest2</code> happily returns 6</li>
+</ul></li>
+<li><code>seq</code> only forces a <code>Val</code>, not the <code>arg</code> fields of the <code>Val</code>
+<ul>
+<li><code>seqTest2</code>'s <code>seq</code> forces <code>str</code>'s constructor <code>(:)</code>, but not the head or tail</li>
+<li>This is known as putting <code>str</code> in <em>Weak Head Normal Form</em> (WHNF)</li>
+<li>Can't fully evaluate an arbitrary data type (but see <a href="http://hackage.haskell.org/packages/archive/deepseq/latest/doc/html/Control-DeepSeq.html">Control.DeepSeq</a>)</li>
+</ul></li>
+</ul>
+<h1 id="example-seq-implementation">Example: <code>seq</code> implementation</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="dt">Val</span> <span class="fu">*</span>seq_2 (<span class="dt">Val</span> <span class="fu">*</span>a, <span class="dt">Val</span> <span class="fu">*</span>b)<br />{ <span class="fu">/*</span> assume seq_1 put first arg <span class="kw">in</span> a <span class="fu">*/</span><br />  val <span class="fu">=</span> xmalloc (offsetof (<span class="dt">Val</span>, args[<span class="dv">2</span>]));<br />  val<span class="ot">-&gt;</span>info <span class="fu">=</span> <span class="fu">&amp;</span>seq_info;<br />  val<span class="ot">-&gt;</span>args[<span class="dv">0</span>] <span class="fu">=</span> a<span class="ot">-&gt;</span>args[<span class="dv">0</span>];<br />  val<span class="ot">-&gt;</span>args[<span class="dv">1</span>] <span class="fu">=</span> b<span class="ot">-&gt;</span>args[<span class="dv">0</span>];<br />  <span class="fu">return</span> val;<br />}<br /><br />struct <span class="dt">ValInfo</span> seq_info <span class="fu">=</span> {<br />  some_gcinfo, <span class="dt">THUNK</span>, <span class="fu">.</span>thunk <span class="fu">=</span> <span class="fu">&amp;</span>seq_thunk<br />};<br /><br /><span class="dt">Exception</span> <span class="fu">*</span>seq_thunk (<span class="dt">Void</span> <span class="fu">*</span>c)<br />{<br />  <span class="dt">Exception</span> <span class="fu">*</span>e <span class="fu">=</span> force (<span class="fu">&amp;</span>c<span class="ot">-&gt;</span>args[<span class="dv">0</span>]);<br />  <span class="kw">if</span> (<span class="fu">!</span>e) {<br />    c<span class="ot">-&gt;</span>info <span class="fu">=</span> <span class="fu">&amp;</span>ind_info;     <span class="fu">/*</span> <span class="dt">ValInfo</span> with tag <span class="dt">IND</span> <span class="fu">*/</span><br />    c<span class="ot">-&gt;</span>args[<span class="dv">0</span>] <span class="fu">=</span> c<span class="ot">-&gt;</span>args[<span class="dv">1</span>]; <span class="fu">/*</span> forward to b <span class="fu">*/</span><br />  }<br />  <span class="fu">return</span> e;<br />}</code></pre>
+<h1 id="strictness-revisited">Strictness revisited</h1>
+<ul>
+<li><p>Recall strictness flag on fields in data declarations</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">IntWrapper</span> <span class="fu">=</span> <span class="dt">IntWrapper</span> <span class="fu">!</span><span class="dt">Int</span></code></pre>
+<ul>
+<li><code>Int</code> has <code>!</code> before it, meaning it must be strict</li>
+<li>Strict means the <code>Int</code>'s <code>ValInfo</code> cannot have <code>tag</code> <code>THUNK</code> or <code>IND</code></li>
+</ul></li>
+<li>Accessing a strict <code>Int</code> touches only one cache line
+<ul>
+<li>Recall <code>data Int = I# Int#</code> has only one constructor</li>
+<li>Plus strict flag means <code>tag == CONSTRNO</code>, so know what's in <code>ValInfo</code></li>
+<li>Plus <code>Int#</code> is unboxed</li>
+<li><p>Thus, once <code>IntWrapper</code> forced, immediately safe to access <code>Int</code> as</p>
+<pre class="sourceCode"><code class="sourceCode c">    myIntWrapper.arg[<span class="dv">0</span>]-&gt;arg[<span class="dv">0</span>].unboxed</code></pre></li>
+</ul></li>
+</ul>
+<h1 id="semantic-effects-of-strictness">Semantic effects of strictness</h1>
+<ul>
+<li>Strictness is primarily used for optimization
+<ul>
+<li>To avoid building up long chains of thunks</li>
+<li>To save overhead of checking whether thunk evaluated</li>
+</ul></li>
+<li>But has semantic effects: A non-strict <code>Int</code> is not just a number
+<ul>
+<li>Can also throw an exception or loop forever when evaluated</li>
+<li>Such behavior can be modeled as a special value <span class="math">⊥</span> (&quot;bottom&quot;)</li>
+<li>So the values of <code>Int</code> are <span class="math">{0, 1}<sup>64</sup> ∪ {⊥}</span></li>
+<li>Types that include value <span class="math">⊥</span> are called <em>lifted</em></li>
+</ul></li>
+<li>Note 1: an unboxed type is necessarily unlifted</li>
+<li><p>Note 2: <code>!Int</code> not a first-class type, only valid for <code>data</code> fields</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SMaybe</span> a <span class="fu">=</span> <span class="dt">SJust</span> <span class="fu">!</span>a <span class="fu">|</span> <span class="dt">SNothing</span>   <span class="co">-- ok, data field</span><br /><span class="ot">strictAdd </span><span class="ot">::</span> <span class="fu">!</span><span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="fu">!</span><span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="fu">!</span><span class="dt">Int</span>     <span class="co">-- error</span><br /><span class="kw">type</span> <span class="dt">StrictMaybeInt</span> <span class="fu">=</span> <span class="dt">Maybe</span> <span class="fu">!</span><span class="dt">Int</span>      <span class="co">-- error</span></code></pre></li>
+</ul>
+<h1 id="case-statements-revisited"><code>case</code> statements revisited</h1>
+<ul>
+<li><code>case</code> statement pattern matching can force thunks
+<ul>
+<li>An <em>irrefutable</em> pattern is one that always matches</li>
+<li>A pattern consisting of a single variable or <code>_</code> is irrefutable</li>
+<li>Any non-irrefutable pattern forces evaluation of the argument</li>
+<li>Matching happens top-to-bottom, and left-to-right within alternatives</li>
+</ul></li>
+<li>Function pattern matching is the same as (desuggared into) <code>case</code>
+<ul>
+<li><code>undefined :: a</code> is <code>Prelude</code> symbol with value <span class="math">⊥</span>, handy for testing</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell">f (<span class="ch">'a'</span><span class="fu">:</span><span class="ch">'b'</span><span class="fu">:</span>rest) <span class="fu">=</span> rest<br />f _              <span class="fu">=</span> <span class="st">&quot;ok&quot;</span><br />test1 <span class="fu">=</span> f (<span class="fu">undefined</span><span class="fu">:</span>[])   <span class="co">-- error</span><br />test2 <span class="fu">=</span> f (<span class="ch">'a'</span><span class="fu">:</span><span class="fu">undefined</span>)  <span class="co">-- error</span><br />test3 <span class="fu">=</span> f (<span class="ch">'x'</span><span class="fu">:</span><span class="fu">undefined</span>)  <span class="co">-- &quot;ok&quot; (didn't force tail)</span></code></pre></li>
+<li><p>Adding <code>~</code> before a pattern makes it irrefutable</p>
+<pre class="sourceCode"><code class="sourceCode haskell">three <span class="fu">=</span> (\ <span class="fu">~</span>(h<span class="fu">:</span>t) <span class="ot">-&gt;</span> <span class="dv">3</span>) <span class="fu">undefined</span>  <span class="co">-- evaluates to 3</span></code></pre></li>
+</ul>
+<h1 id="newtype-declarations"><code>newtype</code> declarations</h1>
+<ul>
+<li>We've seen two ways to introduce new types
+<ul>
+<li><code>data</code> -- creates a new (boxed) type, adding overhead of a <code>Val</code> wrapper</li>
+<li><code>type</code> -- creates an alias for an existing type, with no overhead</li>
+</ul></li>
+<li>Sometimes you want a new type implemented by an existing type
+<ul>
+<li>E.g., might want <code>Meters</code>, <code>Seconds</code>, <code>Grams</code>, all implemented by <code>Double</code></li>
+<li>Using <code>type</code> would make them all synonymous, facilitating errors</li>
+<li>Might want different instances of <code>Show</code> for each, impossible with <code>type</code></li>
+<li>Could say <code>data Meters = Meters Double</code> -- but will add overhead</li>
+</ul></li>
+<li>The <code>newtype</code> keyword introduces new type with no overhead
+<ul>
+<li>Use just like <code>data</code>, but limited to one constructor and one field</li>
+<li>This is possible because all type-checking is compile-time</li>
+</ul></li>
+</ul>
+<h1 id="newtype-semantics"><code>newtype</code> semantics</h1>
+<ul>
+<li><p>What's the semantic difference between these two declarations?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">NTInt</span> <span class="fu">=</span> <span class="dt">NTInt</span> <span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">SInt</span> <span class="fu">=</span> <span class="dt">SInt</span> <span class="fu">!</span><span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre></li>
+<li>The <code>NTInt</code> constructor is a &quot;fake&quot; compile-time-only construct
+<ul>
+<li>A case statement deconstructing a <code>newtype</code> compiles to nothing</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">NTInt</span> <span class="fu">=</span> <span class="dt">NTInt</span> <span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)<br />uNTInt <span class="fu">=</span> <span class="dt">NTInt</span> <span class="fu">undefined</span><br />testNT <span class="fu">=</span> <span class="kw">case</span> uNTInt <span class="kw">of</span> <span class="dt">NTInt</span> _ <span class="ot">-&gt;</span> <span class="kw">True</span>   <span class="co">-- returns True</span><br /><br /><span class="kw">data</span> <span class="dt">SInt</span> <span class="fu">=</span> <span class="dt">SInt</span> <span class="fu">!</span><span class="dt">Int</span> <span class="kw">deriving</span> (<span class="kw">Show</span>)<br />uSInt <span class="fu">=</span> <span class="dt">SInt</span> <span class="fu">undefined</span><br />testS <span class="fu">=</span> <span class="kw">case</span> uSInt <span class="kw">of</span> <span class="dt">SInt</span> _ <span class="ot">-&gt;</span> <span class="kw">True</span>      <span class="co">-- undefined</span></code></pre></li>
+</ul>
+<h1 id="the-unpack-pragma">The <a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/pragmas.html#unpack-pragma">UNPACK</a> pragma</h1>
+<ul>
+<li><code>newtype</code> almost always better than <code>data</code> when it applies</li>
+<li><p>What about a multi-field data type?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">TwoInts</span> <span class="fu">=</span> <span class="dt">TwoInts</span> <span class="fu">!</span><span class="dt">Int</span> <span class="fu">!</span><span class="dt">Int</span></code></pre>
+<ul>
+<li>Fields are strict, we know they'll have <code>CONSTRNO</code> <code>ValInfo</code></li>
+<li>Why not stick the <code>Int#</code>s directly into the <code>args</code> of a <code>TwoInts</code> <code>Val</code>?</li>
+<li><p>GHC provides an <code>UNPACK</code> pragma to do just this</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">TwoInts</span> <span class="fu">=</span> <span class="dt">TwoInts</span> <span class="ot">{-# UNPACK #-} !Int {-# UNPACK #-}</span> <span class="fu">!</span><span class="dt">Int</span></code></pre></li>
+<li>Works for any strict field with a single-constructor datatype</li>
+</ul></li>
+<li>Unlike <code>newtype</code>, <code>UNPACK</code> is not always a win
+<ul>
+<li>If you pass field as argument, will need to re-box it</li>
+</ul></li>
+<li><p><code>-funbox-strict-fields</code> flag unpacks <em>all</em> strict fields</p></li>
+</ul>
+<h1 id="user-managed-memory">User-managed memory</h1>
+<ul>
+<li>Opaque type <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Ptr.html#t:Ptr"><code>Ptr a</code></a> represents pointers to type <code>a</code>
+<ul>
+<li><p>Pointers are not typesafe--allow pointer arithmetic and casting</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">nullPtr </span><span class="ot">::</span> <span class="dt">Ptr</span> a<br /><span class="ot">plusPtr </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Ptr</span> b<br /><span class="ot">minusPtr </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">Ptr</span> b <span class="ot">-&gt;</span> <span class="dt">Int</span><br /><span class="ot">castPtr </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">Ptr</span> b</code></pre></li>
+<li>Pointer arithmetic is always in units of bytes (unlike in C, where unit is size of the pointed-to object)</li>
+</ul></li>
+<li><p>Class <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Storable.html#t:Storable"><code>Storable</code></a> provides raw access to memory using <code>Ptr</code>s</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Storable</span> a <span class="kw">where</span><br /><span class="ot">    sizeOf </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span><br /><span class="ot">    alignment </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span><br /><span class="ot">    peek </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a<br /><span class="ot">    poke </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br />    <span class="fu">...</span></code></pre>
+<ul>
+<li>Most basic types (<code>Bool</code>, <code>Int</code>, <code>Char</code>, <code>Ptr a</code>, etc.) are <code>Storable</code></li>
+</ul></li>
+</ul>
+<h1 id="alloca"><code>alloca</code></h1>
+<ul>
+<li><p>Easiest way to get a valid <code>Ptr</code> is <code>alloca</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">alloca </span><span class="ot">::</span> <span class="dt">Storable</span> a <span class="ot">=&gt;</span> (<span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> b</code></pre>
+<ul>
+<li>Allocates enough space for an object of type <code>a</code></li>
+<li>Calls function with a <code>Ptr</code> to the space</li>
+<li>Reclaims the memory when the function returns (much like C <code>alloca</code>)</li>
+<li>Can also ask for a specific number of bytes:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">allocaBytes </span><span class="ot">::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> (<span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> b</code></pre></li>
+<li><p><code>Foreign</code> module provides handy <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Marshal-Utils.html#v:with"><code>with</code></a> utility</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">with </span><span class="ot">::</span> <span class="dt">Storable</span> a <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> (<span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br />with val f  <span class="fu">=</span><br />  alloca <span class="fu">$</span> \ptr <span class="ot">-&gt;</span> <span class="kw">do</span><br />    poke ptr val<br />    res <span class="ot">&lt;-</span> f ptr<br />    <span class="fu">return</span> res</code></pre></li>
+</ul>
+<h1 id="more-storable-types">More <code>Storable</code> types</h1>
+<ul>
+<li><code>Foreign.C</code> contains wrappers for C type
+<ul>
+<li><code>CInt</code>, <code>CUInt</code>, <code>CChar</code>, <code>CDouble</code>, <code>CIntPtr</code> etc.</li>
+</ul></li>
+<li><code>Data.Int</code> and <code>Data.Word</code> have all sizes of machine integer
+<ul>
+<li><code>Int8</code>, <code>Int16</code>, <code>Int32</code>, <code>Int64</code> -- signed integers</li>
+<li><code>Word8</code>, <code>Word16</code>, <code>Word32</code>, <code>Word64</code> -- unsigned integers</li>
+</ul></li>
+<li><p>Example: extract all the bytes from a <code>Storable</code> object</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">toBytes </span><span class="ot">::</span> (<span class="dt">Storable</span> a) <span class="ot">=&gt;</span> a <span class="ot">-&gt;</span> [<span class="dt">Word8</span>]<br />toBytes a <span class="fu">=</span> unsafePerformIO <span class="fu">$</span><br />    with a <span class="fu">$</span> \pa <span class="ot">-&gt;</span> go (castPtr pa) (pa <span class="ot">`plusPtr`</span> sizeOf a)<br />    <span class="kw">where</span> go p e <span class="fu">|</span> p <span class="fu">&lt;</span> e <span class="fu">=</span> <span class="kw">do</span> b <span class="ot">&lt;-</span> peek p<br />                              bs <span class="ot">&lt;-</span> go (p <span class="ot">`plusPtr`</span> <span class="dv">1</span>) e<br />                              <span class="fu">return</span> (b<span class="fu">:</span>bs)<br />                 <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="fu">return</span> []</code></pre>
+<ul>
+<li><code>unsafePerformIO</code> might be okay here since <code>tobytes</code> pure</li>
+<li>Notice how <code>plusPtr</code> lets us change from <code>Ptr a</code> to <code>Ptr Word8</code></li>
+</ul></li>
+</ul>
+<h1 id="malloc-and-mallocforeignptr"><code>malloc</code> and <code>mallocForeignPtr</code></h1>
+<ul>
+<li><p>Can also allocate longer-lived memory with <code>malloc</code></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">malloc </span><span class="ot">::</span> <span class="dt">Storable</span> a <span class="ot">=&gt;</span> <span class="dt">IO</span> (<span class="dt">Ptr</span> a)<br /><span class="ot">mallocBytes </span><span class="ot">::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Ptr</span> a)<br /><span class="ot">free </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br /><span class="ot">realloc </span><span class="ot">::</span> <span class="dt">Storable</span> b <span class="ot">=&gt;</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Ptr</span> b)<br /><span class="ot">reallocBytes </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Ptr</span> a)</code></pre>
+<ul>
+<li>Disadvantage: bad programming can lead to memory leaks/corruption</li>
+</ul></li>
+<li><p><code>ForeignPtr</code> lets you delegate deallocation to garbage collector</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">mallocForeignPtr </span><span class="ot">::</span> <span class="dt">Storable</span> a <span class="ot">=&gt;</span> <span class="dt">IO</span> (<span class="dt">ForeignPtr</span> a)<br /><span class="ot">mallocForeignPtrBytes </span><span class="ot">::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ForeignPtr</span> a)</code></pre></li>
+</ul>
+<h1 id="working-with-foreignptrs">Working with <code>ForeignPtr</code>s</h1>
+<ul>
+<li>To use <code>ForeignPtr</code>, must convert it to <code>Ptr</code>
+<ul>
+<li>Problem: How does GC know <code>ForeignPtr</code> in scope when using <code>Ptr</code>?</li>
+<li>Solution: use <code>Ptr</code> within function that keeps reference to <code>ForeignPtr</code></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">withForeignPtr </span><span class="ot">::</span> <span class="dt">ForeignPtr</span> a <span class="ot">-&gt;</span> (<span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> b</code></pre></li>
+<li><p>Can also convert <code>Ptr</code>s to <code>ForeignPtr</code>s</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">FinalizerPtr</span> a <span class="fu">=</span> <span class="dt">FunPtr</span> (<span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ())<br /><span class="ot">newForeignPtr </span><span class="ot">::</span> <span class="dt">FinalizerPtr</span> a <span class="ot">-&gt;</span> <span class="dt">Ptr</span> a<br />              <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ForeignPtr</span> a)<br /><span class="ot">newForeignPtr_ </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">ForeignPtr</span> a)<br /><span class="ot">addForeignPtrFinalizer </span><span class="ot">::</span> <span class="dt">FinalizerPtr</span> a <span class="ot">-&gt;</span> <span class="dt">ForeignPtr</span> a<br />                       <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<ul>
+<li>Can add multiple finalizers, will run in reverse order</li>
+</ul></li>
+<li>Note use of <code>FunPtr</code> -- this is type wrapper for C function pointer
+<ul>
+<li>Need foreign function interface to create these</li>
+</ul></li>
+</ul>
+<h1 id="foreign-function-interface-ffi"><a href="http://www.haskell.org/onlinereport/haskell2010/haskellch8.html">Foreign function interface</a> (FFI)</h1>
+<ul>
+<li><p>Can import foreign functions like this:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;stdlib.h malloc&quot;</span><br /><span class="ot">    c_malloc </span><span class="ot">::</span> <span class="dt">CSize</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Ptr</span> a)<br />foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;stdlib.h free&quot;</span><br /><span class="ot">    c_free </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<ul>
+<li><code>ccall</code> says use C calling convention (also <code>cplusplus</code> and few others)</li>
+<li><code>unsafe</code> promises the C function will not call back into Haskell</li>
+<li><code>unafe</code> faster than <code>safe</code>, but gives undefined results if call triggers GC</li>
+</ul></li>
+<li>Spec for import string: <code>&quot;</code>[<code>static</code>] [<em>c-header</em>] [<code>&amp;</code>][<em>c-name</em>]<code>&quot;</code>
+<ul>
+<li><code>static</code> required only if <em>c-name</em> is <code>dynamic</code> or <code>wrapper</code></li>
+<li><em>c-header</em> is a single <code>.h</code> file with the declaration (ignored by GHC)</li>
+<li>'&amp;' imports pointer rather than function (required for <code>FunPtr</code>s)</li>
+</ul></li>
+</ul>
+<h1 id="ffi-types">FFI types</h1>
+<ul>
+<li>FFI function arguments must be <em>basic foreign types</em>
+<ul>
+<li><code>Char</code>, <code>Int</code>, <code>Double</code>, <code>Float</code>, <code>Bool</code>, <code>Int8</code>, <code>Int16</code>, <code>Int32</code>, <code>Int64</code>, <code>Word8</code>, <code>Word16</code>, <code>Word32</code>, <code>Word64</code>, <code>Ptr</code> <code>a</code>, <code>FunPtr a</code>, and <code>StablePtr a</code></li>
+<li>Also accepts any <code>type</code> or <code>newtype</code> wrappers for basic types (<code>CInt</code>, <code>CChar</code>, etc.)<br/> [Documentation incorrectly says <code>data CInt</code>, but <code>:i</code> in GHCI reveals truth.]</li>
+</ul></li>
+<li>FFI function results can be
+<ul>
+<li>Any valid argument type</li>
+<li><code>()</code> (for functions returning <code>void</code>)</li>
+<li><code>IO a</code> where <code>a</code> is either of the above two</li>
+</ul></li>
+<li>Place result <code>IO</code> if function has side effects or non-determinism
+<ul>
+<li><p>Okay to omit if it is a pure C function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;arpa/inet.h ntohl&quot;</span><br /><span class="ot">    ntohl </span><span class="ot">::</span> <span class="dt">Word32</span> <span class="ot">-&gt;</span> <span class="dt">Word32</span></code></pre></li>
+<li><p>Haskell can't check C purity, so omitting <code>IO</code> can cause problems</p></li>
+</ul></li>
+</ul>
+<h1 id="hsc2hs"><a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html"><code>hsc2hs</code></a></h1>
+<ul>
+<li><p>How to access C data structures?</p>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> mystruct {<br />  <span class="dt">char</span> *name;<br />  <span class="dt">int</span> value;<br />};</code></pre>
+<ul>
+<li>Might model with opaque placeholder type</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">MyStruct</span>        <span class="co">-- no constructors, just a placeholder</span><br /><span class="ot">getValue </span><span class="ot">::</span> <span class="dt">Ptr</span> <span class="dt">MyStruct</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">CInt</span><br />getValue ptr <span class="fu">=</span> peek <span class="fu">$</span> ptr <span class="ot">`plusPtr`</span> <span class="dv">8</span>  <span class="co">-- assumes char * 8 bytes</span></code></pre></li>
+<li><p><a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html"><code>hsc2hs</code></a> is pre-processor that lets you compute C values</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">#</span>include <span class="st">&quot;myheader.h&quot;</span><br />getValue ptr <span class="fu">=</span> peek <span class="fu">$</span> ptr <span class="ot">`plusPtr`</span><br />               <span class="fu">#</span>{offset struct mystruct, value}</code></pre>
+<ul>
+<li>Super-simple implementation just uses C macros &amp; <code>printf</code></li>
+<li>Find the file <a href="http://darcs.haskell.org/cgi-bin/gitweb.cgi?p=hsc2hs.git;a=blob;f=template-hsc.h;hb=HEAD"><code>template-hsc.h</code></a> on your system to see defs of <code>#</code> commands</li>
+<li>Can also define your own macros with <code>#let</code> (like <code>#define</code> w/o parens)</li>
+</ul></li>
+</ul>
+<h1 id="bytestrings"><a href="http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/index.html"><code>ByteString</code>s</a></h1>
+<ul>
+<li>Haskell <code>String</code>s obviously not very efficient</li>
+<li><p>Strict <code>ByteString</code>s efficiently manipulate raw bytes</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString</span> <span class="kw">as</span> <span class="dt">S</span><br /><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Char8</span> <span class="kw">as</span> <span class="dt">S8</span></code></pre>
+<ul>
+<li>Implements a similar interface to lists: <code>S.head</code>, <code>S.tail</code>, <code>S.length</code>, <code>S.foldl</code>, <code>S.cons</code> (like <code>:</code>), <code>S.empty</code> (like <code>[]</code>), <code>S.hPut</code> (like <code>hPutStr</code>), <code>S.readFile</code></li>
+<li>Must import qualified to avoid name clashes</li>
+<li><code>S.pack</code> and <code>S.unpack</code> translate to/from <code>[Word8]</code></li>
+<li><code>S8</code> has same functions as <code>S</code>, but uses <code>Char</code> instead of <code>Word8</code>--means you lose upper bits of <code>Char</code> (use <a href="http://hackage.haskell.org/packages/archive/utf8-string/0.3.7/doc/html/Data-ByteString-UTF8.html#v:toString"><code>toString</code></a> from <a href="http://hackage.haskell.org/package/utf8-string">utf8-string</a> to avoid loss)</li>
+</ul></li>
+<li><p>Implementation</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">ByteString</span> <span class="fu">=</span> <span class="dt">PS</span> <span class="ot">{-# UNPACK #-}</span> <span class="fu">!</span>(<span class="dt">ForeignPtr</span> <span class="dt">Word8</span>)<br />                     <span class="ot">{-# UNPACK #-}</span> <span class="fu">!</span><span class="dt">Int</span>  <span class="co">-- offset</span><br />                     <span class="ot">{-# UNPACK #-}</span> <span class="fu">!</span><span class="dt">Int</span>  <span class="co">-- length</span></code></pre></li>
+</ul>
+<h1 id="lazy-bytestrings"><a href="http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/Data-ByteString-Lazy.html">Lazy <code>ByteString</code>s</a></h1>
+<ul>
+<li><p>Same package implements <a href="http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/Data-ByteString-Lazy.html"><em>lazy</em> <code>ByteString</code>s</a></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Lazy</span> <span class="kw">as</span> <span class="dt">L</span><br /><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.ByteString.Lazy.Char8</span> <span class="kw">as</span> <span class="dt">L8</span></code></pre>
+<ul>
+<li>Provides mostly the same functions as strict <code>ByteString</code> modules</li>
+</ul></li>
+<li>Confusing that both modules use same names for many things
+<ul>
+<li>Important to look at import qualifications to understand code</li>
+<li>Worse: documentation does not qualify symbol names<br/> Tip: <strong>hover your mouse over symbol and look at URL to figure out module</strong></li>
+<li>Also, <code>S.ByteString</code> and <code>S8.ByteString</code> are the same type (re-exported), and similarly for <code>L.ByteString</code> and <code>L8.ByteString</code></li>
+<li><code>S.ByteString</code> and <code>L.ByteString</code> <em>not</em> same type, but can convert:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">fromChunks </span><span class="ot">::</span> [<span class="dt">S.ByteString</span>] <span class="ot">-&gt;</span> <span class="dt">L.ByteString</span><br /><span class="ot">toChunks </span><span class="ot">::</span> <span class="dt">L.ByteString</span> <span class="ot">-&gt;</span> [<span class="dt">S.ByteString</span>]</code></pre></li>
+</ul>
+<h1 id="lazy-bytestring-implementation">Lazy <code>ByteString</code> implementation</h1>
+<ul>
+<li><p>Lazy <code>ByteString</code>s are implemented in terms of strict ones</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">ByteString</span> <span class="fu">=</span> <span class="dt">Empty</span><br />                <span class="fu">|</span> <span class="dt">Chunk</span> <span class="ot">{-# UNPACK #-}</span> <span class="fu">!</span><span class="dt">S.ByteString</span> <span class="dt">ByteString</span></code></pre>
+<ul>
+<li>Invariant: <code>Chunk</code>'s first argument (<code>S.ByteString</code>) never <code>null</code></li>
+<li>Basically a linked list of strict <code>ByteString</code>s</li>
+<li>Head is strict, tail is not, allowing lazy computation or I/O</li>
+</ul></li>
+<li>When to use strict/lazy <code>ByteString</code>s?
+<ul>
+<li>Obviously use lazy when you need laziness (e.g., lazy I/O, infinite or cyclical strings, etc.)</li>
+<li>Lazy also much faster at concatenation (need to build a new list of <code>S.ByteString</code>s, but not copy the data they contain)</li>
+<li>Strict makes it much easier to implement things like string search</li>
+<li>Converting strict to lazy <code>ByteString</code>s is cheap, reverse is not (so if a library can work efficiently on lazy <code>ByteString</code>s, good to expose that functionality)</li>
+</ul></li>
+</ul>
+</body>
+</html>
