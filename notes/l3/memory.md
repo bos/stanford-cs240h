@@ -575,7 +575,7 @@ Exception *seq_thunk (Void *c)
 
     * Can add multiple finalizers, will run in reverse order
 
-# FFI
+# Foreign function interface (FFI)
 
 ~~~~ {.haskell}
 foreign import ccall unsafe "ntohl" ntohl :: Word32 -> Word32
