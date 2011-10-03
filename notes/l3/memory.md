@@ -642,7 +642,6 @@ Exception *seq_thunk (Void *c)
 
     ~~~~ {.haskell}
     data MyStruct        -- no constructors, just a placeholder
-
     getValue :: Ptr MyStruct -> IO CInt
     getValue ptr = peek $ ptr `plusPtr` 8  -- assumes char * 8 bytes
     ~~~~
@@ -650,6 +649,7 @@ Exception *seq_thunk (Void *c)
 * [`hsc2hs`][hsc2hs] is pre-processor that lets you compute C values
 
     ~~~~ {.haskell}
+    #include "myheader.h"
     getValue ptr = peek $ ptr `plusPtr`
                    #{offset struct mystruct, value}
     ~~~~
@@ -657,9 +657,91 @@ Exception *seq_thunk (Void *c)
     * Super-simple implementation just uses C macros & `printf`
     * Find the file [`template-hsc.h`][template-hsc.h] on your system
       to see defs of `#` commands
-    * Can also define your own macros
+    * Can also define your own macros with `#let` (like `#define` w/o
+      parens)
 
-# `ByteString`s
+# [`ByteString`s][bytestring]
+
+* Haskell `String`s obviously not very efficient
+* Strict `ByteString`s efficiently manipulate raw bytes
+
+    ~~~~ {.haskell}
+    import qualified Data.ByteString as S
+    import qualified Data.ByteString.Char8 as S8
+    ~~~~
+
+    * Implements a similar interface to lists:  `S.head`, `S.tail`,
+    `S.length`, `S.foldl`, `S.cons` (like `:`), `S.empty` (like `[]`),
+    `S.hPut` (like `hPutStr`), `S.readFile`
+    * Must import qualified to avoid name clashes
+    * `S.pack` and `S.unpack` translate to/from `[Word8]`
+    * `S8` has same functions as `S`, but uses `Char` instead of
+      `Word8`--means you lose upper bits of `Char` (use
+      [`toString`](http://hackage.haskell.org/packages/archive/utf8-string/0.3.7/doc/html/Data-ByteString-UTF8.html#v:toString)
+      from
+      [utf8-string](http://hackage.haskell.org/package/utf8-string) to
+      avoid loss)
+
+* Implementation
+
+    ~~~~ {.haskell}
+    data ByteString = PS {-# UNPACK #-} !(ForeignPtr Word8)
+                         {-# UNPACK #-} !Int  -- offset
+                         {-# UNPACK #-} !Int  -- length
+    ~~~~
+
+# [Lazy `ByteString`s][ByteString.Lazy]
+
+* Same package implements [*lazy* `ByteString`s][ByteString.Lazy]
+
+    ~~~~ {.haskell}
+    import qualified Data.ByteString.Lazy as L
+    import qualified Data.ByteString.Lazy.Char8 as L8
+    ~~~~
+
+    * Provides mostly the same functions as strict `ByteString`
+      modules
+
+* Confusing that both modules use same names for many things
+    * Important to look at import qualifications to understand code
+    * Worse: documentation does not qualify symbol names<br/>
+      Tip: **hover your mouse over symbol and look at URL to figure
+      out module**
+    * Also, `S.ByteString` and `S8.ByteString` are the same type
+      (re-exported), and similarly for `L.ByteString` and
+      `L8.ByteString`
+    * `S.ByteString` and `L.ByteString` *not* same type, but can
+      convert:
+
+    ~~~~ {.haskell}
+    fromChunks :: [S.ByteString] -> L.ByteString
+    toChunks :: L.ByteString -> [S.ByteString]
+    ~~~~
+
+# Lazy `ByteString` implementation
+
+* Lazy `ByteString`s are implemented in terms of strict ones
+
+    ~~~~ {.haskell}
+    data ByteString = Empty
+                    | Chunk {-# UNPACK #-} !S.ByteString ByteString
+    ~~~~
+
+    * Invariant: `Chunk`'s first argument (`S.ByteString`) never `null`
+    * Basically a linked list of strict `ByteString`s
+    * Head is strict, tail is not, allowing lazy computation or I/O
+
+* When to use strict/lazy `ByteString`s?
+    * Obviously use lazy when you need laziness (e.g., lazy I/O,
+      infinite or cyclical strings, etc.)
+    * Lazy also much faster at concatenation (need to build a new list
+      of `S.ByteString`s, but not copy the data they contain)
+    * Strict makes it much easier to implement things like string
+      search
+    * Converting strict to lazy `ByteString`s is cheap, reverse is not
+      (so if a library can work efficiently on lazy `ByteString`s,
+      good to expose that functionality)
+
 
 [Ptr]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Ptr.html#t:Ptr
 [Storable]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Storable.html#t:Storable
@@ -670,3 +752,5 @@ Exception *seq_thunk (Void *c)
 [FFI]: http://www.haskell.org/onlinereport/haskell2010/haskellch8.html
 [hsc2hs]: http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html
 [template-hsc.h]: http://darcs.haskell.org/cgi-bin/gitweb.cgi?p=hsc2hs.git;a=blob;f=template-hsc.h;hb=HEAD
+[bytestring]: http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/index.html
+[ByteString.Lazy]: http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/Data-ByteString-Lazy.html
