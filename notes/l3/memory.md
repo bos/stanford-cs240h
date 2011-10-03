@@ -360,8 +360,9 @@ Exception *seq_thunk (Void *c)
     * An *irrefutable* pattern is one that always matches
     * A pattern consisting of a single variable or `_` is
       *irrefutable*
-    * Matching happens left-to-right, then top-to-bottom
-    * Matching against a non-irrefutable pattern forces evaluation
+    * Any non-irrefutable pattern forces evaluation of the argument
+    * Matching happens top-to-bottom, and left-to-right within
+      alternatives
 * Function pattern matching is the same as (desuggared into) `case`
     * `undefined :: a` is `Prelude` symbol with value $\bot$, handy
       for testing
@@ -446,12 +447,103 @@ Exception *seq_thunk (Void *c)
     * If you pass field as argument, will need to re-box it
 * `-funbox-strict-fields` flag unpacks *all* strict fields
 
-# `ByteString`s
 
-# `Ptr`
+# User-managed memory
+
+* Opaque type [`Ptr a`][Ptr] represents pointers to type `a`
+    * Pointers are not typesafe--allow pointer arithmetic and casting
+
+        ~~~~ {.haskell}
+        nullPtr :: Ptr a
+        plusPtr :: Ptr a -> Int -> Ptr b
+        minusPtr :: Ptr a -> Ptr b -> Int
+        castPtr :: Ptr a -> Ptr b
+        ~~~~
+
+    * Pointer arithmetic is always in units of bytes (unlike in C,
+      where unit is size of the pointed-to object)
+* Class [`Storable`][Storable] provides raw access to memory using
+  `Ptr`s
+
+    ~~~~ {.haskell}
+    class Storable a where
+        sizeOf :: a -> Int
+        peek :: Ptr a -> IO a
+        poke :: Ptr a -> a -> IO ()
+        ...
+    ~~~~
+
+    * Most basic types (`Bool`, `Int`, `Char`, `Ptr a`, etc.) are `Storable`
+
+# `alloca`
+
+* Easiest way to get a valid `Ptr` is `alloca`:
+
+    ~~~~ {.haskell}
+    alloca :: Storable a => (Ptr a -> IO b) -> IO b
+    ~~~~
+
+    * Allocates enough space for an object of type `a`
+    * Calls function with a `Ptr` to the space
+    * Reclaims the memory when the function returns (much like C
+      `alloca`)
+    * Can also ask for a specific number of bytes:
+
+    ~~~~ {.haskell}
+    allocaBytes :: Int -> (Ptr a -> IO b) -> IO b
+    ~~~~
+
+* `Foreign` module provides handy [`with`][with] utility
+
+    ~~~~ {.haskell}
+    with :: Storable a => a -> (Ptr a -> IO b) -> IO b
+    with val f  =
+      alloca $ \ptr -> do
+        poke ptr val
+        res <- f ptr
+        return res
+    ~~~~
+
+
+# Example: `toBytes`
+
+* `Data.Int` and `Data.Word` many sizes of integer
+    * `Int8`, `Int16`, `Int32`, `Int64` -- signed integers
+    * `Word8`, `Word16`, `Word32`, `Word64` -- unsigned integers
+
+* Let's extract all the bytes from a `Storable` object
+
+    ~~~~ {.haskell}
+    toBytes :: (Storable a) => a -> [Word8]
+    toBytes a = unsafePerformIO $
+        with a $ \pa -> go (castPtr pa) (pa `plusPtr` sizeOf a)
+        where go p e | p < e = do b <- peek p
+                                  bs <- go (p `plusPtr` 1) e
+                                  return (b:bs)
+                     | otherwise = return []
+    ~~~~
+
+    * `unsafePerformIO`--usually bad--might be okay here since
+      `tobytes` pure
+    * Notice how `plusPtr` lets us change from `Ptr a` to `Ptr Word8`
+
+# `malloc`
+
+* Can also allocate longer-lived memory with `malloc`
+
+    ~~~~ {.haskell}
+    malloc :: Storable a => IO (Ptr a)
+    mallocBytes :: Int -> IO (Ptr a)
+    free :: Ptr a -> IO ()
+    ~~~~
 
 # `hsc2hs`
 
+# `ByteString`s
+
+[Ptr]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Ptr.html#t:Ptr
+[Storable]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Storable.html#t:Storable
 [GHC.Prim]: http://www.haskell.org/ghc/docs/latest/html/libraries/ghc-prim-0.2.0.0/GHC-Prim.html
 [MagicHash]: http://www.haskell.org/ghc/docs/latest/html/users_guide/syntax-extns.html#magic-hash
 [UNPACK]: http://www.haskell.org/ghc/docs/latest/html/users_guide/pragmas.html#unpack-pragma
+[with]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Marshal-Utils.html#v:with
