@@ -565,6 +565,7 @@ Exception *seq_thunk (Void *c)
 * Can also convert `Ptr`s to `ForeignPtr`s
 
     ~~~~ {.haskell}
+    type FinalizerPtr a = FunPtr (Ptr a -> IO ())
     newForeignPtr :: FinalizerPtr a -> Ptr a
                   -> IO (ForeignPtr a)
     newForeignPtr_ :: Ptr a -> IO (ForeignPtr a)
@@ -573,13 +574,46 @@ Exception *seq_thunk (Void *c)
     ~~~~
 
     * Can add multiple finalizers, will run in reverse order
+* Note use of `FunPtr` -- this is type wrapper for C function pointer
+    * Need foreign function interface to create these
 
-# Foreign function interface (FFI)
 
-~~~~ {.haskell}
-foreign import ccall unsafe "ntohl" ntohl :: Word32 -> Word32
-foreign import ccall unsafe "htonl" htonl :: Word32 -> Word32
-~~~~
+# [Foreign function interface][FFI] (FFI)
+
+* Can import foreign functions like this:
+
+    ~~~~ {.haskell}
+    foreign import ccall unsafe "stdlib.h malloc"
+        c_malloc :: CSize -> IO (Ptr a)
+    foreign import ccall unsafe "stdlib.h free"
+        c_free :: Ptr a -> IO ()
+    ~~~~
+
+    * `ccall` says use C calling convention (also `cplusplus` and few
+      others)
+    * `unsafe` promises the C function will not call back into
+      Haskell<br/>Faster than `safe`, but gives undefined results if
+      call triggers GC
+* Spec for import string: `"`[`static`] [*c-header*] [`&`][*c-name*]`"`
+    * `static` required only if *c-name* is `dynamic` or `wrapper`
+    * *c-header* is a single `.h` file with the declaration
+       (ignored by GHC)
+    * '&' imports pointer rather than function (required for `FunPtr`s)
+
+
+# FFI types
+
+* FFI functions must take/return only "basic foreign types"
+    * `Char`, `Int`, `Double`, `Float`, `Bool`, `Int8`, `Int16`,
+      `Int32`, `Int64`, `Word8`, `Word16`, `Word32`, `Word64`, `Ptr`
+      `a`, `FunPtr a`, and `StablePtr a`
+
+* blah
+
+	~~~~ {.haskell}
+	foreign import ccall unsafe "ntohl" ntohl :: Word32 -> Word32
+	foreign import ccall unsafe "htonl" htonl :: Word32 -> Word32
+	~~~~
 
 # `hsc2hs`
 
@@ -591,3 +625,4 @@ foreign import ccall unsafe "htonl" htonl :: Word32 -> Word32
 [MagicHash]: http://www.haskell.org/ghc/docs/latest/html/users_guide/syntax-extns.html#magic-hash
 [UNPACK]: http://www.haskell.org/ghc/docs/latest/html/users_guide/pragmas.html#unpack-pragma
 [with]: http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Marshal-Utils.html#v:with
+[FFI]: http://www.haskell.org/onlinereport/haskell2010/haskellch8.html
