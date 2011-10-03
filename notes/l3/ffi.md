@@ -165,7 +165,8 @@
     * Compiler emits 3 `ValInfo`s and 3 functions for `const3`
     * Top-level binding's `ValInfo` has `func = const3_1`
     * `const3_1` creates `Val` where `arg[0]` is first argument (`a`)
-      and `info->func = const3_2`
+      and <span style="white-space: nowrap;">`info->func =
+      const3_2`</span>
     * `const3_2` creates a `Val` where `arg[0]` is the second argument
       (`b`), `arg[1]` is `closure`, and `info->func` is `const3_3`
     * `const3_3` has access to all arguments and actually implements
@@ -227,7 +228,8 @@
     3
     ~~~~
 
-    * Lets `Int` contain thunk, but avoids pointer chase when strict
+    * Lets `Int` contain thunk, but avoids pointer dereference once
+      evaluated
 
 # Restrictions on unboxed types
 
@@ -310,6 +312,8 @@ Exception *seq_thunk (Void *c)
 }
 ~~~~
 
+# `case` statements revisited
+
 # Strictness revisited
 
 * Recall strictness flag on fields in data declarations
@@ -332,6 +336,72 @@ Exception *seq_thunk (Void *c)
             myIntWrapper.arg[0]->arg[0].unboxed
         ~~~~
 
+# Semantic effects of strictness
+
+* Strictness is primarily used for optimization
+    * To avoid building up long chains of thunks
+    * To save overhead of checking whether thunk evaluated
+* But has semantic effects:  A non-strict `Int` is not just a number
+    * Can also throw an exception or loop forever when evaluated
+    * Such behavior can be modeled as a special value $\bot$
+      ("bottom")
+    * So the values of `Int` are $\{0,1\}^{64} \cup \{\bot\}$
+    * Types that include value $\bot$ are called *lifted*
+* Note 1: an unboxed type is necessarily unlifted
+* Note 2: `!Int` not a first-class type, only valid for `data` fields
+
+    ~~~~ {.haskell}
+    data SMaybe a = SJust !a | SNothing   -- ok, data field
+    strictAdd :: !Int -> !Int -> !Int     -- error
+    type StrictMaybeInt = Maybe !Int      -- error
+    ~~~~
+
+# `newtype` declarations
+
+* We've seen two ways to introduce new types
+    * `data` -- creates a new (boxed) type, adding overhead of a `Val`
+      wrapper
+    * `type` -- creates an alias for an existing type, with no overhead
+* Sometimes you want a new type implemented by an existing type
+    * E.g., might want `Meters`, `Seconds`, `Grams`, all implemented
+      by `Double`
+    * Using `type` would make them all synonymous, facilitating errors
+    * Might want different instances of `Show` for each, impossible
+      with `type`
+    * Could say `data Meters = Meters Double` -- but will add overhead
+* The `newtype` keyword introduces new type with no overhead
+    * Use just like `data`, but limited to one constructor and one
+      field
+    * This is possible because all type-checking is compile-time
+
+# `newtype` semantics
+
+* What's the semantic difference between these two declarations?
+
+    ~~~~ {.haskell}
+    newtype NTInt = NTInt Int deriving (Show)
+    ~~~~
+
+    ~~~~ {.haskell}
+    data SInt = SInt !Int deriving (Show)
+    ~~~~
+
+* The `NTInt` constructor is a "fake" compile-time-only construct
+    * A case statement deconstructing a `newtype` compiles to nothing
+    * `undefined :: a` is a symbol with value $\bot$ in `Prelude`,
+      handy for testing
+
+    ~~~~ {.haskell}
+    newtype NTInt = NTInt Int deriving (Show)
+    uNTInt = NTInt undefined
+    testNT = case uNTInt of NTInt _ -> True   -- returns True
+
+    data SInt = SInt !Int deriving (Show)
+    uSInt = SInt undefined
+    testS = case uSInt of SInt _ -> True      -- undefined
+    ~~~~
+
+# The [UNPACK][UNPACK] pragma
 
 # `ByteString`s
 
@@ -341,3 +411,4 @@ Exception *seq_thunk (Void *c)
 
 [GHC.Prim]: http://www.haskell.org/ghc/docs/latest/html/libraries/ghc-prim-0.2.0.0/GHC-Prim.html
 [MagicHash]: http://www.haskell.org/ghc/docs/7.0-latest/html/users_guide/syntax-extns.html#magic-hash
+[UNPACK]: http://www.haskell.org/ghc/docs/7.0-latest/html/users_guide/pragmas.html#unpack-pragma
