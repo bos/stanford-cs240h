@@ -261,19 +261,26 @@
 # `seq` revisited
 
 * Recall `seq :: a -> b -> b`
-    * Means if `seq a b` is forced, then `a` must first be forced,
-      before `b` is forced
+    * If `seq a b` is forced, then first `a` is forced, then `b` is
+      forced and returned
 * Consider the following code:
 
     ~~~~ {.haskell}
-    infiniteLoop :: Char
-    infiniteLoop = infiniteLoop
+    infiniteLoop = infiniteLoop :: Char   -- loops forever
 
     seqTest1 = infiniteLoop `seq` "Hello" -- loops forever
 
     seqTest2 = str `seq` length str       -- returns 6
         where str = infiniteLoop:"Hello"
     ~~~~
+
+    * `seqTest1` hangs forever, while `seqTest2` happily returns 6
+* `seq` only forces a `Val`, not the `arg` fields of the `Val`
+    * `seqTest2`'s `seq` forces `str`'s constructor `(:)`, but not the
+      head or tail
+    * This is known as putting `str` in *Weak Head Normal Form* (WHNF)
+    * Can't fully evaluate an arbitrary data type (but see
+      [Control.DeepSeq](http://hackage.haskell.org/packages/archive/deepseq/latest/doc/html/Control-DeepSeq.html))
 
 
 # Example: `seq` implementation
@@ -313,7 +320,7 @@ Exception *seq_thunk (Void *c)
 
     * `Int` has `!` before it, meaning it must be strict
     * Strict means the `Int`'s `ValInfo` cannot have `tag` `THUNK` or `IND`
-* Accessing a strict `Int` touches only one cache-line
+* Accessing a strict `Int` touches only one cache line
     * Recall `data Int = I# Int#` has only one constructor
     * Plus strict flag means `tag == CONSTRNO`, so know what's in
       `ValInfo`
