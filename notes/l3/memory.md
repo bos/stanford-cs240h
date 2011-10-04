@@ -245,7 +245,7 @@
     -- Error: can't pass unboxed type to polymorphic function
     fp' = FastPoint 2.0## (id 2.0##)
 
-    -- Error: can't use unboxed type as type paremeter
+    -- Error: can't use unboxed type as type parameter
     noInt :: Maybe Int#
     noInt = Nothing
     ~~~~
