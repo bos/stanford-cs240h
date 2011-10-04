@@ -673,7 +673,7 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 <li><p>Function <code>&gt;&gt;=</code> (pronounced &quot;bind&quot;) allows point-free IO composition</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(&gt;&gt;=) </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br /><span class="kw">infixl</span> <span class="dv">1</span> <span class="fu">&gt;&gt;=</span></code></pre></li>
 <li><p>Let's re-write <code>urldump</code> in point-free style</p>
-<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> getArgs <span class="fu">&gt;&gt;=</span> simpleHttpStr <span class="fu">.</span> <span class="fu">head</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell">main <span class="fu">=</span> getArgs <span class="fu">&gt;&gt;=</span> simpleHttpStr <span class="fu">.</span> <span class="fu">head</span> <span class="fu">&gt;&gt;=</span> <span class="fu">putStr</span></code></pre>
 <ul>
 <li>Note <code>&gt;&gt;=</code> composes left-to-right, while <code>.</code> goes right-to-left</li>
 </ul></li>

@@ -1007,7 +1007,7 @@ https://blueprints.launchpad.net/inkscape/+spec/allow-browser-resizing
 * Let's re-write `urldump` in point-free style
 
     ~~~~ {.haskell}
-    main = getArgs >>= simpleHttpStr . head
+    main = getArgs >>= simpleHttpStr . head >>= putStr
     ~~~~
 
     * Note `>>=` composes left-to-right, while `.` goes right-to-left
