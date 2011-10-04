@@ -331,7 +331,7 @@ Exception *seq_thunk (Void *c)
       as
 
         ~~~~ {.c}
-            myIntWrapper.arg[0]->arg[0].unboxed
+            myIntWrapper.arg[0].boxed->arg[0].unboxed
         ~~~~
 
 # Semantic effects of strictness

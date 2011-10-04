@@ -671,7 +671,7 @@ Int# :: #
 <li>Plus strict flag means <code>tag == CONSTRNO</code>, so know what's in <code>ValInfo</code></li>
 <li>Plus <code>Int#</code> is unboxed</li>
 <li><p>Thus, once <code>IntWrapper</code> forced, immediately safe to access <code>Int</code> as</p>
-<pre class="sourceCode"><code class="sourceCode c">    myIntWrapper.arg[<span class="dv">0</span>]-&gt;arg[<span class="dv">0</span>].unboxed</code></pre></li>
+<pre class="sourceCode"><code class="sourceCode c">    myIntWrapper.arg[<span class="dv">0</span>].boxed-&gt;arg[<span class="dv">0</span>].unboxed</code></pre></li>
 </ul></li>
 </ul>
 </div>
