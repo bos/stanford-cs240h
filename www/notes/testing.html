@@ -1,0 +1,56 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>Testing</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+<h1 class="title">Testing</h1>
+<h1 id="the-dominant-paradigm">The dominant paradigm</h1>
+<p>By far the most widely used style of testing today is <em>unit</em> testing.</p>
+<ul>
+<li><p>Invent a &quot;state of the world&quot;.</p></li>
+<li><p>Run the unit we're testing (e.g. a function).</p></li>
+<li><p>Check the modified state of the world to see if it looks like it should.</p></li>
+<li><p>Profit!</p></li>
+</ul>
+<h1 id="shameless-wikipedia-pillaging">Shameless Wikipedia pillaging</h1>
+<p>If you're used to unit testing, this may look reasonable.</p>
+<pre class="sourceCode"><code class="sourceCode java"><span class="kw">public</span> <span class="kw">class</span> TestAdder {<br />    <span class="kw">public</span> <span class="dt">void</span> <span class="fu">testSum</span>() {<br />        Adder adder = <span class="kw">new</span> <span class="fu">AdderImpl</span>();<br />        <span class="fu">assert</span>(adder.<span class="fu">add</span>(<span class="dv">1</span>, <span class="dv">1</span>) == <span class="dv">2</span>);<br />        <span class="fu">assert</span>(adder.<span class="fu">add</span>(<span class="dv">1</span>, <span class="dv">2</span>) == <span class="dv">3</span>);<br />        <span class="fu">assert</span>(adder.<span class="fu">add</span>(<span class="dv">2</span>, <span class="dv">2</span>) == <span class="dv">4</span>);<br />        <span class="fu">assert</span>(adder.<span class="fu">add</span>(<span class="dv">0</span>, <span class="dv">0</span>) == <span class="dv">0</span>);<br />        <span class="fu">assert</span>(adder.<span class="fu">add</span>(-<span class="dv">1</span>, -<span class="dv">2</span>) == -<span class="dv">3</span>);<br />        <span class="fu">assert</span>(adder.<span class="fu">add</span>(-<span class="dv">1</span>, <span class="dv">1</span>) == <span class="dv">0</span>);<br />        <span class="fu">assert</span>(adder.<span class="fu">add</span>(<span class="dv">1234</span>, <span class="dv">988</span>) == <span class="dv">2222</span>);<br />    }<br />}</code></pre>
+<p>The &quot;real world&quot; adds tons of cruft: mock objects, preprocessor abuse to expose &quot;test seams&quot;, etc.</p>
+<h1 id="problem-unit-testing-is-only-as-good-as-your-patience">Problem: unit testing is only as good as your patience</h1>
+<p>The example from the previous slide contains 7 tests.</p>
+<p>It's not hard to imagine a world in which we lose the will to continue inventing new unit tests long before we've exhausted our search of the space of possible bugs.</p>
+<h1 id="lets-sort-a-list">Let's sort a list</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">mergeSort </span><span class="ot">::</span> (a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> [a]<br />mergeSort <span class="fu">pred</span> <span class="fu">=</span> go<br />  <span class="kw">where</span><br />    go []  <span class="fu">=</span> []<br />    go [x] <span class="fu">=</span> [x]<br />    go xs  <span class="fu">=</span> merge (go xs1) (go xs2)<br />      <span class="kw">where</span> (xs1,xs2) <span class="fu">=</span> split xs<br /><br />    merge xs [] <span class="fu">=</span> xs<br />    merge [] ys <span class="fu">=</span> ys<br />    merge (x<span class="fu">:</span>xs) (y<span class="fu">:</span>ys)<br />      <span class="fu">|</span> <span class="fu">pred</span> x y  <span class="fu">=</span> x <span class="fu">:</span> merge xs (y<span class="fu">:</span>ys)<br />      <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> y <span class="fu">:</span> merge (x<span class="fu">:</span>xs) ys</code></pre>
+<h1 id="the-split-function">The split function</h1>
+<p>The purpose of splitting is to produce two sublists of roughly equal length, so that they can be merged (where the sorting occurs).</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">split </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> ([a],[a])<br />split []       <span class="fu">=</span> ([],[])<br />split [x]      <span class="fu">=</span> ([x],[])<br />split (x<span class="fu">:</span>y<span class="fu">:</span>zs) <span class="fu">=</span> (x<span class="fu">:</span>xs,y<span class="fu">:</span>ys)<br />  <span class="kw">where</span> (xs,ys) <span class="fu">=</span> split zs</code></pre>
+<h1 id="sorting-a-unit-test-perspective">Sorting: a unit test perspective</h1>
+<pre><code>sort [1,2,3,4] == [1,2,3,4]
+sort [4,3,2,1] == [1,2,3]
+sort [1,4,2,3] == [1,2,3]
+...
+</code></pre>
+</body>
+</html>
