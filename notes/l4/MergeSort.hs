@@ -1,6 +1,6 @@
 module MergeSort (mergeSort) where
 
-mergeSort :: (a -> a -> Bool) -> [a] -> [a]
+mergeSort :: (a -> a -> Ordering) -> [a] -> [a]
 mergeSort pred = go
   where
     go []  = []
@@ -10,9 +10,10 @@ mergeSort pred = go
 
     merge xs [] = xs
     merge [] ys = ys
-    merge (x:xs) (y:ys)
-      | pred x y  = x : merge xs (y:ys)
-      | otherwise = y : merge (x:xs) ys
+    merge (x:xs) (y:ys) =
+      case pred x y of
+        GT -> y : merge (x:xs) ys
+        _  -> x : merge xs (y:ys)
 
 split :: [a] -> ([a],[a])
 split []       = ([],[])

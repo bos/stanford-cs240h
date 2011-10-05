@@ -83,8 +83,28 @@ split (x:y:zs) = (x:xs,y:ys)
 
 ~~~~
 sort [1,2,3,4] == [1,2,3,4]
-sort [4,3,2,1] == [1,2,3]
-sort [1,4,2,3] == [1,2,3]
+sort [4,3,2,1] == [1,2,3,4]
+sort [1,4,2,3] == [1,2,3,4]
 ...
 ~~~~
 
+This gets a little dull.
+
+
+# Let's talk about properties
+
+A property is nothing more than a predicate that should always hold.
+
+What's an obvious property for sorts?
+
+~~~~ {.haskell}
+t_idempotent = sort . sort == id
+~~~~
+
+We can't define this, since we can't compare functions for equality.
+
+However, we can cheat:
+
+~~~~ {.haskell}
+t_idempotent xs = sort (sort xs) == xs
+~~~~
