@@ -429,7 +429,12 @@ Exception *seq_thunk (Void *c)
     newtype NTInt = NTInt Int deriving (Show)
     uNTInt = NTInt undefined
     testNT = case uNTInt of NTInt _ -> True   -- returns True
+    ~~~~
 
+    * Conversely, forcing a value (by matching constructor) forces
+      strict fields
+
+    ~~~~ {.haskell}
     data SInt = SInt !Int deriving (Show)
     uSInt = SInt undefined
     testS = case uSInt of SInt _ -> True      -- undefined
