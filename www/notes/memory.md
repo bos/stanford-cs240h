@@ -596,6 +596,7 @@ Exception *seq_thunk (Void *c)
     * [`finalizerFree`][finalizerFree] symbol conveniently provides
       function pointer for `free`
 
+<!--
 
 # [Foreign function interface][FFI] (FFI)
 
@@ -678,6 +679,8 @@ Exception *seq_thunk (Void *c)
       to see defs of `#` commands
     * Can also define your own macros with `#let` (like `#define` w/o
       parens)
+
+-->
 
 # [`ByteString`s][bytestring]
 
