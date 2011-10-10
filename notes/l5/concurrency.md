@@ -717,11 +717,22 @@ looks up hostnames just like [[RFC3493]][RFC3493] (returns
 ~~~~ {.haskell}
 netcat :: String -> String -> IO ()
 netcat host port = do
-  info:_ <- getAddrInfo Nothing (Just host) (Just port)
+  -- Extract address from first AddrInfo in list
+  AddrInfo{addrAddress = addr}:_
+      <- getAddrInfo Nothing (Just host) (Just port)
+
+  -- Create a TCP socket connected to server
   s <- socket AF_INET Stream 0
-  connect s $ addrAddress info
+  connect s addr
+
+  -- Convert socket to handle
   h <- socketToHandle s ReadWriteMode
-  hSetBuffering h NoBuffering          -- THIS IS IMPORTANT
+  hSetBuffering h NoBuffering  -- THIS IS IMPORTANT
+
+  -- Deal w. broken unicode
+  hSetBinaryMode stdout True
+
+  -- Copy data back and forth
   done <- newEmptyMVar
   forkIO $ (hGetContents h >>= putStr) `finally` putMVar done ()
   getContents >>= hPutStr h
