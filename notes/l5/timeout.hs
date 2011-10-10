@@ -24,3 +24,17 @@ timeout usec action = do
   catchJust (\e -> if e == expired then Just e else Nothing) 
             parent
             (\_ -> return Nothing)
+
+timeout' :: Int -> IO a -> IO (Maybe a)
+timeout' usec action = do
+  -- Create unique exception val (for nested timeouts):
+  expired <- fmap TimedOut getCurrentTime
+
+  ptid <- myThreadId
+  let child = do threadDelay usec
+                 throwTo ptid expired
+      parent = bracket (forkIO child) killThread $
+               \_ -> fmap Just action
+  catchJust (\e -> if e == expired then Just e else Nothing) 
+            parent
+            (\_ -> return Nothing)

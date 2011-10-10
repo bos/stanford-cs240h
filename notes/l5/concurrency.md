@@ -480,8 +480,8 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
 * How would you implement `modifyMVar`?
 
     ~~~~ {.haskell}
-    modifyMVar' :: MVar a -> (a -> IO (a,b)) -> IO b
-    modifyMVar' m action = do
+    modifyMVar :: MVar a -> (a -> IO (a,b)) -> IO b
+    modifyMVar m action = do
       v0 <- takeMVar m -- -------------- oops, race condition
       (v, r) <- action v0 `onException` putMVar m v0
       putMVar m v
@@ -511,7 +511,26 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
       action
     * Exceptions are also unmasked if thread sleeps (e.g., in
       `takeMVar`)
-    * `forkIO` preserves the current mask state
+
+* Example:  Fixing `modifyMVar`
+
+    ~~~~ {.haskell}
+    modifyMVar :: MVar a -> (a -> IO (a,b)) -> IO b
+    modifyMVar m action = mask $ \unmask -> do
+      v0 <- takeMVar m -- automatically unmasked while waiting
+      (v, r) <- unmask (action v0) `onException` putMVar m v0
+      putMVar m v
+      return r
+    ~~~~
+
+
+
+# Masking exceptions (continued)
+
+* `forkIO` preserves the current mask state
+    * Can use the `unmask` function in child thread
+
+* Example: fixed `wrap` function
 
 ~~~~ {.haskell}
 wrap :: IO a -> IO a          -- Fixed version of wrap
@@ -524,6 +543,42 @@ wrap action = do
                  throwTo tid e >> loop
       loop
 ~~~~
+
+* Note we don't call `unmask` in parent thread
+    * `loop` will sleep on `takeMVar`, which implicitly unmasks
+    * Unmask while sleeping is almost always what you want, but can
+      avoid with
+      [uninterruptibleMask](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:uninterruptibleMask)
+
+# The [`bracket`] function
+
+* `mask` is tricky, but library function [`bracket`] simplifies use
+
+    ~~~~ {.haskell}
+    bracket :: IO a -> (a -> IO b) -> (a -> IO c) -> IO c
+    ~~~~
+
+* Example: process file without leaking handle
+
+    ~~~~ {.haskell}
+    bracket (openFile "/etc/mtab" ReadMode) -- first
+            hClose                          -- last
+            (\h -> hGetContents h >>= doit) -- main
+    ~~~~
+
+* Example: fix `parent` function from our `timeout` example
+
+    ~~~~ {.haskell}
+      parent = do ctid <- forkIO child         -- old code,
+                  result <- action             -- bad if async
+                  killThread ctid              -- exception
+                  return $ Just result
+    ~~~~
+
+    ~~~~ {.haskell}
+      parent = bracket (forkIO child) killThread $ -- new code
+               \_ -> fmap Just action
+    ~~~~
 
 <!--
 
@@ -551,3 +606,4 @@ Things to cover
 [`Control.Concurrent`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html
 [`System.Timeout`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/System-Timeout.html
 [`MVar`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-MVar.html
+[`bracket`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:bracket
