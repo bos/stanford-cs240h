@@ -446,10 +446,11 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
 
 # Asynchronous exceptions
 
-* Here's a handy `MVar` utility function for updating a value
+* Some handy `MVar` utility functions for updating a value
 
     ~~~~ {.haskell}
     modifyMVar :: MVar a -> (a -> IO (a, b)) -> IO b
+    modifyMVar_ :: MVar a -> (a -> IO a) -> IO ()
     ~~~~
 
     * E.g., "`modifyMVar x (\n -> return (n+1, n))`" like "`x++`" in C
@@ -457,8 +458,8 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
 * How would you implement `modifyMVar`?
 
     ~~~~ {.haskell}
-    modifyMVar' :: MVar a -> (a -> IO (a,b)) -> IO b
-    modifyMVar' m action = do
+    modifyMVar :: MVar a -> (a -> IO (a,b)) -> IO b
+    modifyMVar m action = do
       v0 <- takeMVar m
       (v, r) <- action v0 `onException` putMVar m v0
       putMVar m v
@@ -469,10 +470,11 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
 
 # Asynchronous exceptions
 
-* Here's a handy `MVar` utility function for updating a value
+* Some handy `MVar` utility functions for updating a value
 
     ~~~~ {.haskell}
     modifyMVar :: MVar a -> (a -> IO (a, b)) -> IO b
+    modifyMVar_ :: MVar a -> (a -> IO a) -> IO ()
     ~~~~
 
     * E.g., "`modifyMVar x (\n -> return (n+1, n))`" like "`x++`" in C
@@ -580,22 +582,58 @@ wrap action = do
                \_ -> fmap Just action
     ~~~~
 
-<!--
+# Working with `MVar`s
 
-Things to cover
+* `MVar`s work just fine as a mutex:
 
- - FFI?  Networking?
+    ~~~~ {.haskell}
+    type Mutex = MVar ()
 
- - Exceptions
- - IORef (STRef?)
+    mutex_create :: IO Mutex
+    mutex_create = newMVar ()
 
- - compiling with -threaded
- - forkIO vs. forkOS
+    mutex_lock, mutex_unlock :: Mutex -> IO ()
+    mutex_lock = takeMVar
+    mutex_unlock mv = putMVar mv ()
 
- - MVars
- - Building all kinds of things with MVars
+    mutex_synchronize :: Mutex -> IO a -> IO a
+    mutex_synchronize mv action =
+        bracket (mutex_lock mv) (\_ -> mutex_unlock mv)
+                    (\_ -> action)
+    ~~~~
 
--->
+* But how would you implement a condition variable?
+    * On the plus side, condition variables don't interact well with
+      asynchronous signals anyway, so let's not worry about `mask`...
+
+# Condition variables
+
+~~~~ {.haskell}
+data Cond = Cond Mutex (MVar [MVar ()])
+
+cond_create :: Mutex -> IO Cond
+cond_create m = do
+  waiters <- newMVar []
+  return $ Cond m waiters
+
+cond_wait, cond_signal, cond_broadcast :: Cond -> IO ()
+cond_wait (Cond m waiters) = do
+  me <- newEmptyMVar
+  modifyMVar_ waiters $ \others -> return $ others ++ [me]
+  mutex_unlock m
+  takeMVar me `finally` mutex_lock m
+  
+cond_signal (Cond _ waiters) = modifyMVar_ waiters wakeone
+    where wakeone [] = return []
+          wakeone (w:ws) = putMVar w () >> return ws
+
+cond_broadcast (Cond _ waiters) = modifyMVar_ waiters wakeall
+    where wakeall ws = mapM_ (flip putMVar ()) ws >> return []
+~~~~
+
+* Key idea: putting `MVar`s inside `MVar`s is very powerful
+
+
 
 
 [FFI]: http://www.haskell.org/onlinereport/haskell2010/haskellch8.html
