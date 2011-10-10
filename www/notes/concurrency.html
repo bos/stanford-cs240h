@@ -1,0 +1,416 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">
+/*<![CDATA[*/
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+/*]]>*/
+  </style>
+</head>
+<body>
+<h1 id="foreign-function-interface-ffi"><a href="http://www.haskell.org/onlinereport/haskell2010/haskellch8.html">Foreign function interface</a> (FFI)</h1>
+<ul>
+<li><p>Can import foreign functions like this:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;stdlib.h malloc&quot;</span><br /><span class="ot">    c_malloc </span><span class="ot">::</span> <span class="dt">CSize</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Ptr</span> a)<br />foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;stdlib.h free&quot;</span><br /><span class="ot">    c_free </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<ul>
+<li><code>ccall</code> says use C calling convention (also <code>cplusplus</code> and few others)</li>
+<li><code>unsafe</code> promises the C function will not call back into Haskell</li>
+<li><code>unafe</code> faster than <code>safe</code>, but gives undefined results if call triggers GC</li>
+</ul></li>
+<li>Spec for import string: <code>&quot;</code>[<code>static</code>] [<em>c-header</em>] [<code>&amp;</code>][<em>c-name</em>]<code>&quot;</code>
+<ul>
+<li><code>static</code> optional unless <em>c-name</em> is <code>dynamic</code> or <code>wrapper</code></li>
+<li><em>c-header</em> is a single <code>.h</code> file with the declaration (ignored by GHC)</li>
+<li>&quot;&amp;&quot; imports pointer rather than function (required for <code>FunPtr</code>s)</li>
+</ul></li>
+<li>See <a href="http://www.haskell.org/onlinereport/haskell2010/haskellch8.html">language spec</a> for other FFI features
+<ul>
+<li>Call C function pointers or turn Haskell functions into C function pointers</li>
+<li>Export Haskell functions for static linking to C code</li>
+</ul></li>
+</ul>
+<h1 id="ffi-types">FFI types</h1>
+<ul>
+<li>FFI function arguments must be <em>basic foreign types</em>
+<ul>
+<li><code>Char</code>, <code>Int</code>, <code>Double</code>, <code>Float</code>, <code>Bool</code>, <code>Int8</code>, <code>Int16</code>, <code>Int32</code>, <code>Int64</code>, <code>Word8</code>, <code>Word16</code>, <code>Word32</code>, <code>Word64</code>, <code>Ptr</code> <code>a</code>, <code>FunPtr a</code>, and <code>StablePtr a</code></li>
+<li>Also accepts any <code>type</code> or <code>newtype</code> wrappers for basic types (<code>CInt</code>, <code>CChar</code>, etc.)<br/> [Documentation incorrectly says <code>data CInt</code>, but <code>:i</code> in GHCI reveals truth.]</li>
+</ul></li>
+<li>FFI function results can be
+<ul>
+<li>Any valid argument type</li>
+<li><code>()</code> (for functions returning <code>void</code>)</li>
+<li><code>IO a</code> where <code>a</code> is either of the above two</li>
+</ul></li>
+<li>Place result in <code>IO</code> if function has side effects or non-determinism
+<ul>
+<li><p>Okay to omit if it is a pure C function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;arpa/inet.h ntohl&quot;</span><br /><span class="ot">    ntohl </span><span class="ot">::</span> <span class="dt">Word32</span> <span class="ot">-&gt;</span> <span class="dt">Word32</span></code></pre></li>
+<li><p>Haskell can't check C purity, so omitting <code>IO</code> can cause problems</p></li>
+</ul></li>
+</ul>
+<h1 id="hsc2hs"><a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html"><code>hsc2hs</code></a></h1>
+<ul>
+<li><p>How to access C constants and data structures?</p>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> mystruct {<br />  <span class="dt">char</span> *name;<br />  <span class="dt">int</span> value;<br />};</code></pre>
+<ul>
+<li>Might model with opaque placeholder type</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">MyStruct</span>           <span class="co">-- no constructors, just a placeholder</span><br /><span class="ot">getValue </span><span class="ot">::</span> <span class="dt">Ptr</span> <span class="dt">MyStruct</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">CInt</span><br />getValue ptr <span class="fu">=</span> peek <span class="fu">$</span> ptr <span class="ot">`plusPtr`</span> <span class="dv">8</span> <span class="co">-- breaks on 32-bit arch</span></code></pre></li>
+<li><p><a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html"><code>hsc2hs</code></a> is pre-processor that lets you compute C values</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">#</span>include <span class="st">&quot;myheader.h&quot;</span><br />getValue ptr <span class="fu">=</span> peek <span class="fu">$</span> ptr <span class="ot">`plusPtr`</span><br />               <span class="fu">#</span>{offset struct mystruct, value}</code></pre>
+<ul>
+<li>Super-simple implementation just uses C macros and <code>printf</code></li>
+<li>Find the file <a href="http://darcs.haskell.org/cgi-bin/gitweb.cgi?p=hsc2hs.git;a=blob;f=template-hsc.h;hb=HEAD"><code>template-hsc.h</code></a> on your system to see defs of <code>#</code> commands</li>
+<li>Can also define your own macros with <code>#let</code> (like <code>#define</code> w/o parens)</li>
+</ul></li>
+</ul>
+<h1 id="exceptions">Exceptions</h1>
+<ul>
+<li><p>We've seen a few functions that &quot;return&quot; any type</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">undefined</span><span class="ot"> </span><span class="ot">::</span> a<br /><span class="fu">error</span><span class="ot"> </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> a</code></pre>
+<ul>
+<li>Return type can be arbitrary because function doesn't actually return</li>
+</ul></li>
+<li><p>These functions throw <em>language-level</em> exceptions</p>
+<ul>
+<li>To use exceptions directly, import <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html"><code>Control.Exception</code></a> as follows:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> (<span class="fu">catch</span>)<br /><span class="kw">import</span> <span class="dt">Control.Exception</span></code></pre>
+<ul>
+<li><p><code>Prelude</code> has an old, less general version of <code>catch</code> you should avoid</br> (<code>hiding</code> keyword prevents import of specific symbols)</p></li>
+<li><p><a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html"><code>Control.Exception</code></a> gives you access to the following symbols:</p></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="dt">Typeable</span> e, <span class="kw">Show</span> e) <span class="ot">=&gt;</span> <span class="dt">Exception</span> e <span class="kw">where</span> <span class="fu">...</span><br /><span class="ot">throw </span><span class="ot">::</span> <span class="dt">Exception</span> e <span class="ot">=&gt;</span> e <span class="ot">-&gt;</span> a<br /><span class="ot">throwIO </span><span class="ot">::</span> <span class="dt">Exception</span> e <span class="ot">=&gt;</span> e <span class="ot">-&gt;</span> <span class="dt">IO</span> a<br /><span class="fu">catch</span><span class="ot">   </span><span class="ot">::</span> <span class="dt">Exception</span> e <span class="ot">=&gt;</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> (e <span class="ot">-&gt;</span> <span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a</code></pre></li>
+</ul>
+<h1 id="simple-example">Simple example</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">{-# LANGUAGE DeriveDataTypeable #-}</span><br /><br /><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> (<span class="fu">catch</span>)<br /><span class="kw">import</span> <span class="dt">Control.Exception</span><br /><span class="kw">import</span> <span class="dt">Data.Typeable</span><br /><br /><span class="kw">data</span> <span class="dt">MyError</span> <span class="fu">=</span> <span class="dt">MyError</span> <span class="dt">String</span> <span class="kw">deriving</span> (<span class="kw">Show</span>, <span class="dt">Typeable</span>)<br /><span class="kw">instance</span> <span class="dt">Exception</span> <span class="dt">MyError</span><br /><br /><span class="ot">catcher </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> a)<br />catcher action <span class="fu">=</span> <span class="fu">fmap</span> <span class="kw">Just</span> action <span class="ot">`catch`</span> handler<br />    <span class="kw">where</span> handler (<span class="dt">MyError</span> msg) <span class="fu">=</span> <span class="kw">do</span> <span class="fu">putStrLn</span> msg; <span class="fu">return</span> <span class="kw">Nothing</span></code></pre>
+<pre><code>*Main&gt; catcher $ readFile &quot;/dev/null&quot;
+Just &quot;&quot;
+*Main&gt; catcher $ throwIO $ MyError &quot;something bad&quot;
+something bad
+Nothing
+</code></pre>
+<ul>
+<li>Need <code>DeriveDataTypeable</code> language pragma (later lecture)</li>
+<li><code>handler</code>'s type cannot be inferred (use constructor or type signature)
+<ul>
+<li>Constructor pattern <code>e@(SomeException _)</code> catches all exceptions</li>
+</ul></li>
+</ul>
+<h1 id="exceptions-in-pure-code">Exceptions in pure code</h1>
+<ul>
+<li>Previous example wrapped <code>catcher</code> around an IO action</li>
+<li>Can <code>throw</code> exceptions in pure code, yet <code>catch</code> them only in <code>IO</code>
+<ul>
+<li>This is because evaluation order depends on implementation</li>
+<li>Which error is thrown by <code>(error &quot;one&quot;) + (error &quot;two&quot;)</code>?<br/> Can be non-deterministic, which is <a href="http://research.microsoft.com/en-us/um/people/simonpj/papers/imprecise-exn.htm">okay</a> if <code>catch</code> is restricted to the <code>IO</code> Monad</li>
+</ul></li>
+<li><p>In <code>IO</code>, use <code>throwIO</code> (not <code>throw</code>) to make exception sequencing precise</p>
+<pre class="sourceCode"><code class="sourceCode haskell">    <span class="kw">do</span> x <span class="ot">&lt;-</span> throwIO (<span class="dt">MyError</span> <span class="st">&quot;one&quot;</span>)  <span class="co">-- this exception thrown</span><br />       y <span class="ot">&lt;-</span> throwIO (<span class="dt">MyError</span> <span class="st">&quot;two&quot;</span>)  <span class="co">-- this code not reached</span></code></pre></li>
+<li><p>Beware <code>catch</code> only catches exceptions if code actually evaluated</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">pureCatcher </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> a)<br />pureCatcher a <span class="fu">=</span> (a <span class="ot">`seq`</span> <span class="fu">return</span> (<span class="kw">Just</span> a))<br />                <span class="ot">`catch`</span> \(<span class="dt">SomeException</span> _) <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="kw">Nothing</span></code></pre>
+<pre><code>*Main&gt; pureCatcher (undefined :: String)
+Nothing
+*Main&gt; pureCatcher (undefined:undefined :: String)
+Just &quot;*** Exception: Prelude.undefined
+</code></pre></li>
+</ul>
+<h1 id="a-few-more-exception-functions">A few more exception functions</h1>
+<ul>
+<li><p><code>try</code> returns <code>Right a</code> normally, <code>Left e</code> if an exception occurred</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">try </span><span class="ot">::</span> <span class="dt">Exception</span> e <span class="ot">=&gt;</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Either</span> e a)</code></pre></li>
+<li><p><code>finally</code> and <code>onException</code> run an clean-up action</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">finally </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> b <span class="ot">-&gt;</span> <span class="dt">IO</span> a      <span class="co">-- cleanup always</span><br /><span class="ot">onException </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> b <span class="ot">-&gt;</span> <span class="dt">IO</span> a  <span class="co">-- after exception</span></code></pre>
+<ul>
+<li>Result of cleanup action (<code>b</code>) is discarded</li>
+</ul></li>
+<li><p><code>catchJust</code> catches only exceptions matching a predicate on value</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">catchJust </span><span class="ot">::</span> <span class="dt">Exception</span> e <span class="ot">=&gt;</span><br />             (e <span class="ot">-&gt;</span> <span class="dt">Maybe</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> (b <span class="ot">-&gt;</span> <span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> a<br /><br />readFileIfExists f <span class="fu">=</span> catchJust p (<span class="fu">readFile</span> f) (\_ <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="st">&quot;&quot;</span>)<br />  <span class="kw">where</span> p e <span class="fu">=</span> <span class="kw">if</span> isDoesNotExistError e <span class="kw">then</span> <span class="kw">Just</span> e <span class="kw">else</span> <span class="kw">Nothing</span></code></pre>
+<pre><code>*Main&gt; readFileIfExists &quot;/nosuchfile&quot;
+&quot;&quot;
+*Main&gt; readFileIfExists &quot;/etc/shadow&quot;
+*** Exception: /etc/shadow: openFile: permission denied ...
+</code></pre></li>
+</ul>
+<h1 id="monadic-exceptions">Monadic exceptions</h1>
+<ul>
+<li>Language-level exceptions can be cumbersome for non-<code>IO</code> actions
+<ul>
+<li>Non-determinism is annoying</li>
+<li>Often want to detect error without assuming the <code>IO</code> monad</li>
+<li>Monads built on top of <code>IO</code> also can't catch exceptions</li>
+</ul></li>
+<li>Often it is better to implement error handling in the Monad
+<ul>
+<li>Recall the <code>Maybe</code> Monad, where can use <code>Nothing</code> to indicate failure</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span>  <span class="kw">Monad</span> <span class="dt">Maybe</span>  <span class="kw">where</span><br />    (<span class="kw">Just</span> x) <span class="fu">&gt;&gt;=</span> k <span class="fu">=</span> k x<br />    <span class="kw">Nothing</span>  <span class="fu">&gt;&gt;=</span> _  <span class="fu">=</span> <span class="kw">Nothing</span><br />    <span class="fu">return</span> <span class="fu">=</span> <span class="kw">Just</span><br />    <span class="fu">fail</span> _ <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<ul>
+<li>Note <code>fail</code> method called when bind pattern matches fail in <code>do</code> block</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">*</span><span class="dt">Main</span><span class="fu">&gt;</span> (<span class="kw">do</span> <span class="dv">1</span> <span class="ot">&lt;-</span> <span class="fu">return</span> <span class="dv">2</span>; <span class="fu">return</span> <span class="dv">3</span>)<span class="ot"> </span><span class="ot">::</span> <span class="dt">Maybe</span> <span class="dt">Int</span><br /><span class="kw">Nothing</span></code></pre></li>
+</ul>
+<h1 id="haskell-threads">Haskell threads</h1>
+<ul>
+<li><p>Haskell implements user-level threads in <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html"><code>Control.Concurrent</code></a></p>
+<ul>
+<li>Threads are lightweight (in both time and space)</li>
+<li>Use threads where in other languages would use cheaper constructs</li>
+<li>Runtime emulates blocking OS calls in terms of non-blocking ones</li>
+<li>Thread-switch can happen any time GC could be invoked</li>
+</ul></li>
+<li><p><code>forkIO</code> call creates a new thread:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">forkIO </span><span class="ot">::</span> <span class="dt">IO</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">ThreadId</span>    <span class="co">-- creates a new thread</span></code></pre></li>
+<li><p>A few other very useful thread functions:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">throwTo </span><span class="ot">::</span> <span class="dt">Exception</span> e <span class="ot">=&gt;</span> <span class="dt">ThreadId</span> <span class="ot">-&gt;</span> e <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br /><span class="ot">killThread </span><span class="ot">::</span> <span class="dt">ThreadId</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()   <span class="co">-- = flip throwTo ThreadKilled</span><br /><span class="ot">threadDelay </span><span class="ot">::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()       <span class="co">-- sleeps for # of &#181;sec</span><br /><span class="ot">myThreadId </span><span class="ot">::</span> <span class="dt">IO</span> <span class="dt">ThreadId</span></code></pre></li>
+</ul>
+<h1 id="example-timeout">Example: timeout</h1>
+<ul>
+<li>Execute <code>IO</code> action, or abort after # of µsec
+<ul>
+<li><a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/System-Timeout.html"><code>System.Timeout</code></a> has a slightly better version of this function</li>
+</ul></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">TimedOut</span> <span class="fu">=</span> <span class="dt">TimedOut</span> <span class="dt">UTCTime</span> <span class="kw">deriving</span> (<span class="kw">Eq</span>, <span class="kw">Show</span>, <span class="dt">Typeable</span>)<br /><span class="kw">instance</span> <span class="dt">Exception</span> <span class="dt">TimedOut</span><br /><br /><span class="ot">timeout </span><span class="ot">::</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> a)<br />timeout usec action <span class="fu">=</span> <span class="kw">do</span><br />  <span class="co">-- Create unique exception val (for nested timeouts):</span><br />  expired <span class="ot">&lt;-</span> <span class="fu">fmap</span> <span class="dt">TimedOut</span> getCurrentTime<br /><br />  ptid <span class="ot">&lt;-</span> myThreadId<br />  <span class="kw">let</span> child <span class="fu">=</span> <span class="kw">do</span> threadDelay usec<br />                 throwTo ptid expired<br />      parent <span class="fu">=</span> <span class="kw">do</span> ctid <span class="ot">&lt;-</span> forkIO child<br />                  result <span class="ot">&lt;-</span> action<br />                  killThread ctid<br />                  <span class="fu">return</span> <span class="fu">$</span> <span class="kw">Just</span> result<br />  catchJust (\e <span class="ot">-&gt;</span> <span class="kw">if</span> e <span class="fu">==</span> expired <span class="kw">then</span> <span class="kw">Just</span> e <span class="kw">else</span> <span class="kw">Nothing</span>) <br />            parent<br />            (\_ <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="kw">Nothing</span>)</code></pre>
+<h1 id="mvars"><a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-MVar.html"><code>MVar</code>s</a></h1>
+<ul>
+<li><p>The <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-MVar.html"><code>MVar</code></a> type lets threads communicate via shared variables</p>
+<ul>
+<li>An <code>MVar t</code> is a mutable variable of type <code>t</code> that is either <em>full</em> or <em>empty</em></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">newEmptyMVar </span><span class="ot">::</span> <span class="dt">IO</span> (<span class="dt">MVar</span> a)  <span class="co">-- create empty MVar</span><br /><span class="ot">newMVar </span><span class="ot">::</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">MVar</span> a)  <span class="co">-- create full MVar given val</span><br /><br /><span class="ot">takeMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a<br /><span class="ot">putMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<ul>
+<li>If an <code>MVar</code> is full, <code>takeMVar</code> makes it empty and returns former contents</li>
+<li>If an <code>MVar</code> is empty, <code>putMVar</code> fills it with a value</li>
+<li>Taking an empty <code>MVar</code> or putting a full one puts thread to sleep until <code>MVar</code> becomes available</li>
+<li>Only one thread awakened at a time if several blocked on same <code>MVar</code></li>
+<li>There are also non-blocking versions of <code>MVar</code> calls</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">tryTakeMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Maybe</span> a) <span class="co">-- Nothing if empty</span><br /><span class="ot">tryPutMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Bool</span>  <span class="co">-- False if full</span></code></pre></li>
+</ul>
+<h1 id="example-pingpong-benchmark">Example: pingpong benchmark</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Control.Concurrent</span><br /><span class="kw">import</span> <span class="dt">Control.Exception</span><br /><span class="kw">import</span> <span class="dt">Control.Monad</span><br /><br /><span class="ot">pingpong </span><span class="ot">::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br />pingpong v n <span class="fu">=</span> <span class="kw">do</span><br />  mvc <span class="ot">&lt;-</span> newEmptyMVar<br />  mvp <span class="ot">&lt;-</span> newEmptyMVar<br />  <span class="kw">let</span> parent n <span class="fu">|</span> n <span class="fu">&gt;</span> <span class="dv">0</span> <span class="fu">=</span> <span class="kw">do</span> when v <span class="fu">$</span> <span class="fu">putStr</span> <span class="fu">$</span> <span class="st">&quot; &quot;</span> <span class="fu">++</span> <span class="fu">show</span> n<br />                            putMVar mvc n<br />                            takeMVar mvp <span class="fu">&gt;&gt;=</span> parent<br />             <span class="fu">|</span> <span class="fu">otherwise</span> <span class="fu">=</span> <span class="fu">return</span> ()<br />      child <span class="fu">=</span> <span class="kw">do</span> n <span class="ot">&lt;-</span> takeMVar mvc<br />                 putMVar mvp (n <span class="fu">-</span> <span class="dv">1</span>)<br />                 child<br />  tid <span class="ot">&lt;-</span> forkIO child<br />  parent n <span class="ot">`finally`</span> killThread tid<br />  when v <span class="fu">$</span> <span class="fu">putStrLn</span> <span class="st">&quot;&quot;</span></code></pre>
+<pre><code>*Main&gt; pingpong True 10
+ 10 9 8 7 6 5 4 3 2 1
+</code></pre>
+<h1 id="sidenote-benchmarking">Sidenote: benchmarking</h1>
+<ul>
+<li>Bryan has a kick-ass benchmarking library <a href="http://hackage.haskell.org/package/criterion">criterion</a></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Criterion.Main</span><br /><br /><span class="fu">...</span><br /><br /><span class="ot">main </span><span class="ot">::</span> <span class="dt">IO</span> ()<br />main <span class="fu">=</span> defaultMain [<br />        bench <span class="st">&quot;thread switch test&quot;</span> mybench<br />       ]<br />    <span class="kw">where</span> mybench <span class="fu">=</span> pingpong <span class="kw">False</span> <span class="dv">10000</span></code></pre>
+<pre><code>$ ghc -O pingpong.hs 
+[1 of 1] Compiling Main             ( pingpong.hs, pingpong.o )
+Linking pingpong ...
+$ ./pingpong 
+...
+benchmarking thread switch test
+mean: 3.782984 ms, lb 3.770838 ms, ub 3.798160 ms, ci 0.950
+std dev: 69.27807 us, lb 55.00853 us, ub 88.83503 us, ci 0.950
+</code></pre>
+<ul>
+<li>~3.8 msec for 20,000 thread switches = ~190 nsec/switch</li>
+</ul>
+<h1 id="os-threads">OS threads</h1>
+<ul>
+<li>GHC also has <em>two</em> versions of the haskell runtime
+<ul>
+<li>By default, all Haskell threads run in a single OS thread</li>
+<li>Link with <code>-threaded</code> to allow OS threads (<code>pthread_create</code>) as well</li>
+</ul></li>
+<li><p><code>forkOS</code> call creates Haskell thread <em>bound</em> to a new OS thread</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">forkOS </span><span class="ot">::</span> <span class="dt">IO</span> () <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">ThreadId</span></code></pre></li>
+<li>Also, when linked with <code>-threaded</code>, initial thread is bound</li>
+<li><p>Whoa... what happened? <code>-threaded</code> 30 times slower?</p></li>
+</ul>
+<pre><code>$ rm pingpong
+$ ghc -threaded -O pingpong.hs 
+Linking pingpong ...
+$ ./pingpong
+...
+mean: 113.6852 ms, lb 113.5195 ms, ub 113.8770 ms, ci 0.950
+std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
+</code></pre>
+<h1 id="bound-vs.-unbound-threads">Bound vs. unbound threads</h1>
+<ul>
+<li>Without <code>-threaded</code>, all Haskell threads run in one OS thread
+<ul>
+<li>Thread switch is basically just a procedure call, i.e. super-fast</li>
+</ul></li>
+<li><code>-threaded</code> introduces multiple OS-level threads
+<ul>
+<li>Some Haskell threads are <em>bound</em> to a particular OS thread</li>
+<li><em>Unbound</em> Haskell threads share (and migrate between) OS threads</li>
+<li><code>unbound</code> haskell threads have same performance as w/o <code>-threaded</code></li>
+</ul></li>
+<li>Initial thread bound, so we were actually benchmarking Linux
+<ul>
+<li>Can wrap parent thread in <code>forkIO</code> to make it unbound</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">wrap </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a<br />wrap action <span class="fu">=</span> <span class="kw">do</span><br />  mv <span class="ot">&lt;-</span> newEmptyMVar<br />  _ <span class="ot">&lt;-</span> forkIO <span class="fu">$</span> (action <span class="fu">&gt;&gt;=</span> putMVar mv) <span class="ot">`catch`</span><br />       \e<span class="fu">@</span>(<span class="dt">SomeException</span> _) <span class="ot">-&gt;</span> putMVar mv (throw e)<br />  takeMVar mv</code></pre>
+<ul>
+<li>But library has better function <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html#v:runInUnboundThread"><code>runInUnboundThread</code></a></li>
+</ul></li>
+</ul>
+<h1 id="what-good-are-os-threads">What good are OS threads?</h1>
+<ul>
+<li>If an unbound thread blocks, can block whole program
+<ul>
+<li>Unix runtime tries to avoid blocking syscalls, but can't avoid blocking for things like file system IO and paging</li>
+<li>With <code>-threaded</code>, GHC ensures <code>safe</code> FFI calls run in separate OS thread</li>
+<li><code>unsafe</code> FFI calls from unbound threads can block other threads</li>
+</ul></li>
+<li>FFI functions may expect to be called from same thread
+<ul>
+<li>E.g., foreign code using <code>pthread_getspecific</code> can get confused if called from a migrated unbound thread</li>
+</ul></li>
+<li>May want to override scheduler and run on particular CPU
+<ul>
+<li>E.g., see <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html#v:forkOn"><code>forkOn</code></a></li>
+</ul></li>
+</ul>
+<h1 id="asynchronous-exceptions">Asynchronous exceptions</h1>
+<ul>
+<li><p>Some handy <code>MVar</code> utility functions for updating a value</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modifyMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> (a, b)) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br /><span class="ot">modifyMVar_ </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<ul>
+<li>E.g., &quot;<code>modifyMVar x (\n -&gt; return (n+1, n))</code>&quot; like &quot;<code>x++</code>&quot; in C</li>
+</ul></li>
+<li><p>How would you implement <code>modifyMVar</code>?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modifyMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> (a,b)) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br />modifyMVar m action <span class="fu">=</span> <span class="kw">do</span><br />  v0 <span class="ot">&lt;-</span> takeMVar m<br />  (v, r) <span class="ot">&lt;-</span> action v0 <span class="ot">`onException`</span> putMVar m v0<br />  putMVar m v<br />  <span class="fu">return</span> r</code></pre>
+<ul>
+<li>Anyone see a problem? (Hint: remember <code>throwTo</code>, <code>killThread</code>)</li>
+</ul></li>
+</ul>
+<h1 id="asynchronous-exceptions-1">Asynchronous exceptions</h1>
+<ul>
+<li><p>Some handy <code>MVar</code> utility functions for updating a value</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modifyMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> (a, b)) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br /><span class="ot">modifyMVar_ </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<ul>
+<li>E.g., &quot;<code>modifyMVar x (\n -&gt; return (n+1, n))</code>&quot; like &quot;<code>x++</code>&quot; in C</li>
+</ul></li>
+<li><p>How would you implement <code>modifyMVar</code>?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modifyMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> (a,b)) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br />modifyMVar m action <span class="fu">=</span> <span class="kw">do</span><br />  v0 <span class="ot">&lt;-</span> takeMVar m <span class="co">-- -------------- oops, race condition</span><br />  (v, r) <span class="ot">&lt;-</span> action v0 <span class="ot">`onException`</span> putMVar m v0<br />  putMVar m v<br />  <span class="fu">return</span> r</code></pre>
+<ul>
+<li>What if another thread calls <code>killThread</code> on the current thread while current thread between <code>takeMVar</code> and <code>onException</code></li>
+<li><code>timeout</code> and <code>wrap</code> functions from a few slides ago have same problem</li>
+</ul></li>
+</ul>
+<h1 id="masking-exceptions">Masking exceptions</h1>
+<ul>
+<li><p>The <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:mask"><code>mask</code></a> function can sidestep such race conditions</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">mask </span><span class="ot">::</span> ((forall a<span class="fu">.</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a) <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> <span class="dt">IO</span> b</code></pre>
+<ul>
+<li>This is a funny type signature--uses an extension called <code>RankNTypes</code>. For now, ignore &quot;<code>forall a.</code>&quot;--just makes function more flexible</li>
+<li><code>mask $ \f -&gt; b</code> runs action <code>b</code> with asynchronous exceptions <em>masked</em></li>
+<li>Function <code>f</code> allows exceptions to be <em>unmasked</em> again for an action</li>
+<li>Exceptions are also unmasked if thread sleeps (e.g., in <code>takeMVar</code>)</li>
+</ul></li>
+<li><p>Example: Fixing <code>modifyMVar</code></p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modifyMVar </span><span class="ot">::</span> <span class="dt">MVar</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> (a,b)) <span class="ot">-&gt;</span> <span class="dt">IO</span> b<br />modifyMVar m action <span class="fu">=</span> mask <span class="fu">$</span> \unmask <span class="ot">-&gt;</span> <span class="kw">do</span><br />  v0 <span class="ot">&lt;-</span> takeMVar m <span class="co">-- automatically unmasked while waiting</span><br />  (v, r) <span class="ot">&lt;-</span> unmask (action v0) <span class="ot">`onException`</span> putMVar m v0<br />  putMVar m v<br />  <span class="fu">return</span> r</code></pre></li>
+</ul>
+<h1 id="masking-exceptions-continued">Masking exceptions (continued)</h1>
+<ul>
+<li><code>forkIO</code> preserves the current mask state
+<ul>
+<li>Can use the <code>unmask</code> function in child thread</li>
+</ul></li>
+<li>Example: fixed <code>wrap</code> function</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">wrap </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a          <span class="co">-- Fixed version of wrap</span><br />wrap action <span class="fu">=</span> <span class="kw">do</span><br />  mv <span class="ot">&lt;-</span> newEmptyMVar<br />  mask <span class="fu">$</span> \unmask <span class="ot">-&gt;</span> <span class="kw">do</span><br />      tid <span class="ot">&lt;-</span> forkIO <span class="fu">$</span> (unmask <span class="fu">$</span> action <span class="fu">&gt;&gt;=</span> putMVar mv) <span class="ot">`catch`</span><br />             \e<span class="fu">@</span>(<span class="dt">SomeException</span> _) <span class="ot">-&gt;</span> putMVar mv (throw e)<br />      <span class="kw">let</span> loop <span class="fu">=</span> takeMVar mv <span class="ot">`catch`</span> \e<span class="fu">@</span>(<span class="dt">SomeException</span> _) <span class="ot">-&gt;</span><br />                 throwTo tid e <span class="fu">&gt;&gt;</span> loop<br />      loop</code></pre>
+<ul>
+<li>Note we don't call <code>unmask</code> in parent thread
+<ul>
+<li><code>loop</code> will sleep on <code>takeMVar</code>, which implicitly unmasks</li>
+<li>Unmask while sleeping is generally what you want, but can avoid with <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:uninterruptibleMask">uninterruptibleMask</a></li>
+</ul></li>
+</ul>
+<h1 id="the-bracket-function">The <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:bracket"><code>bracket</code></a> function</h1>
+<ul>
+<li><p><code>mask</code> is tricky, but library function <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:bracket"><code>bracket</code></a> simplifies use</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">bracket </span><span class="ot">::</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> <span class="dt">IO</span> c) <span class="ot">-&gt;</span> <span class="dt">IO</span> c</code></pre></li>
+<li><p>Example: process file without leaking handle</p>
+<pre class="sourceCode"><code class="sourceCode haskell">bracket (openFile <span class="st">&quot;/etc/mtab&quot;</span> <span class="dt">ReadMode</span>) <span class="co">-- first</span><br />        hClose                          <span class="co">-- last</span><br />        (\h <span class="ot">-&gt;</span> hGetContents h <span class="fu">&gt;&gt;=</span> doit) <span class="co">-- main</span></code></pre></li>
+<li><p>Example: fix <code>parent</code> function from our <code>timeout</code> example</p>
+<pre class="sourceCode"><code class="sourceCode haskell">  parent <span class="fu">=</span> <span class="kw">do</span> ctid <span class="ot">&lt;-</span> forkIO child             <span class="co">-- old code,</span><br />              result <span class="ot">&lt;-</span> action                 <span class="co">-- bad if async</span><br />              killThread ctid                  <span class="co">-- exception</span><br />              <span class="fu">return</span> <span class="fu">$</span> <span class="kw">Just</span> result</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell">  parent <span class="fu">=</span> bracket (forkIO child) killThread <span class="fu">$</span> <span class="co">-- new code</span><br />           \_ <span class="ot">-&gt;</span> <span class="fu">fmap</span> <span class="kw">Just</span> action</code></pre></li>
+</ul>
+<h1 id="working-with-mvars">Working with <code>MVar</code>s</h1>
+<ul>
+<li><p><code>MVar</code>s work just fine as a mutex:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Mutex</span> <span class="fu">=</span> <span class="dt">MVar</span> ()<br /><br /><span class="ot">mutex_create </span><span class="ot">::</span> <span class="dt">IO</span> <span class="dt">Mutex</span><br />mutex_create <span class="fu">=</span> newMVar ()<br /><br />mutex_lock,<span class="ot"> mutex_unlock </span><span class="ot">::</span> <span class="dt">Mutex</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br />mutex_lock <span class="fu">=</span> takeMVar<br />mutex_unlock mv <span class="fu">=</span> putMVar mv ()<br /><br /><span class="ot">mutex_synchronize </span><span class="ot">::</span> <span class="dt">Mutex</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a<br />mutex_synchronize mv action <span class="fu">=</span><br />    bracket (mutex_lock mv) (\_ <span class="ot">-&gt;</span> mutex_unlock mv)<br />                (\_ <span class="ot">-&gt;</span> action)</code></pre></li>
+<li>Note anyone can unlock a <code>Mutex</code> if it is locked
+<ul>
+<li>How would you throw assertion failure if caller doesn't hold lock?</li>
+</ul></li>
+</ul>
+<h1 id="alternate-mutex">Alternate <code>Mutex</code></h1>
+<ul>
+<li><p>Use <em>full</em> <code>MVar</code> rather than empty to mean lock held</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Mutex</span> <span class="fu">=</span> <span class="dt">MVar</span> <span class="dt">ThreadId</span><br /><br /><span class="ot">mutex_create </span><span class="ot">::</span> <span class="dt">IO</span> <span class="dt">Mutex</span><br />mutex_create <span class="fu">=</span> newEmptyMVar<br /><br />mutex_lock,<span class="ot"> mutex_unlock </span><span class="ot">::</span> <span class="dt">Mutex</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br /><br />mutex_lock mv <span class="fu">=</span> myThreadId <span class="fu">&gt;&gt;=</span> putMVar mv<br /><br />mutex_unlock mv <span class="fu">=</span> <span class="kw">do</span> mytid <span class="ot">&lt;-</span> myThreadId<br />                     lockTid <span class="ot">&lt;-</span> tryTakeMVar mv<br />                     unless (lockTid <span class="fu">==</span> <span class="kw">Just</span> mytid) <span class="fu">$</span><br />                         <span class="fu">error</span> <span class="st">&quot;mutex_unlock&quot;</span></code></pre>
+<ul>
+<li>Store <code>ThreadId</code> of lock owner in <code>MVar</code></li>
+</ul></li>
+<li>How would you implement a condition variable?
+<ul>
+<li>Many uses of condition variables don't work with async exceptions</li>
+<li>So let's not worrying about <code>mask</code> for this question...</li>
+</ul></li>
+</ul>
+<h1 id="condition-variables">Condition variables</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Cond</span> <span class="fu">=</span> <span class="dt">Cond</span> <span class="dt">Mutex</span> (<span class="dt">MVar</span> [<span class="dt">MVar</span> ()])<br /><br /><span class="ot">cond_create </span><span class="ot">::</span> <span class="dt">Mutex</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Cond</span><br />cond_create m <span class="fu">=</span> <span class="kw">do</span><br />  waiters <span class="ot">&lt;-</span> newMVar []<br />  <span class="fu">return</span> <span class="fu">$</span> <span class="dt">Cond</span> m waiters<br /><br />cond_wait, cond_signal,<span class="ot"> cond_broadcast </span><span class="ot">::</span> <span class="dt">Cond</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br />cond_wait (<span class="dt">Cond</span> m waiters) <span class="fu">=</span> <span class="kw">do</span><br />  me <span class="ot">&lt;-</span> newEmptyMVar<br />  modifyMVar_ waiters <span class="fu">$</span> \others <span class="ot">-&gt;</span> <span class="fu">return</span> <span class="fu">$</span> others <span class="fu">++</span> [me]<br />  mutex_unlock m   <span class="co">-- note we don't care if preempted here after this</span><br />  takeMVar me <span class="ot">`finally`</span> mutex_lock m<br /><br />cond_signal (<span class="dt">Cond</span> _ waiters) <span class="fu">=</span> modifyMVar_ waiters wakeone<br />    <span class="kw">where</span> wakeone [] <span class="fu">=</span> <span class="fu">return</span> []<br />          wakeone (w<span class="fu">:</span>ws) <span class="fu">=</span> putMVar w () <span class="fu">&gt;&gt;</span> <span class="fu">return</span> ws<br /><br />cond_broadcast (<span class="dt">Cond</span> _ waiters) <span class="fu">=</span> modifyMVar_ waiters wakeall<br />    <span class="kw">where</span> wakeall ws <span class="fu">=</span> <span class="fu">mapM_</span> (<span class="fu">flip</span> putMVar ()) ws <span class="fu">&gt;&gt;</span> <span class="fu">return</span> []</code></pre>
+<ul>
+<li>Key idea: putting <code>MVar</code>s inside <code>MVar</code>s is very powerful</li>
+</ul>
+<h1 id="channels">Channels</h1>
+<ul>
+<li><a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-Chan.html"><code>Control.Concurrent.Chan</code></a> provides unbounded <em>channels</em>
+<ul>
+<li>Implemented as two <code>MVar</code>s -- for read and and write end of <code>Stream</code></li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Item</span> a <span class="fu">=</span> <span class="dt">Item</span> a (<span class="dt">Stream</span> a)<br /><span class="kw">type</span> <span class="dt">Stream</span> a <span class="fu">=</span> <span class="dt">MVar</span> (<span class="dt">Item</span> a)<br /><span class="kw">data</span> <span class="dt">Chan</span> a <span class="fu">=</span> <span class="dt">Chan</span> (<span class="dt">MVar</span> (<span class="dt">Stream</span> a)) (<span class="dt">MVar</span> (<span class="dt">Stream</span> a))</code></pre></li>
+</ul>
+<div class="figure">
+<img src="chan.svg" /><p class="caption"></p>
+</div>
+<h1 id="channel-implementation-simplified">Channel implementation [simplified]</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Item</span> a <span class="fu">=</span> <span class="dt">Item</span> a (<span class="dt">Stream</span> a)<br /><span class="kw">type</span> <span class="dt">Stream</span> a <span class="fu">=</span> <span class="dt">MVar</span> (<span class="dt">Item</span> a)<br /><span class="kw">data</span> <span class="dt">Chan</span> a <span class="fu">=</span> <span class="dt">Chan</span> (<span class="dt">MVar</span> (<span class="dt">Stream</span> a)) (<span class="dt">MVar</span> (<span class="dt">Stream</span> a))<br /><br /><span class="ot">newChan </span><span class="ot">::</span> <span class="dt">IO</span> (<span class="dt">Chan</span> a)<br />newChan <span class="fu">=</span> <span class="kw">do</span><br />  empty <span class="ot">&lt;-</span> newEmptyMVar<br />  liftM2 <span class="dt">Chan</span> (newMVar empty) (newMVar empty)<br /><br /><span class="ot">writeChan </span><span class="ot">::</span> <span class="dt">Chan</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br />writeChan (<span class="dt">Chan</span> _ w) a <span class="fu">=</span> <span class="kw">do</span><br />  empty <span class="ot">&lt;-</span> newEmptyMVar<br />  modifyMVar_ w <span class="fu">$</span> \oldEmpty <span class="ot">-&gt;</span> <span class="kw">do</span><br />    putMVar oldEmpty (<span class="dt">Item</span> a empty)<br />    <span class="fu">return</span> empty<br /><br /><span class="ot">readChan </span><span class="ot">::</span> <span class="dt">Chan</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> a<br />readChan (<span class="dt">Chan</span> r _) <span class="fu">=</span><br />    modifyMVar r <span class="fu">$</span> \full <span class="ot">-&gt;</span> <span class="kw">do</span><br />      (<span class="dt">Item</span> a newFull) <span class="ot">&lt;-</span> takeMVar full<br />      <span class="fu">return</span> (newFull, a)</code></pre>
+<h1 id="networking">Networking</h1>
+<ul>
+<li>Haskell provides basic socket support in <a href="http://hackage.haskell.org/packages/archive/network/latest/doc/html/Network-Socket.html"><code>Network.Socket</code></a>
+<ul>
+<li>Patterned after BSD sockets</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">socket </span><span class="ot">::</span> <span class="dt">Family</span> <span class="ot">-&gt;</span> <span class="dt">SocketType</span> <span class="ot">-&gt;</span> <span class="dt">ProtocolNumber</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">Socket</span><br /><span class="ot">connect </span><span class="ot">::</span> <span class="dt">Socket</span> <span class="ot">-&gt;</span> <span class="dt">SockAddr</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br /><span class="ot">bindSocket </span><span class="ot">::</span> <span class="dt">Socket</span> <span class="ot">-&gt;</span> <span class="dt">SockAddr</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br /><span class="ot">listen </span><span class="ot">::</span> <span class="dt">Socket</span> <span class="ot">-&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br /><span class="ot">accept </span><span class="ot">::</span> <span class="dt">Socket</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Socket</span>, <span class="dt">SockAddr</span>)</code></pre>
+<ul>
+<li><a href="http://hackage.haskell.org/packages/archive/network/latest/doc/html/Network-Socket.html#v:getAddrInfo"><code>getAddrInfo</code></a> looks up hostnames just like <a href="http://tools.ietf.org/html/rfc3493">[RFC3493]</a> (returns <code>[</code><a href="http://hackage.haskell.org/packages/archive/network/latest/doc/html/Network-Socket.html#t:AddrInfo"><code>AddrInfo</code></a><code>]</code>)</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">getAddrInfo </span><span class="ot">::</span> <span class="dt">Maybe</span> <span class="dt">AddrInfo</span><br />            <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">HostName</span> <span class="ot">-&gt;</span> <span class="dt">Maybe</span> <span class="dt">ServiceName</span><br />            <span class="ot">-&gt;</span> <span class="dt">IO</span> [<span class="dt">AddrInfo</span>]</code></pre>
+<ul>
+<li>Example: Get <code>SockAddr</code> for talking to web server:</li>
+</ul>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">webServerAddr </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">SockAddr</span><br />webServerAddr name <span class="fu">=</span> <span class="kw">do</span><br />  addrs <span class="ot">&lt;-</span> getAddrInfo <span class="kw">Nothing</span> (<span class="kw">Just</span> name) (<span class="kw">Just</span> <span class="st">&quot;www&quot;</span>)<br />  <span class="fu">return</span> <span class="fu">$</span> addrAddress <span class="fu">$</span> <span class="fu">head</span> <span class="fu">$</span> addrs</code></pre></li>
+</ul>
+<h1 id="example-netcat">Example: netcat</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">netcat </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">String</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> ()<br />netcat host port <span class="fu">=</span> <span class="kw">do</span><br />  <span class="co">-- Extract address from first AddrInfo in list</span><br />  <span class="dt">AddrInfo</span>{addrAddress <span class="fu">=</span> addr}<span class="fu">:</span>_<br />      <span class="ot">&lt;-</span> getAddrInfo <span class="kw">Nothing</span> (<span class="kw">Just</span> host) (<span class="kw">Just</span> port)<br /><br />  <span class="co">-- Create a TCP socket connected to server</span><br />  s <span class="ot">&lt;-</span> socket <span class="dt">AF_INET</span> <span class="dt">Stream</span> <span class="dv">0</span><br />  connect s addr<br /><br />  <span class="co">-- Convert socket to handle</span><br />  h <span class="ot">&lt;-</span> socketToHandle s <span class="dt">ReadWriteMode</span><br />  hSetBuffering h <span class="dt">NoBuffering</span>  <span class="co">-- THIS IS IMPORTANT</span><br /><br />  <span class="co">-- Deal w. broken unicode</span><br />  hSetBinaryMode stdout <span class="kw">True</span><br /><br />  <span class="co">-- Copy data back and forth</span><br />  done <span class="ot">&lt;-</span> newEmptyMVar<br />  forkIO <span class="fu">$</span> (hGetContents h <span class="fu">&gt;&gt;=</span> <span class="fu">putStr</span>) <span class="ot">`finally`</span> putMVar done ()<br />  <span class="fu">getContents</span> <span class="fu">&gt;&gt;=</span> hPutStr h<br />  takeMVar done</code></pre>
+</body>
+</html>
