@@ -679,6 +679,55 @@ readChan (Chan r _) =
       return (newFull, a)
 ~~~~
 
+# Networking
+
+* Haskell provides basic socket support in [`Network.Socket`]
+    * Patterned after BSD sockets
+
+    ~~~~ {.haskell}
+    socket :: Family -> SocketType -> ProtocolNumber -> IO Socket
+    connect :: Socket -> SockAddr -> IO ()
+    bindSocket :: Socket -> SockAddr -> IO ()
+    listen :: Socket -> Int -> IO ()
+    accept :: Socket -> IO (Socket, SockAddr)
+    ~~~~
+
+    * [`getAddrInfo`](http://hackage.haskell.org/packages/archive/network/latest/doc/html/Network-Socket.html#v:getAddrInfo)
+looks up hostnames just like [[RFC3493]][RFC3493] (returns 
+      `[`[`AddrInfo`](http://hackage.haskell.org/packages/archive/network/latest/doc/html/Network-Socket.html#t:AddrInfo)`]`)
+
+
+    ~~~~ {.haskell}
+    getAddrInfo :: Maybe AddrInfo
+                -> Maybe HostName -> Maybe ServiceName
+                -> IO [AddrInfo]
+    ~~~~
+
+    * Example: Get `SockAddr` for talking to web server:
+
+    ~~~~ {.haskell}
+    webServerAddr :: String -> IO SockAddr
+    webServerAddr name = do
+      addrs <- getAddrInfo Nothing (Just name) (Just "www")
+      return $ addrAddress $ head $ addrs
+    ~~~~
+
+# Example: netcat
+
+~~~~ {.haskell}
+netcat :: String -> String -> IO ()
+netcat host port = do
+  info:_ <- getAddrInfo Nothing (Just host) (Just port)
+  s <- socket AF_INET Stream 0
+  connect s $ addrAddress info
+  h <- socketToHandle s ReadWriteMode
+  hSetBuffering h NoBuffering          -- THIS IS IMPORTANT
+  done <- newEmptyMVar
+  forkIO $ (hGetContents h >>= putStr) `finally` putMVar done ()
+  getContents >>= hPutStr h
+  takeMVar done
+~~~~
+
 
 [FFI]: http://www.haskell.org/onlinereport/haskell2010/haskellch8.html
 [hsc2hs]: http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html
@@ -687,6 +736,8 @@ readChan (Chan r _) =
 [`Control.Exception`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html
 [`Control.Concurrent`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html
 [`Control.Concurrent.Chan`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-Chan.html
+[`Network.Socket`]: http://hackage.haskell.org/packages/archive/network/latest/doc/html/Network-Socket.html
 [`System.Timeout`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/System-Timeout.html
 [`MVar`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-MVar.html
 [`bracket`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:bracket
+[RFC3493]: http://tools.ietf.org/html/rfc3493
