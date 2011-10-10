@@ -48,9 +48,212 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">split </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> ([a],[a])<br />split []       <span class="fu">=</span> ([],[])<br />split [x]      <span class="fu">=</span> ([x],[])<br />split (x<span class="fu">:</span>y<span class="fu">:</span>zs) <span class="fu">=</span> (x<span class="fu">:</span>xs,y<span class="fu">:</span>ys)<br />  <span class="kw">where</span> (xs,ys) <span class="fu">=</span> split zs</code></pre>
 <h1 id="sorting-a-unit-test-perspective">Sorting: a unit test perspective</h1>
 <pre><code>sort [1,2,3,4] == [1,2,3,4]
-sort [4,3,2,1] == [1,2,3]
-sort [1,4,2,3] == [1,2,3]
+sort [4,3,2,1] == [1,2,3,4]
+sort [1,4,2,3] == [1,2,3,4]
 ...
 </code></pre>
+<p>This gets a little dull.</p>
+<h1 id="lets-talk-about-properties">Let's talk about properties</h1>
+<p>A property is nothing more than a predicate that should always hold.</p>
+<p>What's an obvious property for sorts?</p>
+<pre class="sourceCode"><code class="sourceCode haskell">t_idempotent <span class="fu">=</span> <span class="fu">sort</span> <span class="fu">.</span> <span class="fu">sort</span> <span class="fu">==</span> <span class="fu">id</span></code></pre>
+<p>We can't define this, since we can't compare functions for equality.</p>
+<p>However, we can cheat:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">t_idempotent xs <span class="fu">=</span> <br />    <span class="fu">sort</span> (<span class="fu">sort</span> xs) <span class="fu">==</span> <span class="fu">sort</span> xs</code></pre>
+<h1 id="why-dont-we-do-it-in-the-interpreter">Why don't we do it in the interpreter</h1>
+<pre class="sourceCode"><code class="sourceCode haskell">t_idempotent <span class="fu">compare</span> [<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>]</code></pre>
+<p>Okay! Let's mechanize some exhaustive testing.</p>
+<p>To exhaustively test over all lists containing the above elements, we need some help.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Data.List</span> (permutations)<br /><br /><span class="ot">t_permute </span><span class="ot">::</span> ([a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span><br />t_permute prop <span class="fu">=</span> <span class="fu">all</span> prop <span class="fu">.</span> permutations</code></pre>
+<p>Over what list sizes is this practical?</p>
+<h1 id="exhausted-testing">Exhausted testing?</h1>
+<p>Clearly, exhaustive testing is impractical for most interesting purposes.</p>
+<p>The insight of QuickCheck:</p>
+<ul>
+<li><p>Combine property-based testing with <em>randomly generated</em> data.</p></li>
+<li><p>This obviously can't give us the same assurance as exhaustive testing, but it's <em>practical</em>.</p></li>
+<li><p>We can choose the amount of data to throw at our properties.</p></li>
+<li><p>This lets us tune the tradeoff between <em>degree of assurance</em> and <em>cost</em>.</p></li>
+</ul>
+<h1 id="lets-give-it-a-try">Let's give it a try</h1>
+<p>At the <code>ghci</code> prompt:</p>
+<pre><code>&gt;&gt; import Test.QuickCheck
+&gt;&gt; quickCheck (t_idempotent compare)
++++ OK, passed 100 tests.
+</code></pre>
+<p>As the output suggests, QuickCheck generated 100 random lists, and tested our property over them.</p>
+<p>Yay!</p>
+<h1 id="something-funky-is-going-on">Something funky is going on</h1>
+<p>The type of <code>compare</code> is polymorphic:</p>
+<pre><code>&gt;&gt; :type t_idempotent compare
+t_idempotent compare :: Ord a =&gt; [a] -&gt; Bool
+</code></pre>
+<p>So how are we able to generate a list?</p>
+<h1 id="type-defaulting---a-recap">Type defaulting - a recap</h1>
+<p>Haskell's usual defaulting rules take each group of constraints <code>(C1 a, C2 a, ..., Cn a)</code> for each type variable <code>a</code>, and defaults the type variable if all of the following conditions hold:</p>
+<ul>
+<li><p>The type variable <code>a</code> appears in no other constraints.</p></li>
+<li><p>All the classes <code>Ci</code> are standard.</p></li>
+<li><p>At least one of the classes <code>Ci</code> is numeric.</p></li>
+</ul>
+<h1 id="thats-not-enough-for-us-lazy-programmers">That's not enough for us lazy programmers!</h1>
+<p>To reduce the number of types we're forced to specify by hand, <code>ghci</code> relaxes the standard rules (changes in italics):</p>
+<ul>
+<li><p>The type variable <code>a</code> appears in no other constraints. <em>Unchanged</em>.</p></li>
+<li><p>All the classes <code>Ci</code> are standard, <em>and all are single-parameter type classes</em>.</p></li>
+<li><p>At least one of the classes <code>Ci</code> is numeric, <em>or is <code>Show</code>, <code>Eq</code>, or <code>Ord</code></em>.</p></li>
+</ul>
+<p>It also adds another critical step when defaulting:</p>
+<ul>
+<li>The type <code>()</code> becomes the first of the the standard list of types tried when doing type defaulting.</li>
+</ul>
+<h1 id="peek-inside">Peek inside</h1>
+<p>We can use the <code>verboseCheck</code> function to see all the test data that QuickCheck is generating for us.</p>
+<pre><code>&gt;&gt; verboseCheck (t_idempotent compare)
+</code></pre>
+<p>Notice that we have endless lists of <code>()</code>?</p>
+<p>Our supposedly reassuring test isn't very useful!</p>
+<h1 id="polymorphic-testing">Polymorphic testing</h1>
+<p>When we're testing a polymorphic property, we need to specify which concrete type we're testing at.</p>
+<pre><code>&gt;&gt; import Data.Word (Word8)
+&gt;&gt; verboseCheck (t_idempotent (compare :: Word8 -&gt; Word8 -&gt; Ordering))
+</code></pre>
+<p>That's verbose and unhappy-making, right?</p>
+<h1 id="enter-the-type-synonym">Enter the type synonym</h1>
+<p>Here's one approach to reducing our work:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Cmp</span> a <span class="fu">=</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> <span class="dt">Ordering</span></code></pre>
+<p>Trying this at the <code>ghci</code> prompt:</p>
+<pre><code>&gt;&gt; import Data.Word (Word8)
+&gt;&gt; verboseCheck (t_idempotent (compare :: Cmp Word8))
+</code></pre>
+<h1 id="witness-the-fitness">Witness the fitness</h1>
+<p>Here's an alternative approach:</p>
+<pre><code>t_witnessed p a xs = mergeSort p (mergeSort p xs) == mergeSort p xs
+  where _witness = a &lt; head xs
+</code></pre>
+<p>What's that <code>_witness</code> variable for?</p>
+<ul>
+<li><p>It's a <em>type witness</em>, a value that exists to express a constraint between several types (it &quot;witnesses&quot; the constraint).</p></li>
+<li><p>Thanks to the use of <code>&lt;</code>, this witness forces the type of <code>a</code> and the type of the elements of <code>xs</code> to be the same.</p></li>
+</ul>
+<p>(We prefix the name with an underscore to tell GHC that it's an unused wild card.)</p>
+<h1 id="instantiating-our-new-polymorphic-test">Instantiating our new polymorphic test</h1>
+<p>We can supply a value for <code>a</code> of the appropriate type to test over:</p>
+<pre><code>&gt;&gt; verboseCheck (t_witnessed compare 'a')
+</code></pre>
+<p>Of course, the value of <code>a</code> is never used.</p>
+<p>As a result, we don't even need to supply a working value, provided the type of what we supply is correct:</p>
+<pre><code>&gt;&gt; verboseCheck (t_witnessed compare (undefined::Double))
+</code></pre>
+<h1 id="where-do-random-values-come-from">Where do random values come from?</h1>
+<p>To generate random values of some type, we must write an <code>Arbitrary</code> instance for it.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Arbitrary</span> a <span class="kw">where</span><br /><span class="ot">  arbitrary </span><span class="ot">::</span> <span class="dt">Gen</span> a</code></pre>
+<p>Here's an example, making use of the fact that this unknown type <code>Gen</code> is an instance of <code>Monad</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Int</span> <span class="dt">Int</span><br /><br /><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Point</span> <span class="kw">where</span><br />    arbitrary <span class="fu">=</span> <span class="kw">do</span><br />      x <span class="ot">&lt;-</span> arbitrary<br />      y <span class="ot">&lt;-</span> arbitrary<br />      <span class="fu">return</span> (<span class="dt">Point</span> x y)</code></pre>
+<h1 id="lifting">Lifting</h1>
+<p>We're hopefully by now familiar with the <code>Functor</code> class:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Functor</span> f  <span class="kw">where</span><br /><span class="ot">    fmap </span><span class="ot">::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre>
+<p>This takes a pure function and &quot;lifts&quot; it into the functor <code>f</code>.</p>
+<p>In general, &quot;lifting&quot; takes a concept and transforms it to work in a different (sometimes more general) setting.</p>
+<p>For instance, we can define lifting of functions with the <code>Monad</code> class too:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">liftM </span><span class="ot">::</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b<br />liftM f action <span class="fu">=</span> <span class="kw">do</span><br />  b <span class="ot">&lt;-</span> action<br />  <span class="fu">return</span> (f b)</code></pre>
+<h1 id="fmap-and-liftm">fmap and liftM</h1>
+<p>Notice the similarities between the type signatures:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">fmap</span><span class="ot">  </span><span class="ot">::</span> (<span class="kw">Functor</span> f) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b<br /><span class="ot">liftM </span><span class="ot">::</span> (<span class="kw">Monad</span> m)   <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b</code></pre>
+<p>All instances of <code>Monad</code> can possibly be instances of <code>Functor</code>. Ideally, they'd be defined in terms of each other:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Functor</span> m) <span class="ot">=&gt;</span> <span class="kw">Monad</span> m <span class="kw">where</span><br />    <span class="co">{- blah blah -}</span></code></pre>
+<p>For historical reasons, the two classes are separate, so we write separate instances for them and just reuse the code:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Monad</span> <span class="dt">MyThingy</span> <span class="kw">where</span><br />    <span class="co">{- whatever -}</span><br /><br /><span class="kw">instance</span> <span class="kw">Functor</span> <span class="dt">MyThingy</span> <span class="kw">where</span><br />    <span class="fu">fmap</span> <span class="fu">=</span> liftM</code></pre>
+<h1 id="why-the-apparent-digression">Why the apparent digression?</h1>
+<p>It turns out that lifting pure functions into monads is really common.</p>
+<p>So common, in fact, that <code>Control.Monad</code> defines a bunch of extra combinators for us.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">liftM2 </span><span class="ot">::</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b <span class="ot">-&gt;</span> m b<br />liftM2 f act1 act2 <span class="fu">=</span> <span class="kw">do</span><br />  a <span class="ot">&lt;-</span> act1<br />  b <span class="ot">&lt;-</span> act2<br />  <span class="fu">return</span> (f a b)</code></pre>
+<p>These combinators go all the way up to <code>liftM5</code>.</p>
+<p>Look familiar? Useful?</p>
+<h1 id="a-tighter-arbitrary-instance">A tighter Arbitrary instance</h1>
+<p>Before:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Point</span> <span class="kw">where</span><br />    arbitrary <span class="fu">=</span> <span class="kw">do</span><br />      x <span class="ot">&lt;-</span> arbitrary<br />      y <span class="ot">&lt;-</span> arbitrary<br />      <span class="fu">return</span> (<span class="dt">Point</span> x y)</code></pre>
+<p>After:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Control.Monad</span> (liftM2)<br /><br /><span class="kw">instance</span> <span class="dt">Arbitrary</span> <span class="dt">Point</span> <span class="kw">where</span><br />    arbitrary <span class="fu">=</span> liftM2 <span class="dt">Point</span> arbitrary arbitrary</code></pre>
+<h1 id="trying-something-else">Trying something else</h1>
+<p>Suppose we want to verify that the sum of two odd integers is always even.</p>
+<p>Here's a quick and obvious property:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">p_sum_odd a b<br />    <span class="fu">|</span> <span class="fu">odd</span> a <span class="fu">&amp;&amp;</span> <span class="fu">odd</span> b <span class="fu">=</span> <span class="fu">even</span> (a <span class="fu">+</span> b)<br />    <span class="fu">|</span> <span class="fu">otherwise</span>      <span class="fu">=</span> <span class="kw">True</span></code></pre>
+<p>This looks a little crufty, though.</p>
+<ul>
+<li>We're returning <code>True</code> even in instances where the property really isn't defined.</li>
+</ul>
+<h1 id="conditional-properties">Conditional properties</h1>
+<p>It would be nice if we could express the idea &quot;check this property only if the inputs satisfy these constraints&quot;.</p>
+<p>In fact, there's a combinator for that: <code>==&gt;</code></p>
+<pre class="sourceCode"><code class="sourceCode haskell">p_sum_odd1 a b <span class="fu">=</span><br />    <span class="fu">odd</span> a <span class="fu">&amp;&amp;</span> <span class="fu">odd</span> b <span class="fu">==&gt;</span> <br />    <span class="fu">even</span> (a<span class="fu">+</span>b)</code></pre>
+<p>This specifies that the property on the right should hold whenever the <code>Bool</code>-valued test on the left succeeds.</p>
+<p>QuickCheck will discard inputs for which the test fails.</p>
+<h1 id="limits-on-conditional-properties">Limits on conditional properties</h1>
+<p>Suppose we try to test this property:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">p_odd3 a b c <span class="fu">=</span> <span class="fu">odd</span> a <span class="fu">&amp;&amp;</span> <span class="fu">odd</span> b <span class="fu">&amp;&amp;</span> <span class="fu">odd</span> c <span class="fu">==&gt;</span> <span class="fu">odd</span> (a<span class="fu">+</span>b<span class="fu">+</span>c)</code></pre>
+<p>We'll get a strange error from QuickCheck:</p>
+<pre><code>&gt;&gt; quickCheck p_odd
+*** Gave up! Passed only 79 tests.
+</code></pre>
+<p>None of our tests failed, but QuickCheck puts an upper limit on the number of test cases it will generate.</p>
+<ul>
+<li><p>This avoids an infinite loop if the condition before the property never holds.</p></li>
+<li><p>Here, we hit the limit because almost 90% of our inputs are discarded. Why are they discarded?</p></li>
+</ul>
+<h1 id="correctness-by-construction">Correctness by construction</h1>
+<p>Instead of filtering out data that isn't right for us, it's better to generate <em>only</em> data that is right.</p>
+<pre><code>newtype Odd a = Odd a
+    deriving (Show)
+
+instance (Integral a, Arbitrary a) =&gt; Arbitrary (Odd a) where
+    arbitrary = do
+      a &lt;- arbitrary
+      return $! Odd (if even a then a + 1 else a)
+</code></pre>
+<p>It's clear from inspection that the <code>Arbitrary</code> instance for <code>Odd a</code> will only generate odd-valued integers.</p>
+<h1 id="can-i-get-a-witness">Can I get a witness?</h1>
+<p>We no longer need a conditional property now, since all of our property's parameters must by necessity be odd:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">p_odd1 x (<span class="dt">Odd</span> a) (<span class="dt">Odd</span> b) (<span class="dt">Odd</span> c) <span class="fu">=</span> <span class="fu">odd</span> (a<span class="fu">+</span>b<span class="fu">+</span>c)<br />  <span class="kw">where</span> _witness <span class="fu">=</span> x <span class="fu">==</span> a</code></pre>
+<p>Let's run it:</p>
+<pre><code>&gt;&gt; quickCheck $ p_odd1 (1::Int)
++++ OK, passed 100 tests.
+</code></pre>
+<p>Sweet! We saved ourselves from generating a ton of useless data, made the testing process faster, and cleaned up the property some too.</p>
+<h1 id="sizing-a-test">Sizing a test</h1>
+<p>Test data generators have an implicit size parameter, hidden inside the <code>Gen</code> type.</p>
+<p>QuickCheck starts by generating small test cases; it increases the size as testing progresses.</p>
+<p>The meaning of &quot;size&quot; is specific to the needs of an <code>Arbitrary</code> instance.</p>
+<ul>
+<li>The <code>Arbitrary</code> instance for lists interprets it as &quot;the maximum length of a list of arbitrary values&quot;.</li>
+</ul>
+<p>We can find the current size using the <code>sized</code> function, and modify it locally using <code>resize</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">sized  </span><span class="ot">::</span> (<span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a) <span class="ot">-&gt;</span> <span class="dt">Gen</span> a<br /><span class="ot">resize </span><span class="ot">::</span>  <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> a  <span class="ot">-&gt;</span> <span class="dt">Gen</span> a</code></pre>
+<h1 id="testing-a-recursive-data-type">Testing a recursive data type</h1>
+<p>Suppose we have a tree type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Tree</span> a <span class="fu">=</span> <span class="dt">Node</span> (<span class="dt">Tree</span> a) (<span class="dt">Tree</span> a)<br />            <span class="fu">|</span> <span class="dt">Leaf</span> a<br />              <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>Here's an obvious <code>Arbitrary</code> instance:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Tree</span> a) <span class="kw">where</span><br />    arbitrary <span class="fu">=</span> oneof [<br />                  liftM <span class="dt">Leaf</span> arbitrary<br />                , liftM2 <span class="dt">Node</span> arbitrary arbitrary<br />                ]</code></pre>
+<p>The <code>oneof</code> combinator chooses a generator at random.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">oneof </span><span class="ot">::</span> [<span class="dt">Gen</span> a] <span class="ot">-&gt;</span> <span class="dt">Gen</span> a</code></pre>
+<h1 id="whats-up-doc">What's up, Doc?</h1>
+<p>Potential trouble:</p>
+<ul>
+<li><p>This generator may not terminate at all!</p></li>
+<li><p>It's likely to produce <em>huge</em> trees.</p></li>
+</ul>
+<p>We can use the <code>sample</code> function to generate and print some arbitrary data.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">sample </span><span class="ot">::</span> (<span class="kw">Show</span> a) <span class="ot">=&gt;</span> <span class="dt">Gen</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
+<p>This helps us to explore what's going on.</p>
+<h1 id="a-safer-instance">A safer instance</h1>
+<p>Here's where the sizing mechanism comes to the rescue.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> (<span class="dt">Arbitrary</span> a) <span class="ot">=&gt;</span> <span class="dt">Arbitrary</span> (<span class="dt">Tree</span> a) <span class="kw">where</span><br />    arbitrary <span class="fu">=</span> sized tree<br /><br /><span class="ot">tree </span><span class="ot">::</span> (<span class="dt">Arbitrary</span> a) <span class="ot">=&gt;</span> <span class="dt">Int</span> <span class="ot">-&gt;</span> <span class="dt">Gen</span> (<span class="dt">Tree</span> a)<br />tree <span class="dv">0</span> <span class="fu">=</span> liftM <span class="dt">Leaf</span> arbitrary<br />tree n <span class="fu">=</span> oneof [<br />           liftM  <span class="dt">Leaf</span> arbitrary<br />         , liftM2 <span class="dt">Node</span> subtree subtree<br />         ]<br />  <span class="kw">where</span> subtree <span class="fu">=</span> tree (n <span class="ot">`div`</span> <span class="dv">2</span>)</code></pre>
+<h1 id="sorting-revisited">Sorting revisited</h1>
+<p>A very desirable property of a sorting algorithm is <em>stability</em>.</p>
+<p>The built-in <code>sort</code> and <code>sortBy</code> functions are designed to be stable.</p>
+<p>What about our <code>mergeSort</code>? Let's find out.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Data.Function</span> (on)<br /><span class="kw">import</span> <span class="dt">Data.List</span> (sortBy)<br /><span class="kw">import</span> <span class="dt">Data.Word</span> (<span class="dt">Word8</span>)<br /><br />p_stable xs <span class="fu">=</span> merged <span class="fu">==</span> sorted<br />  <span class="kw">where</span> merged <span class="fu">=</span> mergeSort (<span class="fu">compare</span> <span class="ot">`on`</span> <span class="fu">fst</span>) xs<br />        sorted <span class="fu">=</span> sortBy    (<span class="fu">compare</span> <span class="ot">`on`</span> <span class="fu">fst</span>) xs<br />        _witness <span class="fu">=</span><span class="ot"> xs </span><span class="ot">::</span> [(<span class="dt">Word8</span>, <span class="dt">Word8</span>)]</code></pre>
+<p>That <code>on</code> function is pretty neat:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">on </span><span class="ot">::</span> (b <span class="ot">-&gt;</span> b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> a <span class="ot">-&gt;</span> c<br />(<span class="fu">*</span>) <span class="ot">`on`</span> f <span class="fu">=</span> \x y <span class="ot">-&gt;</span> f x <span class="fu">*</span> f y</code></pre>
 </body>
 </html>
