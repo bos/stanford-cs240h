@@ -29,6 +29,17 @@ wrap action = do
        \e@(SomeException _) -> putMVar mv (throw e)
   takeMVar mv
 
+wrap' :: IO a -> IO a
+wrap' action = do
+  mv <- newEmptyMVar
+  mask $ \unmask -> do
+      tid <- forkIO $ (unmask $ action >>= putMVar mv) `catch`
+             \e@(SomeException _) -> putMVar mv (throw e)
+      let loop = takeMVar mv `catch` \e@(SomeException _) ->
+                 throwTo tid e >> loop
+      loop
+
+
 main :: IO ()
 main = defaultMain [
         bench "thread switch test" mybench

@@ -444,51 +444,86 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
     * E.g., see
       [`forkOn`](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html#v:forkOn)
 
+# Asynchronous exceptions
 
-# [Ping](http://www.networksorcery.com/enp/protocol/icmp/msg8.htm)
+* Here's a handy `MVar` utility function for updating a value
 
-<style type="text/css">
-<!--
-TABLE.packetheader {
-    margin-left: auto;
-    margin-right: auto;
-    font-size: small;
-}
-TD.pktconst
-{
-    BACKGROUND-COLOR: plum;
-    TEXT-ALIGN: center
-}
-TD.pkthdr
-{
-    BACKGROUND-COLOR: lemonchiffon;
-    TEXT-ALIGN: center
-}
-TD.pktvarlen
-{
-    BACKGROUND-COLOR: lightgreen;
-    TEXT-ALIGN: center
-}
-//-->
-</style>
+    ~~~~ {.haskell}
+    modifyMVar :: MVar a -> (a -> IO (a, b)) -> IO b
+    ~~~~
 
-<table class="packetheader" border="1">
-<tbody><tr>
-<th>00</th><th>01</th><th>02</th><th>03</th><th>04</th><th>05</th><th>06</th><th>07</th>
-<th>08</th><th>09</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th>
-<th>16</th><th>17</th><th>18</th><th>19</th><th>20</th><th>21</th><th>22</th><th>23</th>
-<th>24</th><th>25</th><th>26</th><th>27</th><th>28</th><th>29</th><th>30</th><th>31</th></tr>
-<tr>
-<td class="pktconst" colspan="8"><a href="#Type">Type</a></td>
-<td class="pktconst" colspan="8"><a href="#Code">Code</a></td>
-<td class="pkthdr" colspan="16"><a href="#ICMP Header Checksum">ICMP header checksum</a></td></tr>
-<tr>
-<td class="pkthdr" colspan="16"><a href="#Identifier">Identifier</a></td>
-<td class="pkthdr" colspan="16"><a href="#Sequence number">Sequence number</a></td></tr>
-<tr>
-<td class="pktvarlen" colspan="32">Data :::</td></tr>
-</tbody></table>
+    * E.g., "`modifyMVar x (\n -> return (n+1, n))`" like "`x++`" in C
 
+* How would you implement `modifyMVar`?
+
+    ~~~~ {.haskell}
+    modifyMVar' :: MVar a -> (a -> IO (a,b)) -> IO b
+    modifyMVar' m action = do
+      v0 <- takeMVar m
+      (v, r) <- action v0 `onException` putMVar m v0
+      putMVar m v
+      return r
+    ~~~~
+
+    * Anyone see a problem?
+
+# Asynchronous exceptions
+
+* Here's a handy `MVar` utility function for updating a value
+
+    ~~~~ {.haskell}
+    modifyMVar :: MVar a -> (a -> IO (a, b)) -> IO b
+    ~~~~
+
+    * E.g., "`modifyMVar x (\n -> return (n+1, n))`" like "`x++`" in C
+
+* How would you implement `modifyMVar`?
+
+    ~~~~ {.haskell}
+    modifyMVar' :: MVar a -> (a -> IO (a,b)) -> IO b
+    modifyMVar' m action = do
+      v0 <- takeMVar m -- -------------- oops, race condition
+      (v, r) <- action v0 `onException` putMVar m v0
+      putMVar m v
+      return r
+    ~~~~
+
+    * What if another thread calls `killThread` on the current thread
+      while current thread between `takeMVar` and `onException`
+    * `timeout` and `wrap` functions from a few slides ago has same problem
+
+# Masking exceptions
+
+* The
+  [`mask`](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:mask)
+  function can sidestep such race conditions
+
+    ~~~~ {.haskell}
+    mask :: ((forall a. IO a -> IO a) -> IO b) -> IO b
+    ~~~~
+
+    * This is a funny type signature--uses an extension called
+      `RankNTypes`.  For now, ignore "`forall a.`"--just makes
+      function more flexible
+    * `mask $ \f -> b` runs action `b` with asynchronous exceptions
+      *masked*
+    * Function `f` allows exceptions to be *unmasked* again for an
+      action
+    * Exceptions are also unmasked if thread sleeps (e.g., in
+      `takeMVar`)
+    * `forkIO` preserves the current mask state
+
+~~~~ {.haskell}
+wrap :: IO a -> IO a          -- Fixed version of wrap
+wrap action = do
+  mv <- newEmptyMVar
+  mask $ \unmask -> do
+      tid <- forkIO $ (unmask $ action >>= putMVar mv) `catch`
+             \e@(SomeException _) -> putMVar mv (throw e)
+      let loop = takeMVar mv `catch` \e@(SomeException _) ->
+                 throwTo tid e >> loop
+      loop
+~~~~
 
 <!--
 
