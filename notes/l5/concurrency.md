@@ -633,6 +633,9 @@ cond_broadcast (Cond _ waiters) = modifyMVar_ waiters wakeall
 
 * Key idea: putting `MVar`s inside `MVar`s is very powerful
 
+# Channels
+
+![](chan.svg)
 
 
 
