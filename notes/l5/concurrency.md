@@ -608,10 +608,35 @@ wrap action = do
                     (\_ -> action)
     ~~~~
 
-* How would you throw assertion failure if thread doesn't hold lock?
+* Note anyone can unlock a `Mutex` if it is locked
+    * How would you throw assertion failure if caller doesn't hold lock?
+
+# Alternate `Mutex`
+
+* Use *full* `MVar` rather than empty to mean lock held
+
+    ~~~~ {.haskell}
+    type Mutex = MVar ThreadId
+
+    mutex_create :: IO Mutex
+    mutex_create = newEmptyMVar
+
+    mutex_lock, mutex_unlock :: Mutex -> IO ()
+
+    mutex_lock mv = myThreadId >>= putMVar mv
+
+    mutex_unlock mv = do mytid <- myThreadId
+                         lockTid <- tryTakeMVar mv
+                         unless (lockTid == Just mytid) $
+                             error "mutex_unlock"
+    ~~~~
+
+    * Store `ThreadId` of lock owner in `MVar`
+
 * How would you implement a condition variable?
-    * On the plus side, condition variables don't interact well with
-      asynchronous signals anyway, so let's not worry about `mask`...
+    * Many uses of condition variables don't work with async
+      exceptions
+    * So let's not worrying about `mask` for this question...
 
 # Condition variables
 
@@ -627,7 +652,7 @@ cond_wait, cond_signal, cond_broadcast :: Cond -> IO ()
 cond_wait (Cond m waiters) = do
   me <- newEmptyMVar
   modifyMVar_ waiters $ \others -> return $ others ++ [me]
-  mutex_unlock m
+  mutex_unlock m   -- note we don't care if preempted here after this
   takeMVar me `finally` mutex_lock m
   
 cond_signal (Cond _ waiters) = modifyMVar_ waiters wakeone
