@@ -22,6 +22,16 @@ pingpong v n = do
   parent n `finally` killThread tid
   when v $ putStrLn ""
 
+main :: IO ()
+main = defaultMain [
+        bench "thread switch test" mybench
+       ]
+    where mybench = pingpong False 10000
+
+
+
+
+
 wrap :: IO a -> IO a
 wrap action = do
   mv <- newEmptyMVar
@@ -40,8 +50,3 @@ wrap' action = do
       loop
 
 
-main :: IO ()
-main = defaultMain [
-        bench "thread switch test" mybench
-       ]
-    where mybench = wrap $ pingpong False 10000

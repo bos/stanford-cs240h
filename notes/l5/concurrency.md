@@ -22,6 +22,10 @@
     * *c-header* is a single `.h` file with the declaration
        (ignored by GHC)
     * "&" imports pointer rather than function (required for `FunPtr`s)
+* See [language spec][FFI] for other FFI features
+    * Call C function pointers or turn Haskell functions into C
+      function pointers
+    * Export Haskell functions for static linking to C code
 
 
 # FFI types
@@ -38,7 +42,7 @@
     * Any valid argument type
     * `()` (for functions returning `void`)
     * `IO a` where `a` is either of the above two
-* Place result `IO` if function has side effects or non-determinism
+* Place result in `IO` if function has side effects or non-determinism
     * Okay to omit if it is a pure C function:
 
         ~~~~ {.haskell}
@@ -63,9 +67,9 @@
     * Might model with opaque placeholder type
 
     ~~~~ {.haskell}
-    data MyStruct        -- no constructors, just a placeholder
+    data MyStruct           -- no constructors, just a placeholder
     getValue :: Ptr MyStruct -> IO CInt
-    getValue ptr = peek $ ptr `plusPtr` 8  -- assumes char * 8 bytes
+    getValue ptr = peek $ ptr `plusPtr` 8 -- breaks on 32-bit arch
     ~~~~
 
 * [`hsc2hs`][hsc2hs] is pre-processor that lets you compute C values
@@ -76,7 +80,7 @@
                    #{offset struct mystruct, value}
     ~~~~
 
-    * Super-simple implementation just uses C macros & `printf`
+    * Super-simple implementation just uses C macros and `printf`
     * Find the file [`template-hsc.h`][template-hsc.h] on your system
       to see defs of `#` commands
     * Can also define your own macros with `#let` (like `#define` w/o
@@ -171,7 +175,7 @@ Nothing
 
     ~~~~ {.haskell}
     pureCatcher :: a -> IO (Maybe a)
-    pureCatcher a = (fmap Just $ return $! a)
+    pureCatcher a = (a `seq` return (Just a))
                     `catch` \(SomeException _) -> return Nothing
     ~~~~
 
@@ -206,7 +210,7 @@ Nothing
                  (e -> Maybe b) -> IO a -> (b -> IO a) -> IO a
 
     readFileIfExists f = catchJust p (readFile f) (\_ -> return "")
-       where p e = if isDoesNotExistError e then Just e else Nothing
+      where p e = if isDoesNotExistError e then Just e else Nothing
     ~~~~
 
     ~~~~
@@ -261,8 +265,8 @@ Nothing
 * A few other very useful thread functions:
 
     ~~~~ {.haskell}
-    killThread :: ThreadId -> IO ()
     throwTo :: Exception e => ThreadId -> e -> IO ()
+    killThread :: ThreadId -> IO ()   -- = flip throwTo ThreadKilled
     threadDelay :: Int -> IO ()       -- sleeps for # of µsec
     myThreadId :: IO ThreadId
     ~~~~
@@ -308,13 +312,14 @@ timeout usec action = do
     putMVar :: MVar a -> a -> IO ()
     ~~~~
 
-    * If an `MVar` is full, `takeMVar` makes it empty and returns its
-      contents
+    * If an `MVar` is full, `takeMVar` makes it empty and returns
+      former contents
     * If an `MVar` is empty, `putMVar` fills it with a value
     * Taking an empty `MVar` or putting a full one puts thread to
-      sleep until state of `MVar` changes
-    * One thread awakened at a time if several blocked on same `MVar`
-    * There are also non-blocking `MVar` calls
+      sleep until `MVar` becomes available
+    * Only one thread awakened at a time if several blocked on same
+      `MVar`
+    * There are also non-blocking versions of `MVar` calls
 
     ~~~~ {.haskell}
     tryTakeMVar :: MVar a -> IO (Maybe a) -- Nothing if empty
@@ -385,7 +390,7 @@ std dev: 69.27807 us, lb 55.00853 us, ub 88.83503 us, ci 0.950
 * GHC also has *two* versions of the haskell runtime
     * By default, all Haskell threads run in a single OS thread
     * Link with `-threaded` to allow OS threads (`pthread_create`) as well
-* New `forkOS` call creates Haskell thread *bound* to OS thread
+* `forkOS` call creates Haskell thread *bound* to a new OS thread
 
     ~~~~ {.haskell}
     forkOS :: IO () -> IO ThreadId
@@ -415,17 +420,17 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
     * `unbound` haskell threads have same performance as w/o
       `-threaded`
 
-* Initial thread is bound -- so we were benchmarking Linux
+* Initial thread bound, so we were actually benchmarking Linux
     * Can wrap parent thread in `forkIO` to make it unbound
 
-        ~~~~ {.haskell}
-        wrap :: IO a -> IO a
-        wrap action = do
-          mv <- newEmptyMVar
-          _ <- forkIO $ (action >>= putMVar mv) `catch`
-               \e@(SomeException _) -> putMVar mv (throw e)
-          takeMVar mv
-        ~~~~
+    ~~~~ {.haskell}
+    wrap :: IO a -> IO a
+    wrap action = do
+      mv <- newEmptyMVar
+      _ <- forkIO $ (action >>= putMVar mv) `catch`
+           \e@(SomeException _) -> putMVar mv (throw e)
+      takeMVar mv
+    ~~~~
 
     * But library has better function
       [`runInUnboundThread`](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html#v:runInUnboundThread)
@@ -435,7 +440,8 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
 * If an unbound thread blocks, can block whole program
     * Unix runtime tries to avoid blocking syscalls, but can't avoid
       blocking for things like file system IO and paging
-    * GHC ensures `safe` FFI calls run in separate thread
+    * With `-threaded`, GHC ensures `safe` FFI calls run in separate
+      OS thread
     * `unsafe` FFI calls from unbound threads can block other threads
 * FFI functions may expect to be called from same thread
     * E.g., foreign code using `pthread_getspecific` can get confused
@@ -466,7 +472,7 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
       return r
     ~~~~
 
-    * Anyone see a problem?
+    * Anyone see a problem?  (Hint: remember `throwTo`, `killThread`)
 
 # Asynchronous exceptions
 
@@ -492,7 +498,8 @@ std dev: 912.0979 us, lb 731.0661 us, ub 1.226794 ms, ci 0.950
 
     * What if another thread calls `killThread` on the current thread
       while current thread between `takeMVar` and `onException`
-    * `timeout` and `wrap` functions from a few slides ago has same problem
+    * `timeout` and `wrap` functions from a few slides ago have same
+      problem
 
 # Masking exceptions
 
@@ -548,8 +555,8 @@ wrap action = do
 
 * Note we don't call `unmask` in parent thread
     * `loop` will sleep on `takeMVar`, which implicitly unmasks
-    * Unmask while sleeping is almost always what you want, but can
-      avoid with
+    * Unmask while sleeping is generally what you want, but can avoid
+      with
       [uninterruptibleMask](http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:uninterruptibleMask)
 
 # The [`bracket`] function
@@ -571,9 +578,9 @@ wrap action = do
 * Example: fix `parent` function from our `timeout` example
 
     ~~~~ {.haskell}
-      parent = do ctid <- forkIO child         -- old code,
-                  result <- action             -- bad if async
-                  killThread ctid              -- exception
+      parent = do ctid <- forkIO child             -- old code,
+                  result <- action                 -- bad if async
+                  killThread ctid                  -- exception
                   return $ Just result
     ~~~~
 
@@ -602,7 +609,8 @@ wrap action = do
                     (\_ -> action)
     ~~~~
 
-* But how would you implement a condition variable?
+* How would you throw assertion failure if thread doesn't hold lock?
+* How would you implement a condition variable?
     * On the plus side, condition variables don't interact well with
       asynchronous signals anyway, so let's not worry about `mask`...
 
@@ -645,6 +653,7 @@ cond_broadcast (Cond _ waiters) = modifyMVar_ waiters wakeall
 [imprecise exceptions]: http://research.microsoft.com/en-us/um/people/simonpj/papers/imprecise-exn.htm
 [`Control.Exception`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html
 [`Control.Concurrent`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent.html
+[`Control.Concurrent.Chan`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-Chan.html
 [`System.Timeout`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/System-Timeout.html
 [`MVar`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Concurrent-MVar.html
 [`bracket`]: http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Exception.html#v:bracket
