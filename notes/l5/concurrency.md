@@ -149,10 +149,9 @@ Nothing
 ~~~~
 
 * Need `DeriveDataTypeable` language pragma (later lecture)
-* Type of `handler` must be unambigous
-    * Okay because we used constructor, otherwise would need type
-      signature
-    * Use pattern `e@(SomeException _)` to catch all exceptions
+* `handler`'s type cannot be inferred (use constructor or type
+  signature)
+    * Constructor pattern `e@(SomeException _)` catches all exceptions
 
 # Exceptions in pure code
 
