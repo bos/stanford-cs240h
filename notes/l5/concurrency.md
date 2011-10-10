@@ -642,8 +642,42 @@ cond_broadcast (Cond _ waiters) = modifyMVar_ waiters wakeall
 
 # Channels
 
+* [`Control.Concurrent.Chan`] provides unbounded *channels*
+    * Implemented as two `MVar`s -- for read and and write end of `Stream`
+
+    ~~~~ {.haskell}
+    data Item a = Item a (Stream a)
+    type Stream a = MVar (Item a)
+    data Chan a = Chan (MVar (Stream a)) (MVar (Stream a))
+    ~~~~
+
 ![](chan.svg)
 
+# Channel implementation [simplified]
+
+~~~~ {.haskell}
+data Item a = Item a (Stream a)
+type Stream a = MVar (Item a)
+data Chan a = Chan (MVar (Stream a)) (MVar (Stream a))
+
+newChan :: IO (Chan a)
+newChan = do
+  empty <- newEmptyMVar
+  liftM2 Chan (newMVar empty) (newMVar empty)
+
+writeChan :: Chan a -> a -> IO ()
+writeChan (Chan _ w) a = do
+  empty <- newEmptyMVar
+  modifyMVar_ w $ \oldEmpty -> do
+    putMVar oldEmpty (Item a empty)
+    return empty
+
+readChan :: Chan a -> IO a
+readChan (Chan r _) =
+    modifyMVar r $ \full -> do
+      (Item a newFull) <- takeMVar full
+      return (newFull, a)
+~~~~
 
 
 [FFI]: http://www.haskell.org/onlinereport/haskell2010/haskellch8.html
