@@ -40,7 +40,10 @@ We have provided a [sample rectangle file](rects.txt) containing all
 ## Command line application
 
 Your submission must come in the form of a command line application.
-The application must behave as follows:
+
+### Starting up
+
+At startup time, the application must behave as follows:
 
 * Read a file (whose name will be supplied on the command line) in the
   format used by the sample `rects.txt` file that we have supplied.
@@ -49,6 +52,8 @@ The application must behave as follows:
 
 * Measure and print the amount of time needed to read the input file
   and construct the tree.
+
+### Queries
 
 Once it has started, your application must read "query rectangles"
 from `stdin` until end-of-file.
@@ -77,6 +82,18 @@ found 2 matches in 14 microseconds:
     3340,2490,3340,2430,3600,2430,3600,2482
 ~~~~
 
+
+### Property-based tests
+
+Your submission should include a file that contains QuickCheck tests
+for your R-tree implemetation, along with instructions on how to build
+and run your tests.
+
+(We strongly suggest that you develop your tests and your code
+simultaneously, as this makes it *far* easier to tell when your code
+is going wrong.)
+
+
 ## Submission
 
 You should submit your work in the form of a URL to a publicly
@@ -85,8 +102,8 @@ accessible `git` repository, which should include the source and a
 
 1. Who you are.
 
-1. How to build and run your program.
+1. How to build and run your program and tests.
 
-Unfortunately, due to budget cuts, we cannot afford JPEGs of ponies
-any longer, and we will not be awarding quatloo bonuses for extra
-achievements.
+(Alas, due to budget cuts, we cannot afford JPEGs of ponies any
+longer, and we will not be awarding quatloo bonuses for extra
+achievements.)
