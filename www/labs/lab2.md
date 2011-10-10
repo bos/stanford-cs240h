@@ -66,6 +66,7 @@ pieces of information:
 
 * The amount of time needed to perform the query.
 
+Here is an example session (user input is prefixed with `>>>` below):
 
 ~~~~
 $ ./my-submission visual486.txt
@@ -74,7 +75,7 @@ visual486.txt: 15373 rectangles read in 25.3 milliseconds
 found 2 matches in 14 microseconds:
     3456,2482,3456,2456,3560,2456,3560,2482
     3340,2490,3340,2430,3600,2430,3600,2482
-
+~~~~
 
 ## Submission
 

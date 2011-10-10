@@ -36,6 +36,20 @@
 <li><p>A small number (say up to 4) of overlapping rectangles. (Why an upper limit? In case the query rectangle overlaps with <em>all</em> rectangles in the tree! We don't want to be spammed with huge amounts of output in that case.)</p></li>
 <li><p>The amount of time needed to perform the query.</p></li>
 </ul>
-<p>~<sub>~</sub> $ ./my-submission visual486.txt visual486.txt: 15373 rectangles read in 25.3 milliseconds &gt;&gt;&gt; 3458,2482,3458,2456,3570,2456,3570,2482 found 2 matches in 14 microseconds: 3456,2482,3456,2456,3560,2456,3560,2482 3340,2490,3340,2430,3600,2430,3600,2482</p>
+<p>Here is an example session (user input is prefixed with <code>&gt;&gt;&gt;</code> below):</p>
+<pre><code>$ ./my-submission visual486.txt
+visual486.txt: 15373 rectangles read in 25.3 milliseconds
+&gt;&gt;&gt; 3458,2482,3458,2456,3570,2456,3570,2482
+found 2 matches in 14 microseconds:
+    3456,2482,3456,2456,3560,2456,3560,2482
+    3340,2490,3340,2430,3600,2430,3600,2482
+</code></pre>
+<h2 id="submission">Submission</h2>
+<p>You should submit your work in the form of a URL to a publicly accessible <code>git</code> repository, which should include the source and a <code>README</code> file that tells us:</p>
+<ol style="list-style-type: decimal">
+<li><p>Who you are.</p></li>
+<li><p>How to build and run your program.</p></li>
+</ol>
+<p>Unfortunately, due to budget cuts, we cannot afford JPEGs of ponies any longer, and we will not be awarding quatloo bonuses for extra achievements.</p>
 </body>
 </html>
