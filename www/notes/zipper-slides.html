@@ -5,6 +5,26 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="generator" content="pandoc" />
+  <title>Zippers and such</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+  </style>
   <style type="text/css">
 body{margin:0;padding:0;width:100%;height:100%;color:black;background-color:white;font-family:"Gill Sans MT","Gill Sans",GillSans,sans-serif;font-size:14pt;}.hidden{display:none;visibility:hidden;}div.toolbar{position:fixed;z-index:200;top:auto;bottom:0;left:0;right:0;height:1.2em;text-align:right;padding-left:1em;padding-right:1em;font-size:60%;color:red;background:#f0f0f0;}div.background{display:none;}div.handout{margin-left:20px;margin-right:20px;}div.slide.titlepage{text-align:center;}div.slide.titlepage.h1{padding-top:40%;}div.slide{z-index:20;margin:0;padding-top:0;padding-bottom:0;padding-left:20px;padding-right:20px;border-width:0;clear:both;top:0;bottom:0;left:0;right:0;line-height:120%;background-color:transparent;}div.slide+div[class].slide{page-break-before:always;}div.slide h1{padding-left:0;padding-right:20pt;padding-top:4pt;padding-bottom:4pt;margin-top:0;margin-left:0;margin-right:60pt;margin-bottom:.5em;display:block;font-size:160%;line-height:1.2em;background:transparent;}div.toc{position:absolute;top:auto;bottom:4em;left:4em;right:auto;width:60%;max-width:30em;height:30em;border:solid thin black;padding:1em;background:#f0f0f0;color:black;z-index:300;overflow:auto;display:block;visibility:visible;}div.toc-heading{width:100%;border-bottom:solid 1px #b4b4b4;margin-bottom:1em;text-align:center;}pre{font-size:80%;font-weight:bold;line-height:120%;padding-top:.2em;padding-bottom:.2em;padding-left:1em;padding-right:1em;border-style:solid;border-left-width:1em;border-top-width:thin;border-right-width:thin;border-bottom-width:thin;border-color:#95ABD0;color:#00428C;background-color:#E4E5E7;}li pre{margin-left:0;}@media print{div.slide{display:block;visibility:visible;position:relative;border-top-style:solid;border-top-width:thin;border-top-color:black;}div.slide pre{font-size:60%;padding-left:.5em;}div.handout{display:block;visibility:visible;}}blockquote{font-style:italic;}img{background-color:transparent;}p.copyright{font-size:smaller;}.center{text-align:center;}.footnote{font-size:smaller;margin-left:2em;}a img{border-width:0;border-style:none;}a:visited{color:navy;}a:link{color:navy;}a:hover{color:red;text-decoration:underline;}a:active{color:red;text-decoration:underline;}a{text-decoration:none;}.navbar a:link{color:white;}.navbar a:visited{color:yellow;}.navbar a:active{color:red;}.navbar a:hover{color:red;}ul{list-style-type:square;}ul ul{list-style-type:disc;}ul ul ul{list-style-type:circle;}ul ul ul ul{list-style-type:disc;}li{margin-left:.5em;margin-top:.5em;}li li{font-size:85%;font-style:italic;}li li li{font-size:85%;font-style:normal;}div dt{margin-left:0;margin-top:1em;margin-bottom:.5em;font-weight:bold;}div dd{margin-left:2em;margin-bottom:.5em;}p,pre,ul,ol,blockquote,h2,h3,h4,h5,h6,dl,table{margin-left:1em;margin-right:1em;}p.subhead{font-weight:bold;margin-top:2em;}.smaller{font-size:smaller;}.bigger{font-size:130%;}td,th{padding:.2em;}ul{margin:.5em 1.5em .5em 1.5em;padding:0;}ol{margin:.5em 1.5em .5em 1.5em;padding:0;}ul{list-style-type:square;}ul ul{list-style-type:disc;}ul ul ul{list-style-type:circle;}ul ul ul ul{list-style-type:disc;}ul li{list-style:square;margin:.1em 0 .6em 0;padding:0;line-height:140%;}ol li{margin:.1em 0 .6em 1.5em;padding:0;line-height:140%;list-style-type:decimal;}li ul li{font-size:85%;font-style:italic;list-style-type:disc;background:transparent;padding:0;}li li ul li{font-size:85%;font-style:normal;list-style-type:circle;background:transparent;padding:0;}li li li ul li{list-style-type:disc;background:transparent;padding:0;}li ol li{list-style-type:decimal;}li li ol li{list-style-type:decimal;}ol.outline li:hover{cursor:pointer;}ol.outline li.nofold:hover{cursor:default;}ul.outline li:hover{cursor:pointer;}ul.outline li.nofold:hover{cursor:default;}ol.outline{list-style:decimal;}ol.outline ol{list-style-type:lower-alpha;}ol.outline li.nofold{padding:0 0 0 20px;background:transparent url(nofold-dim.gif) no-repeat 0 .5em;}ol.outline li.unfolded{padding:0 0 0 20px;background:transparent url(fold-dim.gif) no-repeat 0 .5em;}ol.outline li.folded{padding:0 0 0 20px;background:transparent url(unfold-dim.gif) no-repeat 0 .5em;}ol.outline li.unfolded:hover{padding:0 0 0 20px;background:transparent url(fold.gif) no-repeat 0 .5em;}ol.outline li.folded:hover{padding:0 0 0 20px;background:transparent url(unfold.gif) no-repeat 0 .5em;}ul.outline li.nofold{padding:0 0 0 20px;background:transparent url(nofold-dim.gif) no-repeat 0 .5em;}ul.outline li.unfolded{padding:0 0 0 20px;background:transparent url(fold-dim.gif) no-repeat 0 .5em;}ul.outline li.folded{padding:0 0 0 20px;background:transparent url(unfold-dim.gif) no-repeat 0 .5em;}ul.outline li.unfolded:hover{padding:0 0 0 20px;background:transparent url(fold.gif) no-repeat 0 .5em;}ul.outline li.folded:hover{padding:0 0 0 20px;background:transparent url(unfold.gif) no-repeat 0 .5em;}a.titleslide{font-weight:bold;font-style:italic;}
   </style>
@@ -21,6 +41,137 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
 </div>
 <div class="slide">
 
+<h1>Back to basics</h1>
+<p>How many values can we construct from the following type?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="kw">False</span> <span class="fu">|</span> <span class="kw">True</span></code></pre>
+<p>Note: in this discussion, we're explicitly omitting well-typed but non-terminating constructs such as the following:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">loop </span><span class="ot">::</span> <span class="dt">Bool</span><br />loop <span class="fu">=</span> loop<br /><br /><span class="ot">wtf </span><span class="ot">::</span> <span class="dt">Bool</span><br />wtf <span class="fu">=</span> <span class="fu">undefined</span><br /><br /><span class="ot">crash </span><span class="ot">::</span> <span class="dt">Bool</span><br />crash <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;fnord&quot;</span></code></pre>
+</div>
+
+<div class="slide">
+
+<h1>Ordering</h1>
+<p>Another well-known type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Ordering</span> <span class="fu">=</span> <span class="kw">LT</span> <span class="fu">|</span> <span class="kw">EQ</span> <span class="fu">|</span> <span class="kw">GT</span></code></pre>
+<p>Clearly we can construct three different values of this type.</p>
+</div>
+
+<div class="slide">
+
+<h1>A zero-valued type</h1>
+<p>In Haskell 2010, we can create types from which <em>no</em> values can be constructed:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Empty</span></code></pre>
+<p>This type has no value constructors (and we can't use <code>deriving</code> syntax on it).</p>
+</div>
+
+<div class="slide">
+
+<h1>Zero, one, two...</h1>
+<p>So big deal, we can create types with zero or more constructors:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Empty</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">One</span> <span class="fu">=</span> <span class="dt">One</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="kw">False</span> <span class="fu">|</span> <span class="kw">True</span></code></pre>
+</div>
+
+<div class="slide">
+
+<h1>Adding some parameters</h1>
+<p>Another type to ponder.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">A</span> <span class="fu">=</span> <span class="dt">A</span> <span class="dt">Bool</span><br />       <span class="fu">|</span> <span class="dt">B</span> <span class="dt">Ordering</span></code></pre>
+<p>We can construct five values of this type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="dt">A</span> <span class="kw">False</span><br /><span class="dt">A</span> <span class="kw">True</span><br /><span class="dt">B</span> <span class="kw">LT</span><br /><span class="dt">B</span> <span class="kw">EQ</span><br /><span class="dt">B</span> <span class="kw">GT</span></code></pre>
+</div>
+
+<div class="slide">
+
+<h1>A different tack</h1>
+<p>How many values can this type represent?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Fnord</span> <span class="fu">=</span> <span class="dt">Fnord</span> <span class="dt">Bool</span> <span class="dt">Ordering</span></code></pre>
+<p>What about this one?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Quaternion</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="dt">Double</span></code></pre>
+</div>
+
+<div class="slide">
+
+<h1>Switching the notation: sums</h1>
+<p>Let's take a different perspective for a moment, and do some arithmetic.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Sum</span> <span class="fu">=</span> <span class="dt">A</span> <span class="dt">Bool</span><br />         <span class="fu">|</span> <span class="dt">B</span> <span class="dt">Ordering</span></code></pre>
+<p>If we exhaustively enumerate the possible values of this type, we see that there are as many values as:</p>
+<ul>
+<li>Values of <code>Bool</code>...</li>
+<li>...<em>added to</em>...</li>
+<li>Values of <code>Ordering</code></li>
+</ul>
+<p>Let's write that number as <span class="math">Bool + Ordering</span></p>
+</div>
+
+<div class="slide">
+
+<h1>Switching the notation: products</h1>
+<p>From reading this type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Product</span> <span class="fu">=</span> <span class="dt">Product</span> <span class="dt">Bool</span> <span class="dt">Ordering</span></code></pre>
+<p>Following the previous example, it's pretty clear that we can create as many values of type <code>Ordering</code> as there are:</p>
+<ul>
+<li>Values of <code>Bool</code>...</li>
+<li>...<em>multiplied by</em>...</li>
+<li>Values of <code>TrafficLight</code></li>
+</ul>
+<p>Let's write that number as <span class="math">Bool × Ordering</span></p>
+</div>
+
+<div class="slide">
+
+<h1>From arithmetic to algebra: sums</h1>
+<p>Now let's introduce polymorphism into the mix.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Either</span> a b <span class="fu">=</span> <span class="kw">Left</span> a <span class="fu">|</span> <span class="kw">Right</span> b</code></pre>
+<p>We don't know how many values there are of this type, since neither <code>a</code> nor <code>b</code> is specified.</p>
+<p>But we can still write an algebraic expression that will compute the right number, once we plug concrete types in:</p>
+<ul>
+<li><span class="math"><em>a</em> + <em>b</em></span></li>
+</ul>
+</div>
+
+<div class="slide">
+
+<h1>From arithmetic to algebra: products</h1>
+<p>This should be a no-brainer:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Triple</span> a b c <span class="fu">=</span> <span class="dt">Triple</span> a b c</code></pre>
+<p>The algebraic expression that describes the number of values of this type is no surprise:</p>
+<ul>
+<li><span class="math"><em>a</em> + <em>b</em> + <em>c</em></span></li>
+</ul>
+</div>
+
+<div class="slide">
+
+<h1>Mixing sums and products</h1>
+<p>How many values are there of this type?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Foo</span> a b c <span class="fu">=</span> <span class="dt">Foo</span> a b<br />               <span class="fu">|</span> <span class="dt">Bar</span> b c</code></pre>
+</div>
+
+<div class="slide">
+
+<h1>Clarity on naming: sums</h1>
+<p>Consider a type that consists only of zero-parameter constructors:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Rainbow</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Orange</span> <span class="fu">|</span> <span class="dt">Yellow</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="co">{- etc -}</span></code></pre>
+<p>These are often referred to as <em>sum types</em>.</p>
+</div>
+
+<div class="slide">
+
+<h1>Clarity on naming: products</h1>
+<p>If a type has only one constructor, and that constructor takes parameters:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Int</span> <span class="dt">Int</span></code></pre>
+<p>We refer to this as a <em>product type</em>.</p>
+</div>
+
+<div class="slide">
+
+<h1>Algebraic data types</h1>
+<p>Haskell's type system admits sum types, product types, and types that are a mixture of both.</p>
+<ul>
+<li>This should make it clear why the word &quot;algebraic&quot; appears in the phrase.</li>
+</ul>
 </div>
 </body>
 </html>

@@ -4,9 +4,106 @@
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="generator" content="pandoc" />
   <title>Zippers and such</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+  </style>
 </head>
 <body>
 <h1 class="title">Zippers and such</h1>
-
+<h1 id="back-to-basics">Back to basics</h1>
+<p>How many values can we construct from the following type?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="kw">False</span> <span class="fu">|</span> <span class="kw">True</span></code></pre>
+<p>Note: in this discussion, we're explicitly omitting well-typed but non-terminating constructs such as the following:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">loop </span><span class="ot">::</span> <span class="dt">Bool</span><br />loop <span class="fu">=</span> loop<br /><br /><span class="ot">wtf </span><span class="ot">::</span> <span class="dt">Bool</span><br />wtf <span class="fu">=</span> <span class="fu">undefined</span><br /><br /><span class="ot">crash </span><span class="ot">::</span> <span class="dt">Bool</span><br />crash <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;fnord&quot;</span></code></pre>
+<h1 id="ordering">Ordering</h1>
+<p>Another well-known type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Ordering</span> <span class="fu">=</span> <span class="kw">LT</span> <span class="fu">|</span> <span class="kw">EQ</span> <span class="fu">|</span> <span class="kw">GT</span></code></pre>
+<p>Clearly we can construct three different values of this type.</p>
+<h1 id="a-zero-valued-type">A zero-valued type</h1>
+<p>In Haskell 2010, we can create types from which <em>no</em> values can be constructed:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Empty</span></code></pre>
+<p>This type has no value constructors (and we can't use <code>deriving</code> syntax on it).</p>
+<h1 id="zero-one-two...">Zero, one, two...</h1>
+<p>So big deal, we can create types with zero or more constructors:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Empty</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">One</span> <span class="fu">=</span> <span class="dt">One</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="kw">False</span> <span class="fu">|</span> <span class="kw">True</span></code></pre>
+<h1 id="adding-some-parameters">Adding some parameters</h1>
+<p>Another type to ponder.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">A</span> <span class="fu">=</span> <span class="dt">A</span> <span class="dt">Bool</span><br />       <span class="fu">|</span> <span class="dt">B</span> <span class="dt">Ordering</span></code></pre>
+<p>We can construct five values of this type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="dt">A</span> <span class="kw">False</span><br /><span class="dt">A</span> <span class="kw">True</span><br /><span class="dt">B</span> <span class="kw">LT</span><br /><span class="dt">B</span> <span class="kw">EQ</span><br /><span class="dt">B</span> <span class="kw">GT</span></code></pre>
+<h1 id="a-different-tack">A different tack</h1>
+<p>How many values can this type represent?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Fnord</span> <span class="fu">=</span> <span class="dt">Fnord</span> <span class="dt">Bool</span> <span class="dt">Ordering</span></code></pre>
+<p>What about this one?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Quaternion</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="dt">Double</span></code></pre>
+<h1 id="switching-the-notation-sums">Switching the notation: sums</h1>
+<p>Let's take a different perspective for a moment, and do some arithmetic.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Sum</span> <span class="fu">=</span> <span class="dt">A</span> <span class="dt">Bool</span><br />         <span class="fu">|</span> <span class="dt">B</span> <span class="dt">Ordering</span></code></pre>
+<p>If we exhaustively enumerate the possible values of this type, we see that there are as many values as:</p>
+<ul>
+<li>Values of <code>Bool</code>...</li>
+<li>...<em>added to</em>...</li>
+<li>Values of <code>Ordering</code></li>
+</ul>
+<p>Let's write that number as <span class="math">Bool + Ordering</span></p>
+<h1 id="switching-the-notation-products">Switching the notation: products</h1>
+<p>From reading this type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Product</span> <span class="fu">=</span> <span class="dt">Product</span> <span class="dt">Bool</span> <span class="dt">Ordering</span></code></pre>
+<p>Following the previous example, it's pretty clear that we can create as many values of type <code>Ordering</code> as there are:</p>
+<ul>
+<li>Values of <code>Bool</code>...</li>
+<li>...<em>multiplied by</em>...</li>
+<li>Values of <code>TrafficLight</code></li>
+</ul>
+<p>Let's write that number as <span class="math">Bool × Ordering</span></p>
+<h1 id="from-arithmetic-to-algebra-sums">From arithmetic to algebra: sums</h1>
+<p>Now let's introduce polymorphism into the mix.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Either</span> a b <span class="fu">=</span> <span class="kw">Left</span> a <span class="fu">|</span> <span class="kw">Right</span> b</code></pre>
+<p>We don't know how many values there are of this type, since neither <code>a</code> nor <code>b</code> is specified.</p>
+<p>But we can still write an algebraic expression that will compute the right number, once we plug concrete types in:</p>
+<ul>
+<li><span class="math"><em>a</em> + <em>b</em></span></li>
+</ul>
+<h1 id="from-arithmetic-to-algebra-products">From arithmetic to algebra: products</h1>
+<p>This should be a no-brainer:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Triple</span> a b c <span class="fu">=</span> <span class="dt">Triple</span> a b c</code></pre>
+<p>The algebraic expression that describes the number of values of this type is no surprise:</p>
+<ul>
+<li><span class="math"><em>a</em> + <em>b</em> + <em>c</em></span></li>
+</ul>
+<h1 id="mixing-sums-and-products">Mixing sums and products</h1>
+<p>How many values are there of this type?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Foo</span> a b c <span class="fu">=</span> <span class="dt">Foo</span> a b<br />               <span class="fu">|</span> <span class="dt">Bar</span> b c</code></pre>
+<h1 id="clarity-on-naming-sums">Clarity on naming: sums</h1>
+<p>Consider a type that consists only of zero-parameter constructors:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Rainbow</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Orange</span> <span class="fu">|</span> <span class="dt">Yellow</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="co">{- etc -}</span></code></pre>
+<p>These are often referred to as <em>sum types</em>.</p>
+<h1 id="clarity-on-naming-products">Clarity on naming: products</h1>
+<p>If a type has only one constructor, and that constructor takes parameters:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Int</span> <span class="dt">Int</span></code></pre>
+<p>We refer to this as a <em>product type</em>.</p>
+<h1 id="algebraic-data-types">Algebraic data types</h1>
+<p>Haskell's type system admits sum types, product types, and types that are a mixture of both.</p>
+<ul>
+<li>This should make it clear why the word &quot;algebraic&quot; appears in the phrase.</li>
+</ul>
 </body>
 </html>
