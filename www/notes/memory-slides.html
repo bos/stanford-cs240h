@@ -865,64 +865,92 @@ Int# :: #
 <li><a href="http://www.haskell.org/ghc/docs/latest/html/libraries/base-4.4.0.0/Foreign-Marshal-Alloc.html#v:finalizerFree"><code>finalizerFree</code></a> symbol conveniently provides function pointer for <code>free</code></li>
 </ul></li>
 </ul>
-</div>
-<div class="slide">
-<h1 id="foreign-function-interface-ffi"><a href="http://www.haskell.org/onlinereport/haskell2010/haskellch8.html">Foreign function interface</a> (FFI)</h1>
-<ul>
-<li><p>Can import foreign functions like this:</p>
-<pre class="sourceCode"><code class="sourceCode haskell">foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;stdlib.h malloc&quot;</span><br /><span class="ot">    c_malloc </span><span class="ot">::</span> <span class="dt">CSize</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> (<span class="dt">Ptr</span> a)<br />foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;stdlib.h free&quot;</span><br /><span class="ot">    c_free </span><span class="ot">::</span> <span class="dt">Ptr</span> a <span class="ot">-&gt;</span> <span class="dt">IO</span> ()</code></pre>
-<ul>
-<li><code>ccall</code> says use C calling convention (also <code>cplusplus</code> and few others)</li>
-<li><code>unsafe</code> promises the C function will not call back into Haskell</li>
-<li><code>unafe</code> faster than <code>safe</code>, but gives undefined results if call triggers GC</li>
-</ul></li>
-<li>Spec for import string: <code>&quot;</code>[<code>static</code>] [<em>c-header</em>] [<code>&amp;</code>][<em>c-name</em>]<code>&quot;</code>
-<ul>
-<li><code>static</code> required only if <em>c-name</em> is <code>dynamic</code> or <code>wrapper</code></li>
-<li><em>c-header</em> is a single <code>.h</code> file with the declaration (ignored by GHC)</li>
-<li>'&amp;' imports pointer rather than function (required for <code>FunPtr</code>s)</li>
-</ul></li>
-</ul>
-</div>
-<div class="slide">
-<h1 id="ffi-types">FFI types</h1>
-<ul>
-<li>FFI function arguments must be <em>basic foreign types</em>
-<ul>
-<li><code>Char</code>, <code>Int</code>, <code>Double</code>, <code>Float</code>, <code>Bool</code>, <code>Int8</code>, <code>Int16</code>, <code>Int32</code>, <code>Int64</code>, <code>Word8</code>, <code>Word16</code>, <code>Word32</code>, <code>Word64</code>, <code>Ptr</code> <code>a</code>, <code>FunPtr a</code>, and <code>StablePtr a</code></li>
-<li>Also accepts any <code>type</code> or <code>newtype</code> wrappers for basic types (<code>CInt</code>, <code>CChar</code>, etc.)<br/> [Documentation incorrectly says <code>data CInt</code>, but <code>:i</code> in GHCI reveals truth.]</li>
-</ul></li>
-<li>FFI function results can be
-<ul>
-<li>Any valid argument type</li>
-<li><code>()</code> (for functions returning <code>void</code>)</li>
-<li><code>IO a</code> where <code>a</code> is either of the above two</li>
-</ul></li>
-<li>Place result <code>IO</code> if function has side effects or non-determinism
-<ul>
-<li><p>Okay to omit if it is a pure C function:</p>
-<pre class="sourceCode"><code class="sourceCode haskell">foreign <span class="kw">import</span> ccall unsafe <span class="st">&quot;arpa/inet.h ntohl&quot;</span><br /><span class="ot">    ntohl </span><span class="ot">::</span> <span class="dt">Word32</span> <span class="ot">-&gt;</span> <span class="dt">Word32</span></code></pre></li>
-<li><p>Haskell can't check C purity, so omitting <code>IO</code> can cause problems</p></li>
-</ul></li>
-</ul>
-</div>
-<div class="slide">
-<h1 id="hsc2hs"><a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html"><code>hsc2hs</code></a></h1>
-<ul>
-<li><p>How to access C data structures?</p>
-<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> mystruct {<br />  <span class="dt">char</span> *name;<br />  <span class="dt">int</span> value;<br />};</code></pre>
-<ul>
-<li>Might model with opaque placeholder type</li>
-</ul>
-<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">MyStruct</span>        <span class="co">-- no constructors, just a placeholder</span><br /><span class="ot">getValue </span><span class="ot">::</span> <span class="dt">Ptr</span> <span class="dt">MyStruct</span> <span class="ot">-&gt;</span> <span class="dt">IO</span> <span class="dt">CInt</span><br />getValue ptr <span class="fu">=</span> peek <span class="fu">$</span> ptr <span class="ot">`plusPtr`</span> <span class="dv">8</span>  <span class="co">-- assumes char * 8 bytes</span></code></pre></li>
-<li><p><a href="http://www.haskell.org/ghc/docs/latest/html/users_guide/hsc2hs.html"><code>hsc2hs</code></a> is pre-processor that lets you compute C values</p>
-<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">#</span>include <span class="st">&quot;myheader.h&quot;</span><br />getValue ptr <span class="fu">=</span> peek <span class="fu">$</span> ptr <span class="ot">`plusPtr`</span><br />               <span class="fu">#</span>{offset struct mystruct, value}</code></pre>
-<ul>
-<li>Super-simple implementation just uses C macros &amp; <code>printf</code></li>
-<li>Find the file <a href="http://darcs.haskell.org/cgi-bin/gitweb.cgi?p=hsc2hs.git;a=blob;f=template-hsc.h;hb=HEAD"><code>template-hsc.h</code></a> on your system to see defs of <code>#</code> commands</li>
-<li>Can also define your own macros with <code>#let</code> (like <code>#define</code> w/o parens)</li>
-</ul></li>
-</ul>
+<!--
+
+# [Foreign function interface][FFI] (FFI)
+
+* Can import foreign functions like this:
+
+    ~~~~ {.haskell}
+    foreign import ccall unsafe "stdlib.h malloc"
+        c_malloc :: CSize -> IO (Ptr a)
+    foreign import ccall unsafe "stdlib.h free"
+        c_free :: Ptr a -> IO ()
+    ~~~~
+
+    * `ccall` says use C calling convention (also `cplusplus` and few
+      others)
+    * `unsafe` promises the C function will not call back into
+      Haskell
+    * `unafe` faster than `safe`, but gives undefined results if call
+      triggers GC
+* Spec for import string: `"`[`static`] [*c-header*] [`&`][*c-name*]`"`
+    * `static` required only if *c-name* is `dynamic` or `wrapper`
+    * *c-header* is a single `.h` file with the declaration
+       (ignored by GHC)
+    * '&' imports pointer rather than function (required for `FunPtr`s)
+
+
+# FFI types
+
+* FFI function arguments must be *basic foreign types*
+    * `Char`, `Int`, `Double`, `Float`, `Bool`, `Int8`, `Int16`,
+      `Int32`, `Int64`, `Word8`, `Word16`, `Word32`, `Word64`, `Ptr`
+      `a`, `FunPtr a`, and `StablePtr a`
+    * Also accepts any `type` or `newtype` wrappers for basic types
+      (`CInt`, `CChar`, etc.)<br/>
+      [Documentation incorrectly says `data CInt`, but `:i` in GHCI
+      reveals truth.]
+* FFI function results can be
+    * Any valid argument type
+    * `()` (for functions returning `void`)
+    * `IO a` where `a` is either of the above two
+* Place result `IO` if function has side effects or non-determinism
+    * Okay to omit if it is a pure C function:
+
+        ~~~~ {.haskell}
+        foreign import ccall unsafe "arpa/inet.h ntohl"
+            ntohl :: Word32 -> Word32
+        ~~~~
+
+    * Haskell can't check C purity, so omitting `IO` can cause
+      problems
+
+# [`hsc2hs`][hsc2hs]
+
+* How to access C data structures?
+
+    ~~~~ {.c}
+    struct mystruct {
+      char *name;
+      int value;
+    };
+    ~~~~
+
+    * Might model with opaque placeholder type
+
+    ~~~~ {.haskell}
+    data MyStruct        -- no constructors, just a placeholder
+    getValue :: Ptr MyStruct -> IO CInt
+    getValue ptr = peek $ ptr `plusPtr` 8  -- assumes char * 8 bytes
+    ~~~~
+
+* [`hsc2hs`][hsc2hs] is pre-processor that lets you compute C values
+
+    ~~~~ {.haskell}
+    #include "myheader.h"
+    getValue ptr = peek $ ptr `plusPtr`
+                   #{offset struct mystruct, value}
+    ~~~~
+
+    * Super-simple implementation just uses C macros & `printf`
+    * Find the file [`template-hsc.h`][template-hsc.h] on your system
+      to see defs of `#` commands
+    * Can also define your own macros with `#let` (like `#define` w/o
+      parens)
+
+-->
+
 </div>
 <div class="slide">
 <h1 id="bytestrings"><a href="http://www.haskell.org/ghc/docs/latest/html/libraries/bytestring-0.9.2.0/index.html"><code>ByteString</code>s</a></h1>
