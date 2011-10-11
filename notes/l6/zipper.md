@@ -1,5 +1,15 @@
 % Zippers and such
 
+# The purpose of this lecture
+
+We're going to take a brief break from blowing your mind today.
+
+# The purpose of this lecture
+
+We're going to take a brief break from blowing your mind today.
+
+Instead, we're going to *really* blow your mind.
+
 # Back to basics
 
 How many values can we construct from the following type?
