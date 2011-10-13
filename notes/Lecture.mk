@@ -15,8 +15,10 @@ $(L)-slides.html: $(L).md $(wildcard ../pandoc/slidy/*)
 	@test -f $<
 	pandoc --data-dir=../pandoc --offline -s -t slidy -o $@ $<
 
+CONFIG := $(dir $(PWD))config
 show: $(L)-slides.html
-	xdg-open $<
+	XDG_CONFIG_HOME=$(CONFIG) XDG_DATA_HOME=$(CONFIG)/share \
+		HOME=$(CONFIG) xdg-open $< &
 .PHONY: show
 
 install: $(L).md $(L).html $(L)-slides.html

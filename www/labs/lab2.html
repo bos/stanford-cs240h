@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>CS240H Lab 2</title>
+  <link rel="stylesheet" href="../style.css" type="text/css" />
+</head>
+<body>
+<h1 class="title">CS240H Lab 2</h1>
+<h1 id="hilbert-r-tree">Hilbert R-tree</h1>
+<p>Build a purely functional implementation of the <a href="http://en.wikipedia.org/wiki/Hilbert_R-tree">Hilbert R-tree</a>, a data structure for managing and querying two-dimensional geometric data, such as rectangles, circles, and other shapes.</p>
+<p>This data structure was introduced in the influential VLDB paper &quot;<a href="http://scholar.google.com/scholar?q=Hilbert+R-tree+an+improved+r-tree+using+fractals">Hilbert R-tree: An Improved R-tree using Fractals</a>&quot;. You can find a PDF copy of the original paper at <a href="http://www.cis.temple.edu/~vasilis/Courses/CIS750/Papers/HilbertRtree-Kamel.pdf">cis.temple.edu</a>.</p>
+<p>Your implementation should follow the original description from the VLDB paper.</p>
+<h2 id="requirements">Requirements</h2>
+<p>You should implement two algorithms:</p>
+<ul>
+<li><p>Insert</p></li>
+<li><p>Search</p></li>
+</ul>
+<p>Your implementation only needs to be able to insert and search rectangles. We are not interested in more complex shapes.</p>
+<p>Assume that all X and Y coordinates will be specified as integers between 0 and 65536.</p>
+<h2 id="sample-data">Sample data</h2>
+<p>We have provided a <a href="rects.txt">sample rectangle file</a> containing all 1,454 rectangular features from the <a href="http://visual6502.org/">Visual 6502 project</a>.</p>
+<h2 id="command-line-application">Command line application</h2>
+<p>Your submission must come in the form of a command line application.</p>
+<h3 id="starting-up">Starting up</h3>
+<p>At startup time, the application must behave as follows:</p>
+<ul>
+<li><p>Read a file (whose name will be supplied on the command line) in the format used by the sample <code>rects.txt</code> file that we have supplied.</p></li>
+<li><p>Construct a Hilbert R-tree in memory from this data.</p></li>
+<li><p>Measure and print the amount of time needed to read the input file and construct the tree.</p></li>
+</ul>
+<h3 id="queries">Queries</h3>
+<p>Once it has started, your application must read &quot;query rectangles&quot; from <code>stdin</code> until end-of-file.</p>
+<p>For each query rectangle, it should print out (on <code>stdout</code>) three pieces of information:</p>
+<ul>
+<li><p>The count of the number of rectangles in the tree that overlap with the query rectangle.</p></li>
+<li><p>A small number (say up to 4) of overlapping rectangles. (Why an upper limit? In case the query rectangle overlaps with <em>all</em> rectangles in the tree! We don't want to be spammed with huge amounts of output in that case.)</p></li>
+<li><p>The amount of time needed to perform the query.</p></li>
+</ul>
+<p>Here is an example session (user input is prefixed with <code>&gt;&gt;&gt;</code> below):</p>
+<pre><code>$ ./my-submission visual486.txt
+visual486.txt: 15373 rectangles read in 25.3 milliseconds
+&gt;&gt;&gt; 3458,2482,3458,2456,3570,2456,3570,2482
+found 2 matches in 14 microseconds:
+    3456,2482,3456,2456,3560,2456,3560,2482
+    3340,2490,3340,2430,3600,2430,3600,2482
+</code></pre>
+<h3 id="property-based-tests">Property-based tests</h3>
+<p>Your submission should include a file that contains QuickCheck tests for your R-tree implemetation, along with instructions on how to build and run your tests.</p>
+<p>(We strongly suggest that you develop your tests and your code simultaneously, as this makes it <em>far</em> easier to tell when your code is going wrong.)</p>
+<h2 id="submission">Submission</h2>
+<p>You should submit your work in the form of a URL to a publicly accessible <code>git</code> repository, which should include the source and a <code>README</code> file that tells us:</p>
+<ol style="list-style-type: decimal">
+<li><p>Who you are.</p></li>
+<li><p>How to build and run your program and tests.</p></li>
+</ol>
+<p>(Alas, due to budget cuts, we cannot afford JPEGs of ponies any longer, and we will not be awarding quatloo bonuses for extra achievements.)</p>
+</body>
+</html>
