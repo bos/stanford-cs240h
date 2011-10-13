@@ -5,6 +5,7 @@
   <meta name="generator" content="pandoc" />
   <title>Zippers and such</title>
   <style type="text/css">
+/*<![CDATA[*/
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
    { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
 td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
@@ -22,10 +23,18 @@ code.sourceCode span.al { color: red; font-weight: bold; }
 code.sourceCode span.fu { color: #06287e; }
 code.sourceCode span.re { }
 code.sourceCode span.er { color: red; font-weight: bold; }
+/*]]>*/
   </style>
 </head>
 <body>
+<div id="header">
 <h1 class="title">Zippers and such</h1>
+</div>
+<h1 id="the-purpose-of-this-lecture">The purpose of this lecture</h1>
+<p>We're going to take a brief break from blowing your mind today.</p>
+<h1 id="the-purpose-of-this-lecture-1">The purpose of this lecture</h1>
+<p>We're going to take a brief break from blowing your mind today.</p>
+<p>Instead, we're going to <em>really</em> blow your mind.</p>
 <h1 id="back-to-basics">Back to basics</h1>
 <p>How many values can we construct from the following type?</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="kw">False</span> <span class="fu">|</span> <span class="kw">True</span></code></pre>
@@ -105,5 +114,250 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <ul>
 <li>This should make it clear why the word &quot;algebraic&quot; appears in the phrase.</li>
 </ul>
+<h1 id="the-frob-merchant">The frob merchant</h1>
+<p>This is a frob.</p>
+<pre><code>                 ___             ____
+                /__/\     ______/___/\
+                \  \ \   /          /\\
+                 \  \ \_/__        /  \
+                 _\  \ \  /\______/__  \
+                // \__\/ /  \       /\  \
+        _______//_______/    \     / _\_/_____
+       /      / \       \    /    / /        /\
+    __/      /   \       \  /    / /        / _\__
+   / /      /     \_______\/    / /        / /   /\
+  /_/______/___________________/ /________/ /___/  \
+  \ \      \    ___________    \ \        \ \   \  /
+   \_\      \  /          /\    \ \        \ \___\/
+      \      \/          /  \    \ \        \  /
+       \_____/          /    \    \ \________\/
+            /__________/      \    \  /
+            \   _____  \      /_____\//
+             \ /    /\  \    /    \  /
+              /____/  \  \  /______\/\
+              \    \  /___\/     \  \ \
+               \____\/            \__\/
+</code></pre>
+<h1 id="the-frob-merchants-web-store">The frob merchant's web store</h1>
+<p>Suppose we're building a web app, where we want to send frobs to customers of our web site.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Customer</span> <span class="fu">=</span> <span class="dt">Customer</span> {<br /><span class="ot">      custID </span><span class="ot">::</span> <span class="dt">Int</span><br />    ,<span class="ot"> custName </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> custAddress </span><span class="ot">::</span> <span class="dt">Address</span><br />    }<br /><br /><span class="kw">newtype</span> <span class="dt">Zip</span> <span class="fu">=</span> <span class="dt">Zip</span> <span class="dt">Int</span><br /><br /><span class="kw">data</span> <span class="dt">Address</span> <span class="fu">=</span> <span class="dt">Address</span> {<br /><span class="ot">      addrStreet </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> addrCity </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> addrState </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> addrZip </span><span class="ot">::</span> <span class="dt">Zip</span><br />    }</code></pre>
+<h1 id="oh-noes">Oh noes!</h1>
+<p>A customer has made a mistake in entering their shipping zip code. They've called us up, irate that we've been unable to fulfil their urgent frob order.</p>
+<p>So. We need to change their zip code.</p>
+<p>In a C-like language, this would be easy:</p>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> Customer *cust;<br /><br /><span class="co">/* ... */</span><br /><br />cust-&gt;custAddress-&gt;addrZip = <span class="dv">94043</span>;</code></pre>
+<h1 id="getting-at-a-zip-code">Getting at a zip code</h1>
+<p>Haskell's record syntax automatically defines &quot;accessor&quot; or &quot;getter&quot; functions for us:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">custAddress </span><span class="ot">::</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Address</span><br /><span class="ot">addrZip </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Zip</span></code></pre>
+<p>Given a <code>Customer</code>, we can obviously use function composition to get their zip:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">custZip </span><span class="ot">::</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Zip</span><br />custZip <span class="fu">=</span> addrZip <span class="fu">.</span> custAddress</code></pre>
+<p>Unfortunately, we lack a &quot;good&quot; facility for updating records. Let's see what that means.</p>
+<h1 id="setting-a-zip-code">Setting a zip code</h1>
+<p>We need to modify a zip code, but we're working in a pure language, so clearly a &quot;zip code setter&quot; is going to be a function that returns a new value that is identical to the previous value except for the zip.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setAddrZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Address</span></code></pre>
+<p>If we have a new <code>Address</code> and we want to &quot;modify&quot; a <code>Customer</code>, we need a similar function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustAddress </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span></code></pre>
+<p>Ultimately, our goal is actually to write this function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span></code></pre>
+<h1 id="record-update-syntax">Record update syntax</h1>
+<p>Along with record syntax, Haskell provides an &quot;update&quot; syntax:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setAddrZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Address</span><br />setAddrZip <span class="fu">zip</span> addr <span class="fu">=</span> addr { addrZip <span class="fu">=</span> <span class="fu">zip</span> }</code></pre>
+<p>The expression on the right means this:</p>
+<ul>
+<li><p>Make a copy of <code>addr</code></p></li>
+<li><p>All fields in the new value should be the same as in <code>addr</code>...</p></li>
+<li><p>...<em>except</em> for <code>addrZip</code>, which should have the value <code>zip</code></p></li>
+</ul>
+<h1 id="does-this-solve-our-problem">Does this solve our problem?</h1>
+<p>Here's the other &quot;setter&quot; function we need, which follows the same pattern:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustAddress </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span><br />setCustAddress addr cust <span class="fu">=</span> cust { custAddress <span class="fu">=</span> addr }</code></pre>
+<p>Now we can write that <code>setCustZip</code> function we wanted:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span><br />setCustZip <span class="fu">zip</span> cust <span class="fu">=</span><br />    setCustAddress (setAddrZip <span class="fu">zip</span> (custAddress cust)) cust</code></pre>
+<p>Trouble is, the above looks much uglier to me than the corresponding C:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">cust<span class="ot">-&gt;</span>custAddress<span class="ot">-&gt;</span>addrZip <span class="fu">=</span> <span class="dv">94043</span>;</code></pre>
+<p>Worse, we have to write each of our Haskell &quot;setter&quot; functions <em>by hand</em>. Ugh.</p>
+<h1 id="is-the-situation-hopeless">Is the situation hopeless?</h1>
+<p>Here are our desiderata:</p>
+<ol style="list-style-type: decimal">
+<li><p>We want to be able to access fields within records.</p></li>
+<li><p>We want to be able to <em>compose</em> accesses, so that we can inspect fields within records that are themselves fields of records.</p></li>
+<li><p>We want to be able to update fields within records.</p></li>
+<li><p>We want to be able to <em>compose</em> updates, so that we can modify fields within records that are themselves fields of records.</p></li>
+</ol>
+<p>With Haskell's record syntax, we get #1 and #2, sort of #3 (if we squint), and definitely not #4.</p>
+<h1 id="lenses">Lenses</h1>
+<p>What we want is a type that behaves something like this:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Lens</span> rec fld <span class="fu">=</span> <span class="dt">Lens</span> {<br /><span class="ot">      get </span><span class="ot">::</span> rec <span class="ot">-&gt;</span> fld<br />    ,<span class="ot"> set </span><span class="ot">::</span> fld <span class="ot">-&gt;</span> rec <span class="ot">-&gt;</span> rec<br />    }</code></pre>
+<p>This &quot;bundles together&quot; a record type <code>rec</code> with a field type <code>fld</code>, so that we know:</p>
+<ul>
+<li><p>how to get a field out of a record, and</p></li>
+<li><p>how to update a field within a record.</p></li>
+</ul>
+<p>(Why the name &quot;lens&quot;? Because it lets us <em>focus</em> on a field within a record.)</p>
+<h1 id="how-should-lenses-behave">How should lenses behave?</h1>
+<p>We need three laws to hold for lenses.</p>
+<p>If we <code>put</code> something into a record, we can <code>get</code> it back out.</p>
+<pre class="sourceCode"><code class="sourceCode haskell">get l (put l b a) <span class="fu">==</span> b </code></pre>
+<p>If we <code>get</code> something out of a record, and <code>put</code> it back in, the result is identical to the original record.</p>
+<pre class="sourceCode"><code class="sourceCode haskell">put l (get l a) a <span class="fu">==</span> a</code></pre>
+<p>Two successive <code>put</code> operations must give the same result as a single <code>put</code> of the second value:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">put l b1 (put l b2 a) <span class="fu">==</span> put l b1 a</code></pre>
+<p>(We call these properties &quot;laws&quot; because they <em>must</em> hold in order for us to be able to reason about lenses.)</p>
+<h1 id="what-does-a-real-lens-look-like">What does a real lens look like?</h1>
+<p>The following definitions correspond to those in the <a href="http://hackage.haskell.org/package/data-lens">data-lens</a> package.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Lens</span> rec fld <span class="fu">=</span> <span class="dt">Lens</span> (rec <span class="ot">-&gt;</span> <span class="dt">Store</span> fld rec)</code></pre>
+<p>where</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Store</span> fld rec <span class="fu">=</span> <span class="dt">Store</span> (fld <span class="ot">-&gt;</span> rec) fld</code></pre>
+<p>That's hard to follow, so let's dig in and try to understand. First, we'll get rid of the name <code>Store</code>, to give the tuple:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(fld <span class="ot">-&gt;</span> rec, fld)</code></pre>
+<p>Then we'll substitute this into the definition of <code>Lens</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Lens</span> rec fld <span class="fu">=</span> <span class="dt">Lens</span> (rec <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec, fld))</code></pre>
+<h1 id="simplifying-further">Simplifying further</h1>
+<p>If we ignore all the <code>newtype</code> noise, we're left with a very simple type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">rec <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec, fld)</code></pre>
+<p>That is, a <code>Lens</code> is:</p>
+<ul>
+<li><p>A function that accepts a record type <code>rec</code> as its argument</p></li>
+<li><p>It returns a pair</p></li>
+<li><p>The first element is a setter: give it a field value of type <code>fld</code>, and it will return a new record</p></li>
+<li><p>The second element is the current value of the field</p></li>
+</ul>
+<h1 id="why-the-coupling">Why the coupling?</h1>
+<p>Why does a lens give us both the value of a field and a function for setting a new value of that field?</p>
+<ul>
+<li><p>Suppose that computing the path to the right place in the record for the getter is expensive.</p></li>
+<li><p>This representation allows the setter to reuse that computation.</p></li>
+</ul>
+<p>We can also reduce the number of laws that a lens must obey from 3 to 2 (but that's beyond our scope).</p>
+<h1 id="the-get-operator">The get operator</h1>
+<p>Here is our getter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(^.) </span><span class="ot">::</span> rec <span class="ot">-&gt;</span> <span class="dt">Lens</span> rec fld <span class="ot">-&gt;</span> fld<br />a <span class="fu">^.</span> (<span class="dt">Lens</span> f) <span class="fu">=</span> pos (f a)<br /><span class="kw">infixr</span> <span class="dv">9</span> <span class="fu">^.</span><br /><br /><span class="co">-- internal</span><br /><span class="ot">pos </span><span class="ot">::</span> <span class="dt">Store</span> fld rec <span class="ot">-&gt;</span> fld<br />pos (<span class="dt">Store</span> _ s) <span class="fu">=</span> s</code></pre>
+<h1 id="the-set-operator">The set operator</h1>
+<p>And here is our setter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(^=) </span><span class="ot">::</span> <span class="dt">Lens</span> rec fld <span class="ot">-&gt;</span> fld <span class="ot">-&gt;</span> rec <span class="ot">-&gt;</span> rec<br />(<span class="dt">Lens</span> f) <span class="fu">^=</span> b <span class="fu">=</span> peek b <span class="fu">.</span> f<br /><span class="kw">infixr</span> <span class="dv">4</span> <span class="fu">^=</span><br /><br /><span class="co">-- internal</span><br /><span class="ot">peek </span><span class="ot">::</span> fld <span class="ot">-&gt;</span> <span class="dt">Store</span> fld rec <span class="ot">-&gt;</span> rec<br />peek s (<span class="dt">Store</span> g _) <span class="fu">=</span> g s</code></pre>
+<h1 id="constructing-a-lens">Constructing a lens</h1>
+<p>Given a getter and a setter, we can build a lens:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">lens </span><span class="ot">::</span> (rec <span class="ot">-&gt;</span> fld) <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec <span class="ot">-&gt;</span> rec) <span class="ot">-&gt;</span> <span class="dt">Lens</span> rec fld<br />lens get set <span class="fu">=</span> <span class="dt">Lens</span> <span class="fu">$</span> \a <span class="ot">-&gt;</span> <span class="dt">Store</span> (\b <span class="ot">-&gt;</span> set b a) (get a)</code></pre>
+<p>Alternatively, we can construct a lens from an <em>isomorphism</em> between record and field types:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">iso </span><span class="ot">::</span> (rec <span class="ot">-&gt;</span> fld) <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec) <span class="ot">-&gt;</span> <span class="dt">Lens</span> rec fld<br />iso f g <span class="fu">=</span> <span class="dt">Lens</span> (<span class="dt">Store</span> g <span class="fu">.</span> f)</code></pre>
+<h1 id="a-lens-for-points">A lens for points</h1>
+<p>Consider our venerable <code>Point</code> type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> {<br /><span class="ot">      ptX </span><span class="ot">::</span> <span class="dt">Int</span><br />    ,<span class="ot"> ptY </span><span class="ot">::</span> <span class="dt">Int</span><br />    } <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>We need to define two lenses for this type, one to focus on the <code>x</code> coordinate, and another for <code>y</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">x,<span class="ot"> y </span><span class="ot">::</span> <span class="dt">Lens</span> <span class="dt">Point</span> <span class="dt">Int</span><br />x <span class="fu">=</span> lens ptX (\x pt <span class="ot">-&gt;</span> pt {ptX <span class="fu">=</span> x})<br />y <span class="fu">=</span> lens ptY (\y pt <span class="ot">-&gt;</span> pt {ptY <span class="fu">=</span> y})</code></pre>
+<h1 id="using-our-lens-on-points">Using our lens on points</h1>
+<p>The getter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> <span class="kw">let</span> pt <span class="fu">=</span> <span class="dt">Point</span> <span class="dv">1</span> <span class="dv">1</span><br /><span class="fu">&gt;&gt;</span> pt <span class="fu">^.</span> x<br /><span class="dv">1</span></code></pre>
+<p>The setter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> (x <span class="fu">^=</span> <span class="dv">2</span>) pt<br /><span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">2</span>, ptY <span class="fu">=</span> <span class="dv">1</span>}</code></pre>
+<h1 id="revisiting-nested-data">Revisiting nested data</h1>
+<p>Let's define a line type, with lenses for its beginning and end points:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Line</span> <span class="fu">=</span> <span class="dt">Line</span> {<br /><span class="ot">      lnBeg </span><span class="ot">::</span> <span class="dt">Point</span><br />    ,<span class="ot"> lnEnd </span><span class="ot">::</span> <span class="dt">Point</span><br />    } <span class="kw">deriving</span> (<span class="kw">Show</span>)<br /><br />beg,<span class="ot"> end </span><span class="ot">::</span> <span class="dt">Lens</span> <span class="dt">Line</span> <span class="dt">Point</span><br />beg <span class="fu">=</span> lens lnBeg (\b l <span class="ot">-&gt;</span> l {lnBeg <span class="fu">=</span> b})<br />end <span class="fu">=</span> lens lnEnd (\e l <span class="ot">-&gt;</span> l {lnEnd <span class="fu">=</span> e})</code></pre>
+<p>Suppose we want to access the <code>x</code> coordinate of the end of the line.</p>
+<p>Using normal Haskell machinery, we know we can just use composition:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> <span class="kw">let</span> l <span class="fu">=</span> <span class="dt">Line</span> (<span class="dt">Point</span> <span class="dv">1</span> <span class="dv">2</span>) (<span class="dt">Point</span> <span class="dv">3</span> <span class="dv">4</span>)<br /><span class="fu">&gt;&gt;</span> (ptX <span class="fu">.</span> lnEnd) l<br /><span class="dv">3</span></code></pre>
+<h1 id="function-composition-not-gnar-enough">Function composition: not gnar enough</h1>
+<p>By now, we are familiar with (and love) function composition:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(.) </span><span class="ot">::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</code></pre>
+<p>However, we can make composition more abstract:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> (<span class="fu">id</span>, (<span class="fu">.</span>))<br /><br /><span class="kw">class</span> <span class="dt">Category</span> cat <span class="kw">where</span><br /><span class="ot">  id </span><span class="ot">::</span> cat a a<br /><span class="ot">  (.) </span><span class="ot">::</span> cat b c <span class="ot">-&gt;</span> cat a b <span class="ot">-&gt;</span> cat a c</code></pre>
+<p>Now we can recast function composition as just an instance of this more general <code>Category</code> class:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Category</span> (<span class="ot">-&gt;</span>) <span class="kw">where</span><br />    <span class="fu">id</span> a <span class="fu">=</span> a<br />    f <span class="fu">.</span> g <span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g x)</code></pre>
+<h1 id="category-composition-abstraction-huh">Category? Composition? Abstraction? Huh?</h1>
+<p>We care about the <code>Category</code> class because it turns out we can compose lenses!</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Control.Category</span><br /><br /><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Lens</span> <span class="kw">where</span><br />    <span class="fu">id</span> <span class="fu">=</span> <span class="dt">Lens</span> (<span class="dt">Store</span> <span class="fu">id</span>)<br /><br />    <span class="dt">Lens</span> f <span class="fu">.</span> <span class="dt">Lens</span> g <span class="fu">=</span> <span class="dt">Lens</span> <span class="fu">$</span> \a <span class="ot">-&gt;</span> <span class="kw">case</span> g a <span class="kw">of</span><br />      <span class="dt">Store</span> wba b <span class="ot">-&gt;</span> <span class="kw">case</span> f b <span class="kw">of</span><br />    <span class="dt">Store</span> wcb c <span class="ot">-&gt;</span> <span class="dt">Store</span> (wba <span class="fu">.</span> wcb) c</code></pre>
+<p>How do we do this in practice?</p>
+<p>Just as we compose two functions to get another function, when we compose two lenses, we get another lens.</p>
+<h1 id="composition-of-lenses">Composition of lenses</h1>
+<p>Access a nested field:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> <span class="kw">let</span> l <span class="fu">=</span> <span class="dt">Line</span> (<span class="dt">Point</span> <span class="dv">1</span> <span class="dv">2</span>) (<span class="dt">Point</span> <span class="dv">3</span> <span class="dv">4</span>)<br /><span class="fu">&gt;&gt;</span> l <span class="fu">^.</span> (x <span class="fu">.</span> beg)</code></pre>
+<p>Modify a nested field:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> ((y <span class="fu">.</span> end) <span class="fu">^=</span> <span class="dv">7</span>) l<br /><span class="dt">Line</span> {lnBeg <span class="fu">=</span> <span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">1</span>, ptY <span class="fu">=</span> <span class="dv">2</span>},<br />      lnEnd <span class="fu">=</span> <span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">3</span>, ptY <span class="fu">=</span> <span class="dv">7</span>}}</code></pre>
+<h1 id="a-map-as-a-lens">A map as a lens</h1>
+<p>Algebraic data types are not the only place we can use lenses.</p>
+<p>They're just as applicable to container types, for instance:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map</span> <span class="kw">as</span> <span class="dt">Map</span><br /><span class="kw">import</span> <span class="dt">Data.Map</span> (<span class="dt">Map</span>)<br /><br /><span class="ot">mapLens </span><span class="ot">::</span> (<span class="kw">Ord</span> k) <span class="ot">=&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Lens</span> (<span class="dt">Map</span> k v) (<span class="dt">Maybe</span> v)<br />mapLens k <span class="fu">=</span> <span class="dt">Lens</span> <span class="fu">$</span> \m <span class="ot">-&gt;</span><br />            <span class="kw">let</span> set <span class="kw">Nothing</span>  <span class="fu">=</span> Map.delete k m<br />                set (<span class="kw">Just</span> v) <span class="fu">=</span> Map.insert k v m<br />                get          <span class="fu">=</span> Map.lookup k m<br />            <span class="kw">in</span> <span class="dt">Store</span> set get</code></pre>
+<h1 id="its-all-about-focus">It's all about focus</h1>
+<p>We now know how the &quot;algebraic&quot; got into &quot;algebraic data type&quot;, and why (and how) we'd want to focus on an element within a type.</p>
+<p>What's next?</p>
+<h1 id="lenses-and-triples">Lenses and triples</h1>
+<p>Suppose we have this type.</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="dt">Int</span>,<span class="dt">Int</span>,<span class="dt">Int</span>)</code></pre>
+<p>How many lenses must we define in order to be able to work with all of its fields?</p>
+<h1 id="values-in-a-triple">Values in a triple</h1>
+<p>In our type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="dt">Int</span>,<span class="dt">Int</span>,<span class="dt">Int</span>)</code></pre>
+<p>We can create the following number of values:</p>
+<ul>
+<li><span class="math">Int × Int × Int</span></li>
+</ul>
+<p>Which of course we can shorten as <span class="math">Int<sup>3</sup></span> (raised to the 3rd power).</p>
+<p>Suppose we want to update the first field (using a lens, manual update, or whatever - the mechanism doesn't matter).</p>
+<p>Let's poke a hole in that field:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(_,<span class="dt">Int</span>,<span class="dt">Int</span>)</code></pre>
+<p>Clearly we're now representing just <span class="math">Int × Int</span> (or <span class="math">Int<sup>2</sup></span>) values, because we no longer care what value used to be present in the first field.</p>
+<h1 id="poking-more-holes">Poking more holes</h1>
+<p>There are in fact three different ways we could poke holes in our triple:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(_,<span class="dt">Int</span>,<span class="dt">Int</span>)<br />(<span class="dt">Int</span>,_,<span class="dt">Int</span>)<br />(<span class="dt">Int</span>,<span class="dt">Int</span>,_)</code></pre>
+<p>And each one can express <span class="math">Int<sup>2</sup></span> values, for a total of:</p>
+<ul>
+<li><span class="math">3 × Int<sup>2</sup></span></li>
+</ul>
+<h1 id="getting-a-little-more-abstract">Getting a little more abstract</h1>
+<p>Let's parameterise our triple, so we no longer know or care what the type in each field is:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(x,x,x)</code></pre>
+<p>This can hold <span class="math"><em>x</em><sup>3</sup></span> values.</p>
+<p>When we poke holes in each field, we find that the total number of values expressible is:</p>
+<ul>
+<li><span class="math">3<em>x</em><sup>2</sup></span></li>
+</ul>
+<p>This ought to remind you of differential calculus.</p>
+<p>Isn't that remarkable?</p>
+<h1 id="lists---again">Lists - again?</h1>
+<p>We're so very familiar with the list type by now.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">List</span> x <span class="fu">=</span> <span class="dt">Null</span><br />            <span class="fu">|</span> <span class="dt">Cons</span> x (<span class="dt">List</span> x)</code></pre>
+<p>From the symbolic shenanigans we saw earlier, let's compute <span class="math"><em>n</em>(<em>x</em>)</span>, the number of values expressible in a list of type <code>x</code>:</p>
+<p><span class="math"><em>n</em>(<em>x</em>) = 1 + <em>x</em> × <em>n</em>(<em>x</em>)</span></p>
+<p>Just as the list is a recursive data type, this is a recurrence relation.</p>
+<p>Let's perform a symbolic differentiation on this expression:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = 0 + 1 × <em>n</em>(<em>x</em>) + <em>x</em> × <em>n</em>ʹ(<em>x</em>)</span></p>
+<p>(The last part is from the <a href="http://en.wikipedia.org/wiki/General_Leibniz_rule">Leibniz rule</a>.)</p>
+<h1 id="more-algebraic-crunching">More algebraic crunching</h1>
+<p>We now have:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = 0 + 1 × <em>n</em>(<em>x</em>) + <em>x</em> × <em>n</em>ʹ(<em>x</em>)</span></p>
+<p>Or more simply:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = <em>n</em>(<em>x</em>) + <em>x</em> × <em>n</em>ʹ(<em>x</em>)</span></p>
+<p>Rearranging:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>)(1 - <em>x</em>) = <em>n</em>(<em>x</em>)</span></p>
+<p>And again:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = <em>n</em>(<em>x</em>) / (1 - <em>x</em>)</span></p>
+<p>And finally:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = <em>n</em>(<em>x</em>)<sup>2</sup></span></p>
+<p>In other words, the derivative of a list is the <em>product</em> of two lists.</p>
+<h1 id="wow-but-what-does-this-mean">Wow! But what does this mean?</h1>
+<p>It's quite amazing that symbolic differentiation works on recursive data types. This discovery was made by <a href="http://strictlypositive.org/diff.pdf">McBride</a>.</p>
+<p>But what can we do with this knowledge?</p>
+<p>Recall our earlier phrasing of &quot;poking a hole&quot; in a triple. Clearly there's a correspondence between &quot;poking a hole&quot; and modifying data.</p>
+<p>We can use these ideas to both modify a list and move around in it.</p>
+<h1 id="introducing-the-zipper">Introducing the zipper</h1>
+<p>Here is the derivative of a list, expressed as a data type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Zipper</span> a <span class="fu">=</span> <span class="dt">Zipper</span> [a] a [a]<br />              <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>The unadorned <code>a</code> in the middle is our current focus point. (It's not required, just a detail of this particular implementation.)</p>
+<p>In a regular list, we can only move in one direction: from the head to the tail.</p>
+<h1 id="from-a-list-to-a-zipper">From a list to a zipper</h1>
+<p>This function constructs a zipper from a list:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">fromList </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Zipper</span> a<br />fromList (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dt">Zipper</span> [] x xs<br />fromList _      <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;empty!&quot;</span></code></pre>
+<h1 id="list-like-iteration">List-like iteration</h1>
+<p>Here's iteration in the normal &quot;towards the tail&quot; direction:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">next </span><span class="ot">::</span> <span class="dt">Zipper</span> a <span class="ot">-&gt;</span> <span class="dt">Zipper</span> a<br />next (<span class="dt">Zipper</span> ys y (x<span class="fu">:</span>xs)) <span class="fu">=</span> <span class="dt">Zipper</span> (y<span class="fu">:</span>ys) x xs<br />next z                    <span class="fu">=</span> z</code></pre>
+<p>Notice that we save &quot;where we've been&quot; in our other list. This is critically important.</p>
+<h1 id="going-backwards">Going backwards</h1>
+<p>Since we have saved where we've been in the list, we can step back there again!</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">prev </span><span class="ot">::</span> <span class="dt">Zipper</span> a <span class="ot">-&gt;</span> <span class="dt">Zipper</span> a<br />prev (<span class="dt">Zipper</span> (y<span class="fu">:</span>ys) x xs) <span class="fu">=</span> <span class="dt">Zipper</span> ys y (x<span class="fu">:</span>xs)<br />prev z                    <span class="fu">=</span> z</code></pre>
+<p>We can use the fact that we can pattern match against nearby elements on <em>both sides</em> of our current focus to perform useful operations that need local context, e.g. sliding window algorithms, convolutions, etc.</p>
+<h1 id="conversion-back-to-a-list">Conversion back to a list</h1>
+<p>What should this function look like?</p>
+<h1 id="more-general-zippers">More general zippers</h1>
+<p>The ideas of differentiating data structures and zippers can be generalized to other recursive data structures, e.g. trees.</p>
 </body>
 </html>
