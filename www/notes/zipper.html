@@ -5,7 +5,6 @@
   <meta name="generator" content="pandoc" />
   <title>Zippers and such</title>
   <style type="text/css">
-/*<![CDATA[*/
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
    { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
 td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
@@ -23,13 +22,10 @@ code.sourceCode span.al { color: red; font-weight: bold; }
 code.sourceCode span.fu { color: #06287e; }
 code.sourceCode span.re { }
 code.sourceCode span.er { color: red; font-weight: bold; }
-/*]]>*/
   </style>
 </head>
 <body>
-<div id="header">
 <h1 class="title">Zippers and such</h1>
-</div>
 <h1 id="the-purpose-of-this-lecture">The purpose of this lecture</h1>
 <p>We're going to take a brief break from blowing your mind today.</p>
 <h1 id="the-purpose-of-this-lecture-1">The purpose of this lecture</h1>
@@ -96,7 +92,7 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Triple</span> a b c <span class="fu">=</span> <span class="dt">Triple</span> a b c</code></pre>
 <p>The algebraic expression that describes the number of values of this type is no surprise:</p>
 <ul>
-<li><span class="math"><em>a</em> + <em>b</em> + <em>c</em></span></li>
+<li><span class="math"><em>a</em> × <em>b</em> × <em>c</em></span></li>
 </ul>
 <h1 id="mixing-sums-and-products">Mixing sums and products</h1>
 <p>How many values are there of this type?</p>
@@ -274,7 +270,7 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <p>Modify a nested field:</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> ((y <span class="fu">.</span> end) <span class="fu">^=</span> <span class="dv">7</span>) l<br /><span class="dt">Line</span> {lnBeg <span class="fu">=</span> <span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">1</span>, ptY <span class="fu">=</span> <span class="dv">2</span>},<br />      lnEnd <span class="fu">=</span> <span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">3</span>, ptY <span class="fu">=</span> <span class="dv">7</span>}}</code></pre>
 <h1 id="a-map-as-a-lens">A map as a lens</h1>
-<p>Algebraic data types are not the only place we can use lenses.</p>
+<p>Lenses are not restricted to use solely with algebraic data types.</p>
 <p>They're just as applicable to container types, for instance:</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map</span> <span class="kw">as</span> <span class="dt">Map</span><br /><span class="kw">import</span> <span class="dt">Data.Map</span> (<span class="dt">Map</span>)<br /><br /><span class="ot">mapLens </span><span class="ot">::</span> (<span class="kw">Ord</span> k) <span class="ot">=&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Lens</span> (<span class="dt">Map</span> k v) (<span class="dt">Maybe</span> v)<br />mapLens k <span class="fu">=</span> <span class="dt">Lens</span> <span class="fu">$</span> \m <span class="ot">-&gt;</span><br />            <span class="kw">let</span> set <span class="kw">Nothing</span>  <span class="fu">=</span> Map.delete k m<br />                set (<span class="kw">Just</span> v) <span class="fu">=</span> Map.insert k v m<br />                get          <span class="fu">=</span> Map.lookup k m<br />            <span class="kw">in</span> <span class="dt">Store</span> set get</code></pre>
 <h1 id="its-all-about-focus">It's all about focus</h1>

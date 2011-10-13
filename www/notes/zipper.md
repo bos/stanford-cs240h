@@ -175,7 +175,7 @@ data Triple a b c = Triple a b c
 The algebraic expression that describes the number of values of this
 type is no surprise:
 
-* $a+b+c$
+* $a \times b \times c$
 
 
 # Mixing sums and products
@@ -699,7 +699,7 @@ Line {lnBeg = Point {ptX = 1, ptY = 2},
 
 # A map as a lens
 
-Algebraic data types are not the only place we can use lenses.
+Lenses are not restricted to use solely with algebraic data types.
 
 They're just as applicable to container types, for instance:
 
