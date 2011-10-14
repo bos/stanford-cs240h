@@ -98,7 +98,7 @@ A property is nothing more than a predicate that should always hold.
 What's an obvious property for sorts?
 
 ~~~~ {.haskell}
-t_idempotent = sort . sort == id
+t_idempotent = sort . sort == sort
 ~~~~
 
 We can't define this, since we can't compare functions for equality.
@@ -114,7 +114,7 @@ t_idempotent xs =
 # Why don't we do it in the interpreter
 
 ~~~~ {.haskell}
-t_idempotent compare [3,2,1]
+t_idempotent [3,2,1]
 ~~~~
 
 Okay!  Let's mechanize some exhaustive testing.
