@@ -95,7 +95,7 @@ sort [1,4,2,3] == [1,2,3,4]
 <h1>Let's talk about properties</h1>
 <p>A property is nothing more than a predicate that should always hold.</p>
 <p>What's an obvious property for sorts?</p>
-<pre class="sourceCode"><code class="sourceCode haskell">t_idempotent <span class="fu">=</span> <span class="fu">sort</span> <span class="fu">.</span> <span class="fu">sort</span> <span class="fu">==</span> <span class="fu">id</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell">t_idempotent <span class="fu">=</span> <span class="fu">sort</span> <span class="fu">.</span> <span class="fu">sort</span> <span class="fu">==</span> <span class="fu">sort</span></code></pre>
 <p>We can't define this, since we can't compare functions for equality.</p>
 <p>However, we can cheat:</p>
 <pre class="sourceCode"><code class="sourceCode haskell">t_idempotent xs <span class="fu">=</span> <br />    <span class="fu">sort</span> (<span class="fu">sort</span> xs) <span class="fu">==</span> <span class="fu">sort</span> xs</code></pre>
@@ -104,7 +104,7 @@ sort [1,4,2,3] == [1,2,3,4]
 <div class="slide">
 
 <h1>Why don't we do it in the interpreter</h1>
-<pre class="sourceCode"><code class="sourceCode haskell">t_idempotent <span class="fu">compare</span> [<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>]</code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell">t_idempotent [<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">1</span>]</code></pre>
 <p>Okay! Let's mechanize some exhaustive testing.</p>
 <p>To exhaustively test over all lists containing the above elements, we need some help.</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Data.List</span> (permutations)<br /><br /><span class="ot">t_permute </span><span class="ot">::</span> ([a] <span class="ot">-&gt;</span> <span class="dt">Bool</span>) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> <span class="dt">Bool</span><br />t_permute prop <span class="fu">=</span> <span class="fu">all</span> prop <span class="fu">.</span> permutations</code></pre>
