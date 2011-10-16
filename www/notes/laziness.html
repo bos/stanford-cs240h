@@ -1,0 +1,35 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>Phantoms, mutants, and laziness</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+<h1 class="title">Phantoms, mutants, and laziness</h1>
+<h1 id="language-hacking">Language hacking</h1>
+<p>Let's create a very small fragment of a programming language:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Expr</span> <span class="fu">=</span> <span class="dt">List</span> [<span class="dt">Expr</span>]<br />          <span class="fu">|</span> <span class="kw">Num</span> <span class="dt">Int</span><br />          <span class="fu">|</span> <span class="dt">Str</span> <span class="dt">String</span><br />          <span class="fu">|</span> <span class="dt">Op</span> <span class="dt">BinOp</span> <span class="dt">Expr</span> <span class="dt">Expr</span><br />            <span class="kw">deriving</span> (<span class="kw">Show</span>)<br /><br /><span class="kw">data</span> <span class="dt">BinOp</span> <span class="fu">=</span> <span class="dt">Add</span> <span class="fu">|</span> <span class="dt">Concat</span><br />             <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>And an interpreter for it:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">interp x<span class="fu">@</span>(<span class="dt">List</span> _)                    <span class="fu">=</span> x<br />interp x<span class="fu">@</span>(<span class="kw">Num</span> _)                     <span class="fu">=</span> x<br />interp (<span class="dt">Op</span> <span class="dt">Add</span> (<span class="kw">Num</span> a) (<span class="kw">Num</span> b))      <span class="fu">=</span> <span class="kw">Num</span> (a <span class="fu">+</span> b)<br />interp (<span class="dt">Op</span> <span class="dt">Concat</span> (<span class="dt">List</span> a) (<span class="dt">List</span> b)) <span class="fu">=</span> <span class="dt">List</span> (a <span class="fu">++</span> b)</code></pre>
+</body>
+</html>
