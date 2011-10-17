@@ -1,13 +1,13 @@
-data Expr = List [Expr]
-          | Num Int
-          | Str String
-          | Op BinOp Expr Expr
+data Expr = Num Int             -- atom
+          | Str String          -- atom
+          | Op BinOp Expr Expr  -- compound
             deriving (Show)
 
 data BinOp = Add | Concat
              deriving (Show)
 
-interp x@(List _)                    = x
 interp x@(Num _)                     = x
-interp (Op Add (Num a) (Num b))      = Num (a + b)
-interp (Op Concat (List a) (List b)) = List (a ++ b)
+interp x@(Str _)                     = x
+interp (Op Add a b)      = Num (i a + i b)
+  where i x = case interp x of Num a -> a
+interp (Op Concat (Str a) (Str b))   = Str (a ++ b)
