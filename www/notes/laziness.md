@@ -239,7 +239,8 @@ We've already seen the very handy `MVar` type, which represents a
 we'll block if we put when full or take when empty.
 
 Even though `MVar`s are the fastest blocking concurrent structure in
-the industry, we don't always want blocking semantics.
+the industry (they made the the Kessel Run in less than twelve
+parsecs!), we don't always want blocking semantics.
 
 For cases where we want *non-*blocking updates, there's the `IORef`
 type, which gives us mutable references.
