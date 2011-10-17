@@ -1,4 +1,4 @@
-% Phantoms, mutants, and laziness
+% Phantoms and mutants
 
 # Language hacking
 
@@ -249,10 +249,10 @@ type, which gives us mutable references.
 ~~~~ {.haskell}
 import Data.IORef
 
-newIORef :: a -> IO (IORef a)
+newIORef    :: a -> IO (IORef a)
 
-readIORef :: IORef a -> IO a
-writeIORef :: IORef a -> a -> IO ()
+readIORef   :: IORef a -> IO a
+writeIORef  :: IORef a -> a -> IO ()
 
 modifyIORef :: IORef a -> (a -> a) -> IO ()
 ~~~~
@@ -428,12 +428,12 @@ These `forall` keywords are implied if they're not explicitly written.
 
 Love 'em or hate 'em, everybody has to deal with databases.
 
-Here are two typical functions that a low-level database library will
+Here are some typical functions that a low-level database library will
 provide, for clients that have to modify data concurrently:
 
 ~~~~ {.haskell}
-begin :: Connection -> IO Transaction
-commit :: Transaction -> IO ()
+begin    :: Connection -> IO Transaction
+commit   :: Transaction -> IO ()
 rollback :: Transaction -> IO ()
 ~~~~
 
@@ -456,7 +456,7 @@ oops conn = do
   -- also forgot to commit!
 ~~~~
 
-We can defeat `rollback` and `commit` forgetfulness with a suitable
+We can avoid `rollback` and `commit` forgetfulness with a suitable
 combinator:
 
 ~~~~ {.haskell}
@@ -612,7 +612,7 @@ Here's a burly type for you:
 
 withConnection :: Pool
                -> (forall c. SafeConn c -> DB c a) 
-	       -> IO a
+               -> IO a
 ~~~~
 
 We've introduced a universal quantifier (that `forall`) into our type
@@ -649,7 +649,7 @@ Putting it back into context:
 ~~~~ {.haskell}
 withConnection :: Pool
                -> (forall c. SafeConn c -> DB c a) 
-	       -> IO a
+               -> IO a
 ~~~~
 
 The type variable `a` is mentioned in a place where `c` is *not* in
@@ -662,7 +662,7 @@ related* to `c`.
 ~~~~ {.haskell}
 withConnection :: Pool
                -> (forall c. SafeConn c -> DB c a) 
-	       -> IO a
+               -> IO a
 ~~~~
 
 Because `SafeConn c` shares the same phantom type as `DB c`, and the
@@ -789,4 +789,333 @@ readSTRef :: STRef s a -> ST s a
 ~~~~
 
 
-# Mutable arrays
+# Arrays and vectors
+
+For working with large collections of uniform data, the usual
+representation in most languages is an array.
+
+The longtime standard for working with arrays in Haskell is the
+`Array` type, from the `array` package, but I don't like it: it has an
+API that is simultaneously bizarre, too general, and puny.
+
+I much prefer its modern cousin, the `vector` package:
+
+* `vector` provides a *vastly* richer API than `array`.
+
+* A `Vector` is one-dimensional and indexed by `Int`s counting from
+  zero, so it's easy to reason about.
+  
+* An `Array` is indexed by an instance of the `Ix` class, can have
+  arbitrary bounds, and makes my brain hurt.
+
+
+# Families and flavours of vectors
+
+The `vector` package provides two "flavours" of vector type:
+
+* `Vector` types are immutable.
+
+* `MVector` types can be modified in either the `ST` or `IO` monad,
+  and cannot be read by purely functional code.
+  
+Within these flavours, there are two "families" of vector type:
+
+* Unboxed vectors are tightly packed in contiguous memory.  They are
+  very fast, but it is only possible to create unboxed vectors of
+  certain types, and an unboxed vector can't store thunks.
+  
+* Normal vectors are boxed, just like ordinary Haskell values. Any
+  value can be stored in a plain old vector, at the cost of an
+  additional level of indirection.
+  
+We can thus have an immutable unboxed vector, a mutable boxed vector,
+and so on.
+
+
+# Mutable vectors in action
+
+The classic Haskell implementation of a "quicksort":
+
+~~~~ {.haskell}
+import Data.List (partition)
+
+qsort (p:xs) = qsort lt ++ [p] ++ qsort ge
+  where (lt,ge) = partition (<p) xs
+qsort _      = []
+~~~~
+
+This isn't *really* a quicksort, because it doesn't operate in-place.
+
+We can apply our newfound knowledge to this problem:
+
+~~~~ {.haskell}
+import qualified Data.Vector.Unboxed.Mutable as V
+import Control.Monad.ST (ST)
+
+quicksort :: V.MVector s Int -> ST s ()
+quicksort vec = go 0 (V.length vec)
+  where
+    {- ... -}
+~~~~
+
+
+# The recursive step
+
+~~~~ {.haskell}
+    recur left right
+      | left >= right = return ()
+      | otherwise     = do
+      idx <- partition left right
+             (left + (right-left) `div` 2)
+      recur left (idx-1)
+      recur (idx+1) right
+~~~~
+
+
+# Partitioning the vector
+
+(Remember, `vec` is in scope here.)
+
+~~~~ {.haskell}
+    partition left right pivotIdx = do
+      pivot <- V.read vec pivotIdx
+      V.swap vec pivotIdx right
+      let loop i k
+            | i == right = V.swap vec k right >>
+                           return k
+            | otherwise = do
+            v <- V.read vec i
+            if v < pivot
+              then V.swap vec i k >>
+                   loop (i+1) (k+1)
+              else loop (i+1) k
+      loop left left
+~~~~
+
+
+# From immutable to mutable, and back
+
+We can even use this in-place sort to efficiently perform an in-place
+sort of an immutable array!
+
+Our building blocks:
+
+~~~~ {.haskell}
+thaw   :: Vector a -> ST s (MVector s a)
+create :: (forall s. ST s (MVector s a)) -> Vector a
+~~~~
+
+* `thaw` creates a new mutable vector, and copies the contents of the
+  immutable vector into it.
+
+* `create` runs an `ST` action that returns a mutable vector, and
+  "freezes" its result to be immutable, and hence usable in pure code.
+
+~~~~ {.haskell}
+import qualified Data.Vector.Unboxed as U
+
+vsort :: U.Vector Int -> U.Vector Int
+vsort v = U.create $ do
+            vec <- U.thaw v
+            quicksort vec
+            return vec
+~~~~
+
+
+# Mutability, purity, and determinism
+
+The big advantage of the `ST` monad is that it gives us the ability to
+efficiently run computations that require mutability, while both the
+inputs to and results of our computations remain pure.
+
+In order to achieve this, we sacrifice some power:
+
+* We can't run arbitrary `IO` actions.  No database accesses, no
+  filesystem, etc.
+
+* Other potential sources of nondeterminism (e.g. threads) are thus
+  also off limits.
+
+
+# Laziness
+
+Originally, this lecture was supposed to be all about the joys of lazy
+evaluation, but we hijacked much of our time to serve other purposes.
+
+I'm going to talk a little bit about it anyway.
+
+In a minute.
+
+
+# A digression
+
+How can we use random numbers to approximate the value of $\pi$?
+
+
+# A digression
+
+How can we use random numbers to approximate the value of pi?
+
+* Take two random numbers, $x$ and $y$, on the interval $[0,1]$
+
+* Add their squares: $r = x^2 + y^2$
+
+* We have a $\pi/4$ probability of $r \le 1$
+
+What can we do with this knowledge?
+
+
+# Purely functional random numbers
+
+Haskell supplies a `random` package that we can use in a purely
+functional setting.
+
+~~~~ {.haskell}
+class Random a where
+    random :: RandomGen g => g -> (a, g)
+
+class RandomGen g where
+    next   :: g -> (Int, g)
+    split  :: g -> (g, g)
+~~~~
+
+
+# RandomGen
+
+The `RandomGen` class is a building block: it specifies an interface
+for a generator that can generate uniformly distributed pseudo-random
+`Int`s.
+
+There is one default instance of this class:
+
+~~~~ {.haskell}
+data StdGen {- opaque -}
+
+instance RandomGen StdGen
+~~~~
+
+
+# Random
+
+The `Random` class specifies how to generate a pseudo-random value of
+some type, given the random numbers generated by a `Gen` instance.
+
+Quite a few common types have `Random` instances.
+
+* For `Int`, the instance will generate any representable value.
+
+* For `Double`, the instance will generate a value in the range
+  $[0,1]$.
+  
+
+# Generators are pure
+
+Since we want to use a PRNG in pure code, we obviously can't modify
+the state of a PRNG when we generate a new value.
+
+This is why `next` and `random` return a *new* state for the PRNG
+every time we generate a new pseudo-random value.
+
+
+# Throwing darts at the board
+
+Here's how we can generate a guess at $x^2 + y^2$:
+
+~~~~ {.haskell}
+guess :: (RandomGen g) => (Double,g) -> (Double,g)
+guess (_,g) = (z, g'')
+    where z        = x^2 + y^2
+          (x, g')  = random g
+          (y, g'') = random g'
+~~~~
+
+Note that we have to hand back the *final* state of the PRNG along
+with our result! 
+
+If we handed back `g` or `g'` instead, our numbers would either be all
+identical or disastrously correlated (every `x` would just be a repeat
+of the previous `y`).
+
+
+# Global state
+
+We can use the `getStdGen` function to get a handy global PRNG state:
+
+~~~~ {.haskell}
+getStdGen :: IO StdGen
+~~~~
+
+This does *not* modify the state, though. If we use `getStdGen` twice
+in succession, we'll get the same result each time.
+
+To be safe, we should update the global PRNG state with the final PRNG
+state returned by our pure code:
+
+~~~~ {.haskell}
+setStdGen :: StdGen -> IO ()
+~~~~
+
+
+# Ugh - let's split!
+
+Calling `getStdGen` and `setStdGen` from `ghci` is a pain, so let's
+write a combinator to help us.
+
+Remember that `split` method from earlier?
+
+~~~~ {.haskell}
+class RandomGen g where
+    split  :: g -> (g, g)
+~~~~
+
+This "forks" the PRNG, creating two children with different states.
+
+The hope is that the states will be different enough that
+pseudo-random values generated from each will not be obviously
+correlated.
+
+~~~~ {.haskell}
+withGen :: (StdGen -> a) -> IO a
+withGen f = do
+  g <- getStdGen
+  let (g',g'') = split g
+  setStdGen g'
+  return (f g'')
+~~~~
+
+
+# Living in ghci
+
+Now we can use our `guess` function reasonably easily.
+
+~~~~ {.haskell}
+>> let f = fst `fmap` withGen (guess . ((,) 0))
+>> f
+1.2397265526054513
+>> f
+0.9506331164887969
+~~~~
+
+
+# Let's iterate
+
+Here's a useful function from the `Prelude`:
+
+~~~~ {.haskell}
+iterate :: (a -> a) -> a -> [a]
+iterate f x = x : iterate f (f x)
+~~~~
+
+Obviously that list is infinite.
+
+Let's use `iterate` and `guess`, and as much other `Prelude` machinery
+as we can think of, to write a function that can approximate $\pi$.
+
+By the way, in case you don't recognize this technique, it's a famous
+example of the family of
+[Monte Carlo methods](http://en.wikipedia.org/wiki/Monte_Carlo_method).
+
+
+# Where's the connection to laziness?
+
+What aspects of laziness were important in developing our solution?
