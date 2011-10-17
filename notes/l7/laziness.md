@@ -194,7 +194,8 @@ Consequences of exporting only the type constructor for `Expr`:
 * Clients cannot use the value constructors to create new values.  
 
 * The *only* way for a client to construct expressions is using our
-  handwritten constructor functions with their carefully chosen types.
+  handwritten "smart constructor" functions with their carefully
+  chosen types.
 
 * Clients cannot pattern-match on an `Expr` value.  Our internals are
   opaque; we could change our implementation without clients being
