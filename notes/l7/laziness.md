@@ -780,10 +780,13 @@ Let's try this in `ghci`:
 ~~~~
 
 Thanks to chaining of the universally quantified `s`, there is no way
-for an `STRef` to escape from the `ST` monad, save by reading its
-current value with `readSTRef`.
+for an `STRef` to escape from the `ST` monad, save by the approved
+route of reading its current value with `readSTRef`.
 
 ~~~~ {.haskell}
 newSTRef  :: a -> ST s (STRef s a)
 readSTRef :: STRef s a -> ST s a
 ~~~~
+
+
+# Mutable arrays
