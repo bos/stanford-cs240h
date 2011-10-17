@@ -749,9 +749,9 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
 ><p
 >Let's consider one where we use a reference to a piece of config data.</p
 ><p
->Any piece of code that's executing in the <code
+>Any code that's executing in the <code
   >IO</code
-  > monad, if it knows the name of the config reference, can get the current config:</p
+  > monad can, if it knows the name of the config reference, retrieve the current config:</p
 ><pre class="sourceCode haskell"
 ><code
   >curCfg &lt;- readIORef cfgRef<br

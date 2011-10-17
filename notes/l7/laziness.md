@@ -268,8 +268,8 @@ There are of course many ways to address this sort of problem.
 
 Let's consider one where we use a reference to a piece of config data.
 
-Any piece of code that's executing in the `IO` monad, if it knows the
-name of the config reference, can get the current config:
+Any code that's executing in the `IO` monad can, if it knows the name of
+the config reference, retrieve the current config:
 
 ~~~~ {.haskell}
 curCfg <- readIORef cfgRef
