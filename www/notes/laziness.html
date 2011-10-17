@@ -1145,6 +1145,8 @@ pre.sourceCode span.er { color: red; font-weight: bold; }
     > a<br
      /></code
   ></pre
+><h1 id="ouch-sorry-about-that"
+>&quot;Ouch, sorry about that!&quot;</h1
 ><p
 >Unfortunately, since <code
   >withConn</code
@@ -1418,7 +1420,9 @@ pre.sourceCode span.er { color: red; font-weight: bold; }
   >c</code
   > is <em
   >not</em
-  > in scope, so although <code
+  > in scope, but <code
+  >c</code
+  > cannot escape from its scope, so while <code
   >a</code
   > is also universally quantified, it <em
   >cannot be related</em
@@ -1495,8 +1499,19 @@ pre.sourceCode span.er { color: red; font-weight: bold; }
     ><br
      /></code
   ></pre
-><h1 id="bonus-question"
->Bonus question</h1
+><h1 id="bonus-question-1"
+>Bonus question 1</h1
+><p
+>What expressions can we write that have this type?</p
+><pre class="sourceCode haskell"
+><code
+  >[forall a<span class="fu"
+    >.</span
+    > a]<br
+     /></code
+  ></pre
+><h1 id="bonus-question-2"
+>Bonus question 2</h1
 ><p
 >Do we have time to talk about how to write a <code
   >Monad</code

@@ -1209,6 +1209,10 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
     > a<br
      /></code
   ></pre
+></div>
+<div class="slide">
+<h1
+>&quot;Ouch, sorry about that!&quot;</h1
 ><p
 >Unfortunately, since <code
   >withConn</code
@@ -1492,7 +1496,9 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
   >c</code
   > is <em
   >not</em
-  > in scope, so although <code
+  > in scope, but <code
+  >c</code
+  > cannot escape from its scope, so while <code
   >a</code
   > is also universally quantified, it <em
   >cannot be related</em
@@ -1576,7 +1582,20 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
 ></div>
 <div class="slide">
 <h1
->Bonus question</h1
+>Bonus question 1</h1
+><p
+>What expressions can we write that have this type?</p
+><pre class="sourceCode haskell"
+><code
+  >[forall a<span class="fu"
+    >.</span
+    > a]<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Bonus question 2</h1
 ><p
 >Do we have time to talk about how to write a <code
   >Monad</code

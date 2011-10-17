@@ -523,6 +523,9 @@ So we have to pass that handle into our combinator:
 withConn :: Pool -> (Connection -> IO a) -> IO a
 ~~~~
 
+
+# "Ouch, sorry about that!"
+
 Unfortunately, since `withConn` gives us a connection handle, we can defeat the
 intention of the combinator (sometimes accidentally).
 
@@ -653,8 +656,8 @@ withConnection :: Pool
 ~~~~
 
 The type variable `a` is mentioned in a place where `c` is *not* in
-scope, so although `a` is also universally quantified, it *cannot be
-related* to `c`.
+scope, but `c` cannot escape from its scope, so while `a` is also
+universally quantified, it *cannot be related* to `c`.
 
 
 # Wait, wait. What, exactly, got rescued?
@@ -700,7 +703,15 @@ standard, hence our use of a pragma earlier:
 ~~~~
 
 
-# Bonus question
+# Bonus question 1
+
+What expressions can we write that have this type?
+
+~~~~ {.haskell}
+[forall a. a]
+~~~~
+
+# Bonus question 2
 
 Do we have time to talk about how to write a `Monad` instance for `DB`?
 
