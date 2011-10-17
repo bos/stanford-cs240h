@@ -129,7 +129,7 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
     >Op</span
     > <span class="dt"
     >Add</span
-    > a b)      <span class="fu"
+    > a b)                  <span class="fu"
     >=</span
     > <span class="kw"
     >Num</span
@@ -244,9 +244,9 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
     >|</span
     > <span class="dt"
     >Op</span
-    > (<span class="dt"
+    > <span class="dt"
     >BinOp</span
-    > a) (<span class="dt"
+    > (<span class="dt"
     >Expr</span
     > a) (<span class="dt"
     >Expr</span
@@ -257,11 +257,14 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
     >Show</span
     >)<br
      /><br
+     /><span class="co"
+    >-- This is unchanged.</span
+    ><br
      /><span class="kw"
     >data</span
     > <span class="dt"
     >BinOp</span
-    > a <span class="fu"
+    > <span class="fu"
     >=</span
     > <span class="dt"
     >Add</span
@@ -270,7 +273,7 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
     > <span class="dt"
     >Concat</span
     ><br
-     />               <span class="kw"
+     />             <span class="kw"
     >deriving</span
     > (<span class="kw"
     >Show</span
@@ -391,47 +394,11 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
   >BinOp</code
   > that we never use a value of type <code
   >a</code
-  >. So what purpose does this serve?</p
+  >. Then what purpose does this type parameter serve?</p
 ><p
 >Recall the type of <code
-  >BinOp</code
+  >Expr</code
   >:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >BinOp</span
-    > a <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Add</span
-    > <span class="fu"
-    >|</span
-    > <span class="dt"
-    >Concat</span
-    ><br
-     />               <span class="kw"
-    >deriving</span
-    > (<span class="kw"
-    >Show</span
-    >)<br
-     /></code
-  ></pre
-></div>
-<div class="slide">
-<h1
->Some context</h1
-><p
->Let's think of that <code
-  >a</code
-  > parameter as expressing our <em
-  >intent</em
-  > that the operation be typed.</p
-><p
->And in fact the only place we've so far used <code
-  >BinOp</code
-  > is in this constructor:</p
 ><pre class="sourceCode haskell"
 ><code
   ><span class="kw"
@@ -447,9 +414,59 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
     >|</span
     > <span class="dt"
     >Op</span
-    > (<span class="dt"
+    > <span class="dt"
     >BinOp</span
+    > (<span class="dt"
+    >Expr</span
     > a) (<span class="dt"
+    >Expr</span
+    > a)<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Some context</h1
+><p
+>Let's think of that <code
+  >a</code
+  > parameter as expressing our <em
+  >intent</em
+  > that:</p
+><ul
+><li
+  ><p
+    >The operands of an <code
+      >Op</code
+      > expression should have the same types.</p
+    ></li
+  ><li
+  ><p
+    >The resulting <code
+      >Expr</code
+      > value should <em
+      >also</em
+      > have this type.</p
+    ></li
+  ></ul
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >data</span
+    > <span class="dt"
+    >Expr</span
+    > a <span class="fu"
+    >=</span
+    > <span class="fu"
+    >...</span
+    ><br
+     />            <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Op</span
+    > <span class="dt"
+    >BinOp</span
+    > (<span class="dt"
     >Expr</span
     > a) (<span class="dt"
     >Expr</span
@@ -457,15 +474,7 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
      /></code
   ></pre
 ><p
->Clearly, our intention here is that if we're constructing a <code
-  >BinOp</code
-  > over some type <code
-  >a</code
-  >, the two <code
-  >Expr</code
-  > parameters must be of that same type.</p
-><p
->The type system will enforce this for us.</p
+>In fact, the type system will enforce these constraints for us.</p
 ></div>
 <div class="slide">
 <h1
@@ -1410,7 +1419,7 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
   >forall</code
   >) into our type signature. And we've added a <code
   >LANGUAGE</code
-  > pragma! Whoa!</p
+  > pragma! Whoa. Duuude.</p
 ><p
 >Relax! Let's not worry about those details just yet. What does our signature seem to want to tell us?</p
 ><ul
@@ -1426,13 +1435,13 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
       >SafeConn c</code
       >, returning a value <code
       >a</code
-      > in the world of <code
+      > embedded in the type <code
       >DB c</code
       >.</p
     ></li
   ></ul
 ><p
->Not so scary after all, except for the detail we're ignoring.</p
+>Not so scary after all. Well, except for the details we're ignoring.</p
 ></div>
 <div class="slide">
 <h1
@@ -1491,16 +1500,10 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
   ></pre
 ><p
 >The type variable <code
-  >a</code
-  > is mentioned in a place where <code
   >c</code
-  > is <em
-  >not</em
-  > in scope, but <code
-  >c</code
-  > cannot escape from its scope, so while <code
+  > can't escape from its scope, so <code
   >a</code
-  > is also universally quantified, it <em
+  > <em
   >cannot be related</em
   > to <code
   >c</code
@@ -1590,6 +1593,28 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
   >[forall a<span class="fu"
     >.</span
     > a]<br
+     /></code
+  ></pre
+><p
+>What about this one?</p
+><pre class="sourceCode haskell"
+><code
+  >[forall a<span class="fu"
+    >.</span
+    > (<span class="kw"
+    >Enum</span
+    > a) =&gt; a]<br
+     /></code
+  ></pre
+><p
+>Or this?</p
+><pre class="sourceCode haskell"
+><code
+  >[forall a<span class="fu"
+    >.</span
+    > (<span class="kw"
+    >Num</span
+    > a) =&gt; a]<br
      /></code
   ></pre
 ></div>

@@ -8,11 +8,11 @@ module Interp2
 
 data Expr a = Num Int
             | Str String
-            | Op (BinOp a) (Expr a) (Expr a)
+            | Op BinOp (Expr a) (Expr a)
               deriving (Show)
 
-data BinOp a = Add | Concat
-               deriving (Show)
+data BinOp = Add | Concat
+             deriving (Show)
 
 interp :: Expr a -> Expr a
 interp x@(Num _)       = x

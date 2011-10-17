@@ -19,7 +19,7 @@ And an interpreter for it:
 ~~~~ {.haskell}
 interp x@(Num _)                     = x
 interp x@(Str _)                     = x
-interp (Op Add a b)      = Num (i a + i b)
+interp (Op Add a b)                  = Num (i a + i b)
   where i x = case interp x of Num a -> a
 interp (Op Concat (Str a) (Str b))   = Str (a ++ b)
 ~~~~
@@ -53,11 +53,12 @@ Here's a slightly modified version of our language:
 ~~~~ {.haskell}
 data Expr a = Num Int
             | Str String
-            | Op (BinOp a) (Expr a) (Expr a)
+            | Op BinOp (Expr a) (Expr a)
               deriving (Show)
 
-data BinOp a = Add | Concat
-               deriving (Show)
+-- This is unchanged.
+data BinOp = Add | Concat
+             deriving (Show)
 ~~~~
 
 We've introduced a type parameter here...
@@ -100,34 +101,30 @@ interp :: Expr a -> Expr a
 ~~~~
 
 But we know from the definitions of `Expr` and `BinOp` that we never
-use a value of type `a`.  So what purpose does this serve?
+use a value of type `a`.  Then what purpose does this type parameter
+serve?
 
-Recall the type of `BinOp`:
-
-~~~~ {.haskell}
-data BinOp a = Add | Concat
-               deriving (Show)
-~~~~
-
-
-# Some context
-
-Let's think of that `a` parameter as expressing our *intent* that the
-operation be typed.
-
-And in fact the only place we've so far used `BinOp` is in this
-constructor:
+Recall the type of `Expr`:
 
 ~~~~ {.haskell}
 data Expr a = ...
-            | Op (BinOp a) (Expr a) (Expr a)
+            | Op BinOp (Expr a) (Expr a)
 ~~~~
 
-Clearly, our intention here is that if we're constructing a `BinOp`
-over some type `a`, the two `Expr` parameters must be of that same
-type.
+# Some context
 
-The type system will enforce this for us.
+Let's think of that `a` parameter as expressing our *intent* that:
+
+* The operands of an `Op` expression should have the same types.
+
+* The resulting `Expr` value should *also* have this type.
+
+~~~~ {.haskell}
+data Expr a = ...
+            | Op BinOp (Expr a) (Expr a)
+~~~~
+
+In fact, the type system will enforce these constraints for us.
 
 
 # Building blocks
@@ -619,7 +616,7 @@ withConnection :: Pool
 ~~~~
 
 We've introduced a universal quantifier (that `forall`) into our type
-signature.  And we've added a `LANGUAGE` pragma!  Whoa!
+signature.  And we've added a `LANGUAGE` pragma!  Whoa. Duuude.
 
 Relax!  Let's not worry about those details just yet.  What does our
 signature seem to want to tell us?
@@ -627,10 +624,10 @@ signature seem to want to tell us?
 * We accept a `Pool`.
 
 * And an "I have a connection, so I can talk to the database now"
-  action that accepts a `SafeConn c`, returning a value `a` in the
-  world of `DB c`.
+  action that accepts a `SafeConn c`, returning a value `a` embedded
+  in the type `DB c`.
 
-Not so scary after all, except for the detail we're ignoring.
+Not so scary after all.  Well, except for the details we're ignoring.
 
 
 # Universal quantification to the rescue!
@@ -655,9 +652,8 @@ withConnection :: Pool
                -> IO a
 ~~~~
 
-The type variable `a` is mentioned in a place where `c` is *not* in
-scope, but `c` cannot escape from its scope, so while `a` is also
-universally quantified, it *cannot be related* to `c`.
+The type variable `c` can't escape from its scope, so `a` *cannot be
+related* to `c`.
 
 
 # Wait, wait. What, exactly, got rescued?
@@ -709,6 +705,18 @@ What expressions can we write that have this type?
 
 ~~~~ {.haskell}
 [forall a. a]
+~~~~
+
+What about this one?
+
+~~~~ {.haskell}
+[forall a. (Enum a) => a]
+~~~~
+
+Or this?
+
+~~~~ {.haskell}
+[forall a. (Num a) => a]
 ~~~~
 
 # Bonus question 2
