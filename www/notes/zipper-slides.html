@@ -1,596 +1,585 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"> 
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-  <title>Zippers and such</title>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="generator" content="pandoc" />
+  <title>Zippers and such</title>
   <style type="text/css">
+/*<![CDATA[*/
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
    { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
 td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
 td.sourceCode { padding-left: 5px; }
-pre.sourceCode span.kw { color: #007020; font-weight: bold; } 
-pre.sourceCode span.dt { color: #902000; }
-pre.sourceCode span.dv { color: #40a070; }
-pre.sourceCode span.bn { color: #40a070; }
-pre.sourceCode span.fl { color: #40a070; }
-pre.sourceCode span.ch { color: #4070a0; }
-pre.sourceCode span.st { color: #4070a0; }
-pre.sourceCode span.co { color: #60a0b0; font-style: italic; }
-pre.sourceCode span.ot { color: #007020; }
-pre.sourceCode span.al { color: red; font-weight: bold; }
-pre.sourceCode span.fu { color: #06287e; }
-pre.sourceCode span.re { }
-pre.sourceCode span.er { color: red; font-weight: bold; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+/*]]>*/
   </style>
   <style type="text/css">
-body{margin:0;padding:0;width:100%;height:100%;color:black;background-color:white;font-family:"Gill Sans MT","Gill Sans",GillSans,sans-serif;font-size:14pt;}.hidden{display:none;visibility:hidden;}div.toolbar{position:fixed;z-index:200;top:auto;bottom:0;left:0;right:0;height:1.2em;text-align:right;padding-left:1em;padding-right:1em;font-size:60%;color:red;background:#f0f0f0;}div.background{display:none;}div.handout{margin-left:20px;margin-right:20px;}div.slide.titlepage{text-align:center;}div.slide.titlepage.h1{padding-top:40%;}div.slide{z-index:20;margin:0;padding-top:0;padding-bottom:0;padding-left:20px;padding-right:20px;border-width:0;clear:both;top:0;bottom:0;left:0;right:0;line-height:120%;background-color:transparent;}div.slide+div[class].slide{page-break-before:always;}div.slide h1{padding-left:0;padding-right:20pt;padding-top:4pt;padding-bottom:4pt;margin-top:0;margin-left:0;margin-right:60pt;margin-bottom:.5em;display:block;font-size:160%;line-height:1.2em;background:transparent;}div.toc{position:absolute;top:auto;bottom:4em;left:4em;right:auto;width:60%;max-width:30em;height:30em;border:solid thin black;padding:1em;background:#f0f0f0;color:black;z-index:300;overflow:auto;display:block;visibility:visible;}div.toc-heading{width:100%;border-bottom:solid 1px #b4b4b4;margin-bottom:1em;text-align:center;}pre{font-size:80%;font-weight:bold;line-height:120%;padding-top:.2em;padding-bottom:.2em;padding-left:1em;padding-right:1em;border-style:solid;border-left-width:1em;border-top-width:thin;border-right-width:thin;border-bottom-width:thin;border-color:#95ABD0;color:#00428C;background-color:#E4E5E7;}li pre{margin-left:0;}@media print{div.slide{display:block;visibility:visible;position:relative;border-top-style:solid;border-top-width:thin;border-top-color:black;}div.slide pre{font-size:60%;padding-left:.5em;}div.handout{display:block;visibility:visible;}}blockquote{font-style:italic;}img{background-color:transparent;}p.copyright{font-size:smaller;}.center{text-align:center;}.footnote{font-size:smaller;margin-left:2em;}a img{border-width:0;border-style:none;}a:visited{color:navy;}a:link{color:navy;}a:hover{color:red;text-decoration:underline;}a:active{color:red;text-decoration:underline;}a{text-decoration:none;}.navbar a:link{color:white;}.navbar a:visited{color:yellow;}.navbar a:active{color:red;}.navbar a:hover{color:red;}ul{list-style-type:square;}ul ul{list-style-type:disc;}ul ul ul{list-style-type:circle;}ul ul ul ul{list-style-type:disc;}li{margin-left:.5em;margin-top:.5em;}li li{font-size:85%;font-style:italic;}li li li{font-size:85%;font-style:normal;}div dt{margin-left:0;margin-top:1em;margin-bottom:.5em;font-weight:bold;}div dd{margin-left:2em;margin-bottom:.5em;}p,pre,ul,ol,blockquote,h2,h3,h4,h5,h6,dl,table{margin-left:1em;margin-right:1em;}p.subhead{font-weight:bold;margin-top:2em;}.smaller{font-size:smaller;}.bigger{font-size:130%;}td,th{padding:.2em;}ul{margin:.5em 1.5em .5em 1.5em;padding:0;}ol{margin:.5em 1.5em .5em 1.5em;padding:0;}ul{list-style-type:square;}ul ul{list-style-type:disc;}ul ul ul{list-style-type:circle;}ul ul ul ul{list-style-type:disc;}ul li{list-style:square;margin:.1em 0 .6em 0;padding:0;line-height:140%;}ol li{margin:.1em 0 .6em 1.5em;padding:0;line-height:140%;list-style-type:decimal;}li ul li{font-size:85%;font-style:italic;list-style-type:disc;background:transparent;padding:0;}li li ul li{font-size:85%;font-style:normal;list-style-type:circle;background:transparent;padding:0;}li li li ul li{list-style-type:disc;background:transparent;padding:0;}li ol li{list-style-type:decimal;}li li ol li{list-style-type:decimal;}ol.outline li:hover{cursor:pointer;}ol.outline li.nofold:hover{cursor:default;}ul.outline li:hover{cursor:pointer;}ul.outline li.nofold:hover{cursor:default;}ol.outline{list-style:decimal;}ol.outline ol{list-style-type:lower-alpha;}ol.outline li.nofold{padding:0 0 0 20px;background:transparent url(nofold-dim.gif) no-repeat 0 .5em;}ol.outline li.unfolded{padding:0 0 0 20px;background:transparent url(fold-dim.gif) no-repeat 0 .5em;}ol.outline li.folded{padding:0 0 0 20px;background:transparent url(unfold-dim.gif) no-repeat 0 .5em;}ol.outline li.unfolded:hover{padding:0 0 0 20px;background:transparent url(fold.gif) no-repeat 0 .5em;}ol.outline li.folded:hover{padding:0 0 0 20px;background:transparent url(unfold.gif) no-repeat 0 .5em;}ul.outline li.nofold{padding:0 0 0 20px;background:transparent url(nofold-dim.gif) no-repeat 0 .5em;}ul.outline li.unfolded{padding:0 0 0 20px;background:transparent url(fold-dim.gif) no-repeat 0 .5em;}ul.outline li.folded{padding:0 0 0 20px;background:transparent url(unfold-dim.gif) no-repeat 0 .5em;}ul.outline li.unfolded:hover{padding:0 0 0 20px;background:transparent url(fold.gif) no-repeat 0 .5em;}ul.outline li.folded:hover{padding:0 0 0 20px;background:transparent url(unfold.gif) no-repeat 0 .5em;}a.titleslide{font-weight:bold;font-style:italic;}
+/*<![CDATA[*/
+/* slidy.css
+
+   Copyright (c) 2005-2010 W3C (MIT, ERCIM, Keio), All Rights Reserved.
+   W3C liability, trademark, document use and software licensing
+   rules apply, see:
+
+   http://www.w3.org/Consortium/Legal/copyright-documents
+   http://www.w3.org/Consortium/Legal/copyright-software
+*/
+body
+{
+  margin: 0 0 0 0;
+  padding: 0 0 0 0;
+  width: 100%;
+  height: 100%;
+  color: black;
+  background-color: white;
+  font-family: "URW Palladio L", "Palatino Linotype", sans-serif;
+  font-size: 14pt;
+}
+
+code
+{
+  font-family: "DejaVu Sans Mono", monospace;
+}
+
+div.toolbar {
+  position: fixed; z-index: 200;
+  top: auto; bottom: 0; left: 0; right: 0;
+  height: 1.2em; text-align: right;
+  padding-left: 1em;
+  padding-right: 1em; 
+  font-size: 60%;
+  color: red;
+  background-color: rgb(240,240,240);
+  border-top: solid 1px rgb(180,180,180);
+}
+
+div.toolbar span.copyright {
+  color: black;
+  margin-left: 0.5em;
+}
+
+div.initial_prompt {
+  position: absolute;
+  z-index: 1000;
+  bottom: 1.2em;
+  width: 100%;
+  background-color: rgb(200,200,200);
+  opacity: 0.35;
+  background-color: rgb(200,200,200, 0.35);
+  cursor: pointer;
+}
+
+div.initial_prompt p.help {
+  text-align: center;
+}
+
+div.initial_prompt p.close {
+  text-align: right;
+  font-style: italic;
+}
+
+div.slidy_toc {
+  position: absolute;
+  z-index: 300;
+  width: 60%;
+  max-width: 30em;
+  height: 30em;
+  overflow: auto;
+  top: auto;
+  right: auto;
+  left: 4em;
+  bottom: 4em;
+  padding: 1em;
+  background: rgb(240,240,240);
+  border-style: solid;
+  border-width: 2px;
+  font-size: 60%;
+}
+
+div.slidy_toc .toc_heading {
+  text-align: center;
+  width: 100%;
+  margin: 0;
+  margin-bottom: 1em;
+  border-bottom-style: solid;
+  border-bottom-color: rgb(180,180,180);
+  border-bottom-width: 1px;
+}
+
+div.slide {
+  z-index: 20;
+  margin: 0 0 0 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-width: 0;
+  clear: both;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  line-height: 120%;
+  background-color: transparent;
+}
+
+div.slide > div.figure {
+  text-align: center
+}
+
+div.background {
+  display: none;
+}
+
+div.handout {
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+div.slide.titlepage {
+  text-align: center;
+}
+
+div.slide.titlepage h1 {
+  padding-top: 10%;
+  margin-right: 0;
+}
+
+div.slide h1 {
+  padding-left: 0;
+  padding-right: 20pt;
+  padding-top: 4pt;
+  padding-bottom: 4pt;
+  margin-top: 0;
+  margin-left: 0;
+  margin-right: 60pt;
+  margin-bottom: 0.5em;
+  display: block; 
+  font-size: 160%;
+  line-height: 1.2em;
+  background: transparent;
+}
+
+div.toc {
+  position: absolute;
+  top: auto;
+  bottom: 4em;
+  left: 4em;
+  right: auto;
+  width: 60%;
+  max-width: 30em;
+  height: 30em;
+  border: solid thin black;
+  padding: 1em;
+  background: rgb(240,240,240);
+  color: black;
+  z-index: 300;
+  overflow: auto;
+  display: block;
+  visibility: visible;
+}
+
+div.toc-heading {
+  width: 100%;
+  border-bottom: solid 1px rgb(180,180,180);
+  margin-bottom: 1em;
+  text-align: center;
+}
+
+pre {
+ font-size: 80%;
+ font-weight: bold;
+ line-height: 120%;
+ padding-top: 0.2em;
+ padding-bottom: 0.2em;
+ padding-left: 1em;
+ padding-right: 1em;
+ border-style: solid;
+ border-left-width: 1em;
+ border-top-width: thin;
+ border-right-width: thin;
+ border-bottom-width: thin;
+ border-color: #95ABD0;
+ color: #00428C;
+ background-color: #E4E5E7;
+}
+
+li pre { margin-left: 0; }
+
+blockquote { font-style: italic }
+
+img { background-color: transparent }
+
+p.copyright { font-size: smaller }
+
+.center { text-align: center }
+.footnote { font-size: smaller; margin-left: 2em; }
+
+a img { border-width: 0; border-style: none }
+
+a:visited { color: navy }
+a:link { color: navy }
+a:hover { color: red; text-decoration: underline }
+a:active { color: red; text-decoration: underline }
+
+a {text-decoration: none}
+.navbar a:link {color: white}
+.navbar a:visited {color: yellow}
+.navbar a:active {color: red}
+.navbar a:hover {color: red}
+
+ul { list-style-type: square; }
+ul ul { list-style-type: disc; }
+ul ul ul { list-style-type: circle; }
+ul ul ul ul { list-style-type: disc; }
+li { margin-left: 0.5em; margin-top: 0.5em; font-weight: bold }
+li li { font-size: 85%; font-weight: normal }
+li li li { font-size: 85%; font-weight: normal }
+strong { color: red; }
+li li strong { color: black; }
+/* pandoc's rules about when to insert paragraphs don't interact well
+with the requirement for blank lines around code blocks.  Let's just
+neutralize the effects of p in bullets.  */
+li > p { margin: 0em; }
+
+div dt
+{
+  margin-left: 0;
+  margin-top: 1em;
+  margin-bottom: 0.5em;
+  font-weight: bold;
+}
+div dd
+{
+  margin-left: 2em;
+  margin-bottom: 0.5em;
+}
+
+
+p,pre,ul,ol,blockquote,h2,h3,h4,h5,h6,dl,table {
+  margin-left: 1em;
+  margin-right: 1em;
+}
+
+p.subhead { font-weight: bold; margin-top: 2em; }
+
+.smaller { font-size: smaller }
+.bigger { font-size: 130% }
+
+td,th { padding: 0.2em }
+
+ul {
+  margin: 0.5em 1.5em 0.5em 1.5em;
+  padding: 0;
+}
+
+ol {
+  margin: 0.5em 1.5em 0.5em 1.5em;
+  padding: 0;
+}
+
+ul { list-style-type: square; }
+ul ul { list-style-type: disc; }
+ul ul ul { list-style-type: circle; }
+ul ul ul ul { list-style-type: disc; }
+
+ul li { 
+  list-style: square;
+  margin: 0.1em 0em 0.6em 0;
+  padding: 0 0 0 0;
+  line-height: 140%;
+}
+
+ol li { 
+  margin: 0.1em 0em 0.6em 1.5em;
+  padding: 0 0 0 0px;
+  line-height: 140%;
+  list-style-type: decimal;
+}
+
+li ul li { 
+  font-size: 85%; 
+  font-style: normal;
+  list-style-type: disc;
+  background: transparent;
+  padding: 0 0 0 0;
+}
+li li ul li { 
+  font-size: 85%; 
+  font-style: normal;
+  list-style-type: circle;
+  background: transparent;
+  padding: 0 0 0 0;
+}
+li li li ul li {
+  list-style-type: disc;
+  background: transparent;
+  padding: 0 0 0 0;
+}
+
+li ol li {
+  list-style-type: decimal;
+}
+
+
+li li ol li {
+  list-style-type: decimal;
+}
+
+/*
+ setting class="outline on ol or ul makes it behave as an
+ ouline list where blocklevel content in li elements is
+ hidden by default and can be expanded or collapsed with
+ mouse click. Set class="expand" on li to override default
+*/
+
+ol.outline li:hover { cursor: pointer }
+ol.outline li.nofold:hover { cursor: default }
+
+ul.outline li:hover { cursor: pointer }
+ul.outline li.nofold:hover { cursor: default }
+
+ol.outline { list-style:decimal; }
+ol.outline ol { list-style-type:lower-alpha }
+
+ol.outline li.nofold {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/nofold-dim.gif) no-repeat 0px 0.5em;
+}
+ol.outline li.unfolded {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/fold-dim.gif) no-repeat 0px 0.5em;
+}
+ol.outline li.folded {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/unfold-dim.gif) no-repeat 0px 0.5em;
+}
+ol.outline li.unfolded:hover {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/fold.gif) no-repeat 0px 0.5em;
+}
+ol.outline li.folded:hover {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/unfold.gif) no-repeat 0px 0.5em;
+}
+
+ul.outline li.nofold {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/nofold-dim.gif) no-repeat 0px 0.5em;
+}
+ul.outline li.unfolded {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/fold-dim.gif) no-repeat 0px 0.5em;
+}
+ul.outline li.folded {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/unfold-dim.gif) no-repeat 0px 0.5em;
+}
+ul.outline li.unfolded:hover {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/fold.gif) no-repeat 0px 0.5em;
+}
+ul.outline li.folded:hover {
+  padding: 0 0 0 20px;
+  background: transparent url(../graphics/unfold.gif) no-repeat 0px 0.5em;
+}
+
+/* for slides with class "title" in table of contents */
+a.titleslide { font-weight: bold; font-style: italic }
+
+/*
+ hide images for work around for save as bug
+ where browsers fail to save images used by CSS
+*/
+img.hidden { display: none; visibility: hidden }
+div.initial_prompt { display: none; visibility: hidden }
+
+  div.slide {
+     visibility: visible;
+     position: inherit;
+  }
+  div.handout {
+     border-top-style: solid;
+     border-top-width: thin;
+     border-top-color: black;
+  }
+
+@media screen {
+  .hidden { display: none; visibility: visible }
+
+  div.slide.hidden { display: block; visibility: visible }
+  div.handout.hidden { display: block; visibility: visible }
+  div.background { display: none; visibility: hidden }
+  body.single_slide div.initial_prompt { display: block; visibility: visible }
+  body.single_slide div.background { display: block; visibility: visible }
+  body.single_slide div.background.hidden { display: none; visibility: hidden }
+  body.single_slide .invisible { visibility: hidden }
+  body.single_slide .hidden { display: none; visibility: hidden }
+  body.single_slide div.slide { position: absolute }
+  body.single_slide div.handout { display: none; visibility: hidden }
+}
+
+@media print {
+  .hidden { display: block; visibility: visible }
+
+  div.slide pre { font-size: 60%; padding-left: 0.5em; }
+  div.toolbar { display: none; visibility: hidden; }
+  div.slidy_toc { display: none; visibility: hidden; }
+  div.background { display: none; visibility: hidden; }
+  div.slide { page-break-before: always }
+  /* :first-child isn't reliable for print media */
+  div.slide.first-slide { page-break-before: avoid }
+}
+
+/*]]>*/
   </style>
-  <script type="text/javascript" charset="utf-8">
+<script type="text/javascript" charset="utf-8">
+/*<![CDATA[*/
 var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator.userAgent).indexOf("KHTML")>=0?true:false),opera:((navigator.userAgent).indexOf("Opera")>=0?true:false),ipad:((navigator.userAgent).indexOf("iPad")>=0?true:false),iphone:((navigator.userAgent).indexOf("iPhone")>=0?true:false),ie:(typeof document.all!="undefined"&&!this.opera),ie6:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 6")!=-1),ie7:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 7")!=-1),ie8:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 8")!=-1),ie9:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 9")!=-1),keyboardless:(this.ipad||this.iphone),is_xhtml:/xml/.test(document.contentType),slide_number:0,slide_number_element:null,slides:[],notes:[],backgrounds:[],toolbar:null,title:null,last_shown:null,eos:null,toc:null,outline:null,selected_text_len:0,view_all:0,want_toolbar:true,mouse_click_enabled:true,scroll_hack:0,disable_slide_click:false,lang:"en",help_anchor:null,help_page:"http://www.w3.org/Talks/Tools/Slidy2/help/help.html",help_text:"Navigate with mouse click, space bar, Cursor Left/Right, or Pg Up and Pg Dn. Use S and B to change font size.",size_index:0,size_adjustment:0,sizes:new Array("10pt","12pt","14pt","16pt","18pt","20pt","22pt","24pt","26pt","28pt","30pt","32pt"),last_width:0,last_height:0,objects:[],set_up:function(){var a=function(){w3c_slidy.init()};if(typeof window.addEventListener!="undefined"){window.addEventListener("load",a,false)}else{window.attachEvent("onload",a)}},hide_slides:function(){if(document.body&&!w3c_slidy.initialized){document.body.style.visibility="hidden"}else{setTimeout(w3c_slidy.hide_slides,50)}},ie_hack:function(){window.resizeBy(0,-1);window.resizeBy(0,1)},init:function(){document.body.style.visibility="visible";this.init_localization();this.add_toolbar();this.wrap_implicit_slides();this.collect_slides();this.collect_notes();this.collect_backgrounds();this.objects=document.body.getElementsByTagName("object");this.patch_anchors();this.slide_number=this.find_slide_number(location.href);window.offscreenbuffering=true;this.size_adjustment=this.find_size_adjust();this.time_left=this.find_duration();this.hide_image_toolbar();this.init_outliner();this.title=document.title;this.is_xhtml=(document.body.tagName=="BODY"?false:true);if(this.slides.length>0){var a=this.slides[this.slide_number];if(this.slide_number>0){this.set_visibility_all_incremental("visible");this.last_shown=this.previous_incremental_item(null);this.set_eos_status(true)}else{this.last_shown=null;this.set_visibility_all_incremental("hidden");this.set_eos_status(!this.next_incremental_item(this.last_shown))}this.set_location();this.add_class(this.slides[0],"first-slide");w3c_slidy.show_slide(a)}this.toc=this.table_of_contents();this.add_initial_prompt();if(!this.keyboardless){this.add_listener(document.body,"click",this.mouse_button_click)}this.add_listener(document,"keydown",this.key_down);this.add_listener(document,"keypress",this.key_press);this.add_listener(window,"resize",this.resized);this.add_listener(window,"scroll",this.scrolled);this.add_listener(window,"unload",this.unloaded);this.single_slide_view();this.resized();if(this.ie7){setTimeout(w3c_slidy.ie_hack,100)}this.show_toolbar();setInterval(function(){w3c_slidy.check_location()},200);w3c_slidy.initialized=true},table_of_contents:function(){var c=this.create_element("div");this.add_class(c,"slidy_toc hidden");var k=this.create_element("div");this.add_class(k,"toc-heading");k.innerHTML=this.localize("Table of Contents");c.appendChild(k);var f=null;for(var d=0;d<this.slides.length;++d){var g=this.has_class(this.slides[d],"title");var e=document.createTextNode((d+1)+". ");c.appendChild(e);var h=this.create_element("a");h.setAttribute("href","#("+(d+1)+")");if(g){this.add_class(h,"titleslide")}var b=document.createTextNode(this.slide_name(d));h.appendChild(b);h.onclick=w3c_slidy.toc_click;h.onkeydown=w3c_slidy.toc_key_down;h.previous=f;if(f){f.next=h}c.appendChild(h);if(d==0){c.first=h}if(d<this.slides.length-1){var j=this.create_element("br");c.appendChild(j)}f=h}c.focus=function(){if(this.first){this.first.focus()}};c.onmouseup=w3c_slidy.mouse_button_up;c.onclick=function(a){a||(a=window.event);if(w3c_slidy.selected_text_len<=0){w3c_slidy.hide_table_of_contents(true)}w3c_slidy.stop_propagation(a);if(a.cancel!=undefined){a.cancel=true}if(a.returnValue!=undefined){a.returnValue=false}return false};document.body.insertBefore(c,document.body.firstChild);return c},is_shown_toc:function(){return !w3c_slidy.has_class(w3c_slidy.toc,"hidden")},show_table_of_contents:function(){w3c_slidy.remove_class(w3c_slidy.toc,"hidden");var a=w3c_slidy.toc;a.focus();if(w3c_slidy.ie7&&w3c_slidy.slide_number==0){setTimeout(w3c_slidy.ie_hack,100)}},hide_table_of_contents:function(a){w3c_slidy.add_class(w3c_slidy.toc,"hidden");if(a&&!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}},toggle_table_of_contents:function(){if(w3c_slidy.is_shown_toc()){w3c_slidy.hide_table_of_contents(true)}else{w3c_slidy.show_table_of_contents()}},toc_click:function(d){if(!d){d=window.event}var c=w3c_slidy.get_target(d);if(c&&c.nodeType==1){var b=c.getAttribute("href");if(b){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.find_slide_number(b);a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_location();w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));w3c_slidy.show_slide(a);try{if(!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}}catch(d){}}}w3c_slidy.hide_table_of_contents(true);if(w3c_slidy.ie7){w3c_slidy.ie_hack()}w3c_slidy.stop_propagation(d);return w3c_slidy.cancel(d)},toc_key_down:function(d){var b;if(!d){var d=window.event}if(window.event){b=window.event.keyCode}else{if(d.which){b=d.which}else{return true}}if(!b){return true}if(d.ctrlKey||d.altKey){return true}if(b==13){var c=this.getAttribute("href");if(c){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.find_slide_number(c);a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_location();w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));w3c_slidy.show_slide(a);try{if(!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}}catch(f){}}w3c_slidy.hide_table_of_contents(true);if(self.ie7){w3c_slidy.ie_hack()}return w3c_slidy.cancel(d)}if(b==40&&this.next){this.next.focus();return w3c_slidy.cancel(d)}if(b==38&&this.previous){this.previous.focus();return w3c_slidy.cancel(d)}return true},before_print:function(){this.show_all_slides();this.hide_toolbar();alert("before print")},after_print:function(){if(!this.view_all){this.single_slide_view();this.show_toolbar()}alert("after print")},print_slides:function(){this.before_print();window.print();this.after_print()},toggle_view:function(){if(this.view_all){this.single_slide_view();this.show_toolbar();this.view_all=0}else{this.show_all_slides();this.hide_toolbar();this.view_all=1}},show_all_slides:function(){this.remove_class(document.body,"single_slide");this.set_visibility_all_incremental("visible")},single_slide_view:function(){this.add_class(document.body,"single_slide");this.set_visibility_all_incremental("visible");this.last_shown=this.previous_incremental_item(null)},hide_image_toolbar:function(){if(!this.ns_pos){var a=document.getElementsByTagName("IMG");for(var b=0;b<a.length;++b){a[b].setAttribute("galleryimg","no")}}},unloaded:function(a){},is_KHTML:function(){var a=navigator.userAgent;return(a.indexOf("KHTML")>=0?true:false)},slide_name:function(c){var b=null;var a=this.slides[c];var d=this.find_heading(a);if(d){b=this.extract_text(d)}if(!b){b=this.title+"("+(c+1)+")"}b.replace(/\&/g,"&amp;");b.replace(/\</g,"&lt;");b.replace(/\>/g,"&gt;");return b},find_heading:function(a){if(!a||a.nodeType!=1){return null}if(a.nodeName=="H1"||a.nodeName=="h1"){return a}var b=a.firstChild;while(b){a=this.find_heading(b);if(a){return a}b=b.nextSibling}return null},extract_text:function(a){if(!a){return""}if(a.nodeType==3){return a.nodeValue}if(a.nodeType==1){a=a.firstChild;var b="";while(a){b=b+this.extract_text(a);a=a.nextSibling}return b}return""},find_copyright:function(){var a,c;var d=document.getElementsByTagName("meta");for(var b=0;b<d.length;++b){a=d[b].getAttribute("name");c=d[b].getAttribute("content");if(a=="copyright"){return c}}return null},find_size_adjust:function(){var a,c,e;var d=document.getElementsByTagName("meta");for(var b=0;b<d.length;++b){a=d[b].getAttribute("name");c=d[b].getAttribute("content");if(a=="font-size-adjustment"){return 1*c}}return 1},find_duration:function(){var a,c,e;var d=document.getElementsByTagName("meta");for(var b=0;b<d.length;++b){a=d[b].getAttribute("name");c=d[b].getAttribute("content");if(a=="duration"){return 60000*c}}return null},replace_by_non_breaking_space:function(b){for(var a=0;a<b.length;++a){b[a]=160}},init_outliner:function(){var a=document.getElementsByTagName("li");for(var b=0;b<a.length;++b){var c=a[b];if(!this.has_class(c.parentNode,"outline")){continue}c.onclick=this.outline_click;if(this.foldable(c)){c.foldable=true;c.onfocus=function(){w3c_slidy.outline=this};c.onblur=function(){w3c_slidy.outline=null};if(!c.getAttribute("tabindex")){c.setAttribute("tabindex","0")}if(this.has_class(c,"expand")){this.unfold(c)}else{this.fold(c)}}else{this.add_class(c,"nofold");c.visible=true;c.foldable=false}}},foldable:function(b){if(!b||b.nodeType!=1){return false}var a=b.firstChild;while(a){if(a.nodeType==1&&this.is_block(a)){return true}a=a.nextSibling}return false},fold:function(b){if(b){this.remove_class(b,"unfolded");this.add_class(b,"folded")}var a=b?b.firstChild:null;while(a){if(a.nodeType==1&&this.is_block(a)){w3c_slidy.add_class(a,"hidden")}a=a.nextSibling}b.visible=false},unfold:function(b){if(b){this.add_class(b,"unfolded");this.remove_class(b,"folded")}var a=b?b.firstChild:null;while(a){if(a.nodeType==1&&this.is_block(a)){w3c_slidy.remove_class(a,"hidden")}a=a.nextSibling}b.visible=true},outline_click:function(c){if(!c){c=window.event}var a=false;var b=w3c_slidy.get_target(c);while(b&&b.visible==undefined){b=b.parentNode}if(!b){return true}if(c.which){a=(c.which==3)}else{if(c.button){a=(c.button==2)}}if(!a&&b.visible!=undefined){if(b.foldable){if(b.visible){w3c_slidy.fold(b)}else{w3c_slidy.unfold(b)}}w3c_slidy.stop_propagation(c);c.cancel=true;c.returnValue=false}return false},add_initial_prompt:function(){var a=this.create_element("div");a.setAttribute("class","initial_prompt");var b=this.create_element("p");a.appendChild(b);b.setAttribute("class","help");if(this.keyboardless){b.innerHTML="Tap footer to move to next slide"}else{b.innerHTML="Space or Right Arrow to move to next slide, click help below for more details"}this.add_listener(a,"click",function(c){document.body.removeChild(a);w3c_slidy.stop_propagation(c);if(c.cancel!=undefined){c.cancel=true}if(c.returnValue!=undefined){c.returnValue=false}return false});document.body.appendChild(a);this.initial_prompt=a;setTimeout(function(){document.body.removeChild(a)},5000)},add_toolbar:function(){var a,i;this.toolbar=this.create_element("div");this.toolbar.setAttribute("class","toolbar");if(this.ns_pos||!this.ie6){var k=this.create_element("div");k.setAttribute("style","float: right; text-align: right");a=this.create_element("span");a.innerHTML=this.localize("slide")+" n/m";k.appendChild(a);this.toolbar.appendChild(k);var e=this.create_element("div");e.setAttribute("style","text-align: left");this.eos=this.create_element("span");this.eos.innerHTML="* ";e.appendChild(this.eos);var g=this.create_element("a");g.setAttribute("href",this.help_page);g.setAttribute("title",this.localize(this.help_text));g.innerHTML=this.localize("help?");e.appendChild(g);this.help_anchor=g;var d=document.createTextNode(" ");e.appendChild(d);var f=this.create_element("a");f.setAttribute("href","javascript:w3c_slidy.toggle_table_of_contents()");f.setAttribute("title",this.localize("table of contents"));f.innerHTML=this.localize("contents?");e.appendChild(f);var b=document.createTextNode(" ");e.appendChild(b);var h=this.find_copyright();if(h){var j=this.create_element("span");j.className="copyright";j.innerHTML=h;e.appendChild(j)}this.toolbar.setAttribute("tabindex","0");this.toolbar.appendChild(e)}else{this.toolbar.style.position=(this.ie7?"fixed":"absolute");this.toolbar.style.zIndex="200";this.toolbar.style.width="99.9%";this.toolbar.style.height="1.2em";this.toolbar.style.top="auto";this.toolbar.style.bottom="0";this.toolbar.style.left="0";this.toolbar.style.right="0";this.toolbar.style.textAlign="left";this.toolbar.style.fontSize="60%";this.toolbar.style.color="red";this.toolbar.borderWidth=0;this.toolbar.className="toolbar";this.toolbar.style.background="rgb(240,240,240)";var c=this.create_element("span");c.innerHTML="&nbsp;&nbsp;*&nbsp;";this.toolbar.appendChild(c);this.eos=c;var g=this.create_element("a");g.setAttribute("href",this.help_page);g.setAttribute("title",this.localize(this.help_text));g.innerHTML=this.localize("help?");this.toolbar.appendChild(g);this.help_anchor=g;var d=document.createTextNode(" ");this.toolbar.appendChild(d);var f=this.create_element("a");f.setAttribute("href","javascript:toggleTableOfContents()");f.setAttribute("title",this.localize("table of contents".localize));f.innerHTML=this.localize("contents?");this.toolbar.appendChild(f);var b=document.createTextNode(" ");this.toolbar.appendChild(b);var h=this.find_copyright();if(h){var j=this.create_element("span");j.innerHTML=h;j.style.color="black";j.style.marginLeft="0.5em";this.toolbar.appendChild(j)}a=this.create_element("div");a.style.position="absolute";a.style.width="auto";a.style.height="1.2em";a.style.top="auto";a.style.bottom=0;a.style.right="0";a.style.textAlign="right";a.style.color="red";a.style.background="rgb(240,240,240)";a.innerHTML=this.localize("slide")+" n/m";this.toolbar.appendChild(a)}this.toolbar.onclick=function(m){if(!m){m=window.event}var l=m.target;if(!l&&m.srcElement){l=m.srcElement}if(l&&l.nodeType==3){l=l.parentNode}w3c_slidy.stop_propagation(m);if(l&&l.nodeName.toLowerCase()!="a"){w3c_slidy.mouse_button_click(m)}};this.slide_number_element=a;this.set_eos_status(false);document.body.appendChild(this.toolbar)},wrap_implicit_slides:function(){var a,d,c,b,f;var e=document.getElementsByTagName("h1");if(!e){return}for(a=0;a<e.length;++a){d=e[a];if(d.parentNode!=document.body){continue}c=d.nextSibling;f=document.createElement("div");this.add_class(f,"slide");document.body.replaceChild(f,d);f.appendChild(d);while(c){if(c.nodeType==1&&(c.nodeName=="H1"||c.nodeName=="h1"||c.nodeName=="DIV"||c.nodeName=="div")){break}b=c.nextSibling;c=document.body.removeChild(c);f.appendChild(c);c=b}}},collect_slides:function(){var e=new Array();var d=document.body.getElementsByTagName("div");for(var c=0;c<d.length;++c){div=d.item(c);if(this.has_class(div,"slide")){e[e.length]=div;this.add_class(div,"hidden");var b=document.createElement("br");div.appendChild(b);var a=document.createElement("br");div.appendChild(a)}else{if(this.has_class(div,"background")){div.style.display="block"}}}this.slides=e},collect_notes:function(){var b=new Array();var c=document.body.getElementsByTagName("div");for(var a=0;a<c.length;++a){div=c.item(a);if(this.has_class(div,"handout")){b[b.length]=div;this.add_class(div,"hidden")}}this.notes=b},collect_backgrounds:function(){var c=new Array();var b=document.body.getElementsByTagName("div");for(var a=0;a<b.length;++a){div=b.item(a);if(this.has_class(div,"background")){c[c.length]=div;this.add_class(div,"hidden")}}this.backgrounds=c},patch_anchors:function(){var a=w3c_slidy;var c=function(g){if(a.page_address(this.href)==a.page_address(location.href)){var f=a.find_slide_number(this.href);if(f!=a.slide_number){var e=a.slides[a.slide_number];a.hide_slide(e);a.slide_number=f;e=a.slides[a.slide_number];a.show_slide(e);a.set_location()}}else{w3c_slidy.stop_propagation(g)}this.blur();a.disable_slide_click=true};var d=document.body.getElementsByTagName("a");for(var b=0;b<d.length;++b){if(window.addEventListener){d[b].addEventListener("click",c,false)}else{d[b].attachEvent("onclick",c)}}},show_slide_number:function(){var a=w3c_slidy.get_timer();w3c_slidy.slide_number_element.innerHTML=a+w3c_slidy.localize("slide")+" "+(w3c_slidy.slide_number+1)+"/"+w3c_slidy.slides.length},check_location:function(){var b=location.hash;if(w3c_slidy.slide_number>0&&(b==""||b=="#")){w3c_slidy.goto_slide(0)}else{if(b.length>2&&b!="#("+(w3c_slidy.slide_number+1)+")"){var a=parseInt(location.hash.substr(2));if(!isNaN(a)){w3c_slidy.goto_slide(a-1)}}}if(w3c_slidy.time_left&&w3c_slidy.slide_number>0){w3c_slidy.show_slide_number();if(w3c_slidy.time_left>0){w3c_slidy.time_left-=200}}},get_timer:function(){var c="";if(w3c_slidy.time_left){var b,a;a=Math.floor(w3c_slidy.time_left/1000);b=Math.floor(a/60);a=a%60;c=(b?b+"m":"")+a+"s "}return c},set_location:function(){var a=w3c_slidy.page_address(location.href);var b="#("+(w3c_slidy.slide_number+1)+")";if(w3c_slidy.slide_number>=0){a=a+b}if(w3c_slidy.ie&&(w3c_slidy.ie6||w3c_slidy.ie7)){w3c_slidy.push_hash(b)}if(a!=location.href){location.href=a}if(this.khtml){b="("+(w3c_slidy.slide_number+1)+")"}if(!this.ie&&location.hash!=b&&location.hash!=""){location.hash=b}document.title=w3c_slidy.title+" ("+(w3c_slidy.slide_number+1)+")";w3c_slidy.show_slide_number()},page_address:function(b){var a=b.indexOf("#");if(a<0){a=b.indexOf("%23")}if(a<0){return b}return b.substr(0,a)},on_frame_loaded:function(b){location.hash=b;var a=w3c_slidy.page_address(location.href);location.href=a+b},push_hash:function(b){if(b==""){b="#(1)"}window.location.hash=b;var a=document.getElementById("historyFrame").contentWindow.document;a.open("javascript:'<html></html>'");a.write('<html><head><script type="text/javascript">window.parent.w3c_slidy.on_frame_loaded(\''+(b)+"');\74/script></head><body>hello mum</body></html>");a.close()},find_slide_number:function(e){var c=e.indexOf("#");if(c<0){return 0}var b=unescape(e.substr(c+1));var f=document.getElementById(b);if(!f){var d=/\((\d)+\)/;if(b.match(d)){var a=parseInt(b.substring(1,b.length-1));if(a>this.slides.length){a=1}if(--a<0){a=0}return a}d=/\[(\d)+\]/;if(b.match(d)){var a=parseInt(b.substring(1,b.length-1));if(a>this.slides.length){a=1}if(--a<0){a=0}return a}return 0}while(true){if(f.nodeName.toLowerCase()=="div"&&this.has_class(f,"slide")){break}f=f.parentNode;if(!f){return 0}}for(c=0;c<slides.length;++c){if(slides[c]==f){return c}}return 0},previous_slide:function(b){if(!w3c_slidy.view_all){var a;if((b||w3c_slidy.slide_number==0)&&w3c_slidy.last_shown!=null){w3c_slidy.last_shown=w3c_slidy.hide_previous_item(w3c_slidy.last_shown);w3c_slidy.set_eos_status(false)}else{if(w3c_slidy.slide_number>0){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.slide_number-1;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.set_visibility_all_incremental("visible");w3c_slidy.last_shown=w3c_slidy.previous_incremental_item(null);w3c_slidy.set_eos_status(true);w3c_slidy.show_slide(a)}}w3c_slidy.set_location();if(!w3c_slidy.ns_pos){w3c_slidy.refresh_toolbar(200)}}},next_slide:function(c){if(!w3c_slidy.view_all){var a,b=w3c_slidy.last_shown;if(c||w3c_slidy.slide_number==w3c_slidy.slides.length-1){w3c_slidy.last_shown=w3c_slidy.reveal_next_item(w3c_slidy.last_shown)}if((!c||w3c_slidy.last_shown==null)&&w3c_slidy.slide_number<w3c_slidy.slides.length-1){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.slide_number+1;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.show_slide(a)}else{if(!w3c_slidy.last_shown){if(b&&c){w3c_slidy.last_shown=b}}}w3c_slidy.set_location();w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));if(!w3c_slidy.ns_pos){w3c_slidy.refresh_toolbar(200)}}},first_slide:function(){if(!w3c_slidy.view_all){var a;if(w3c_slidy.slide_number!=0){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=0;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.show_slide(a)}w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));w3c_slidy.set_location()}},last_slide:function(){if(!w3c_slidy.view_all){var a;w3c_slidy.last_shown=null;if(w3c_slidy.last_shown==null&&w3c_slidy.slide_number<w3c_slidy.slides.length-1){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.slides.length-1;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.set_visibility_all_incremental("visible");w3c_slidy.last_shown=w3c_slidy.previous_incremental_item(null);w3c_slidy.show_slide(a)}else{w3c_slidy.set_visibility_all_incremental("visible");w3c_slidy.last_shown=w3c_slidy.previous_incremental_item(null)}w3c_slidy.set_eos_status(true);w3c_slidy.set_location()}},set_eos_status:function(a){if(this.eos){this.eos.style.color=(a?"rgb(240,240,240)":"red")}},goto_slide:function(b){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=b;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));document.title=w3c_slidy.title+" ("+(w3c_slidy.slide_number+1)+")";w3c_slidy.show_slide(a);w3c_slidy.show_slide_number()},show_slide:function(a){this.sync_background(a);window.scrollTo(0,0);this.remove_class(a,"hidden")},hide_slide:function(a){this.add_class(a,"hidden")},sync_background:function(a){var e;var g;if(a.currentStyle){g=a.currentStyle.backgroundColor}else{if(document.defaultView){var f=document.defaultView.getComputedStyle(a,null);if(f){g=f.getPropertyValue("background-color")}else{g="transparent"}}else{g=="transparent"}}if(g=="transparent"||g.indexOf("rgba")>=0||g.indexOf("opacity")>=0){var c=this.get_class_list(a);for(var d=0;d<this.backgrounds.length;d++){e=this.backgrounds[d];var b=this.get_class_list(e);if(this.matching_background(c,b)){this.remove_class(e,"hidden")}else{this.add_class(e,"hidden")}}}else{this.hide_backgrounds()}},hide_backgrounds:function(){for(var a=0;a<this.backgrounds.length;a++){background=this.backgrounds[a];this.add_class(background,"hidden")}},matching_background:function(c,b){var d,e,f,a;f=/\w+/g;a=b.match(f);for(d=e=0;d<a.length;d++){if(a[d]=="hidden"){continue}if(a[d]=="background"){continue}++e}if(e==0){return true}a=c.match(f);for(d=e=0;d<a.length;d++){if(a[d]=="hidden"){continue}if(this.has_token(b,a[d])){return true}}return false},resized:function(){var c=0;if(typeof(window.innerWidth)=="number"){c=window.innerWidth}else{if(document.documentElement&&document.documentElement.clientWidth){c=document.documentElement.clientWidth}else{if(document.body&&document.body.clientWidth){c=document.body.clientWidth}}}var b=0;if(typeof(window.innerHeight)=="number"){b=window.innerHeight}else{if(document.documentElement&&document.documentElement.clientHeight){b=document.documentElement.clientHeight}else{if(document.body&&document.body.clientHeight){b=document.body.clientHeight}}}if(b&&(c/b>1.05*1024/768)){c=b*1024/768}if(c!=w3c_slidy.last_width||b!=w3c_slidy.last_height){if(c>=1100){w3c_slidy.size_index=5}else{if(c>=1000){w3c_slidy.size_index=4}else{if(c>=800){w3c_slidy.size_index=3}else{if(c>=600){w3c_slidy.size_index=2}else{if(c){w3c_slidy.size_index=0}}}}}if(0<=w3c_slidy.size_index+w3c_slidy.size_adjustment&&w3c_slidy.size_index+w3c_slidy.size_adjustment<w3c_slidy.sizes.length){w3c_slidy.size_index=w3c_slidy.size_index+w3c_slidy.size_adjustment}w3c_slidy.adjust_object_dimensions(c,b);if(document.body.style.fontSize!=w3c_slidy.sizes[w3c_slidy.size_index]){document.body.style.fontSize=w3c_slidy.sizes[w3c_slidy.size_index]}w3c_slidy.last_width=c;w3c_slidy.last_height=b;if(w3c_slidy.ns_pos){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.show_slide(a)}w3c_slidy.refresh_toolbar(200)}},scrolled:function(){if(w3c_slidy.toolbar&&!w3c_slidy.ns_pos&&!w3c_slidy.ie7){w3c_slidy.hack_offset=w3c_slidy.scroll_x_offset();w3c_slidy.toolbar.style.display="none";if(w3c_slidy.scrollhack==0&&!w3c_slidy.view_all){setTimeout(function(){w3c_slidy.show_toolbar()},1000);w3c_slidy.scrollhack=1}}},hide_toolbar:function(){w3c_slidy.add_class(w3c_slidy.toolbar,"hidden");window.focus()},refresh_toolbar:function(a){if(!w3c_slidy.ns_pos&&!w3c_slidy.ie7){w3c_slidy.hide_toolbar();setTimeout(function(){w3c_slidy.show_toolbar()},a)}},show_toolbar:function(){if(w3c_slidy.want_toolbar){w3c_slidy.toolbar.style.display="block";if(!w3c_slidy.ns_pos){var b=w3c_slidy.scroll_x_offset();w3c_slidy.toolbar.style.left=b;w3c_slidy.toolbar.style.right=b;w3c_slidy.toolbar.style.bottom=0}w3c_slidy.remove_class(w3c_slidy.toolbar,"hidden")}w3c_slidy.scrollhack=0;try{if(!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}}catch(a){}},toggle_toolbar:function(){if(!w3c_slidy.view_all){if(w3c_slidy.has_class(w3c_slidy.toolbar,"hidden")){w3c_slidy.remove_class(w3c_slidy.toolbar,"hidden");w3c_slidy.want_toolbar=1}else{w3c_slidy.add_class(w3c_slidy.toolbar,"hidden");w3c_slidy.want_toolbar=0}}},scroll_x_offset:function(){if(window.pageXOffset){return self.pageXOffset}if(document.documentElement&&document.documentElement.scrollLeft){return document.documentElement.scrollLeft}if(document.body){return document.body.scrollLeft}return 0},scroll_y_offset:function(){if(window.pageYOffset){return self.pageYOffset}if(document.documentElement&&document.documentElement.scrollTop){return document.documentElement.scrollTop}if(document.body){return document.body.scrollTop}return 0},optimize_font_size:function(){var a=w3c_slidy.slides[w3c_slidy.slide_number];var d=a.scrollHeight;var b=getWindowHeight();var c=100*d/b;alert("window utilization = "+c+"% (doc "+d+" win "+b+")")},get_doc_height:function(a){if(!a){a=document}if(a&&a.body&&a.body.offsetHeight){return a.body.offsetHeight}if(a&&a.body&&a.body.scrollHeight){return a.body.scrollHeight}alert("couldn't determine document height")},get_window_height:function(){if(typeof(window.innerHeight)=="number"){return window.innerHeight}if(document.documentElement&&document.documentElement.clientHeight){return document.documentElement.clientHeight}if(document.body&&document.body.clientHeight){return document.body.clientHeight}},document_height:function(){var a,b;a=document.body.scrollHeight;b=document.body.offsetHeight;if(a&&b){return(a>b?a:b)}return 0},smaller:function(){if(w3c_slidy.size_index>0){--w3c_slidy.size_index}w3c_slidy.toolbar.style.display="none";document.body.style.fontSize=w3c_slidy.sizes[w3c_slidy.size_index];var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.show_slide(a);setTimeout(function(){w3c_slidy.show_toolbar()},50)},bigger:function(){if(w3c_slidy.size_index<w3c_slidy.sizes.length-1){++w3c_slidy.size_index}w3c_slidy.toolbar.style.display="none";document.body.style.fontSize=w3c_slidy.sizes[w3c_slidy.size_index];var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.show_slide(a);setTimeout(function(){w3c_slidy.show_toolbar()},50)},adjust_object_dimensions:function(c,k){for(var e=0;e<w3c_slidy.objects.length;e++){var d=this.objects[e];var b=d.getAttribute("type");if(b=="image/svg+xml"||b=="application/x-shockwave-flash"){if(!d.initialWidth){d.initialWidth=d.getAttribute("width")}if(!d.initialHeight){d.initialHeight=d.getAttribute("height")}if(d.initialWidth&&d.initialWidth.charAt(d.initialWidth.length-1)=="%"){var j=parseInt(d.initialWidth.slice(0,d.initialWidth.length-1));var a=c*(j/100);d.setAttribute("width",a)}if(d.initialHeight&&d.initialHeight.charAt(d.initialHeight.length-1)=="%"){var f=parseInt(d.initialHeight.slice(0,d.initialHeight.length-1));var g=k*(f/100);d.setAttribute("height",g)}}}},key_press:function(a){if(!a){a=window.event}if(!w3c_slidy.key_wanted){return w3c_slidy.cancel(a)}return true},key_down:function(d){var c,e,a;w3c_slidy.key_wanted=true;if(!d){d=window.event}if(window.event){c=window.event.keyCode;e=window.event.srcElement}else{if(d.which){c=d.which;e=d.target}else{return true}}if(!c){return true}if(!w3c_slidy.slidy_chrome(e)&&w3c_slidy.special_element(e)){return true}if(d.ctrlKey||d.altKey||d.metaKey){return true}if(w3c_slidy.is_shown_toc()&&c!=9&&c!=16&&c!=38&&c!=40){w3c_slidy.hide_table_of_contents(true);if(c==27||c==84||c==67){return w3c_slidy.cancel(d)}}if(c==34){if(w3c_slidy.view_all){return true}w3c_slidy.next_slide(false);return w3c_slidy.cancel(d)}else{if(c==33){if(w3c_slidy.view_all){return true}w3c_slidy.previous_slide(false);return w3c_slidy.cancel(d)}else{if(c==32){w3c_slidy.next_slide(true);return w3c_slidy.cancel(d)}else{if(c==37){w3c_slidy.previous_slide(!d.shiftKey);return w3c_slidy.cancel(d)}else{if(c==36){w3c_slidy.first_slide();return w3c_slidy.cancel(d)}else{if(c==35){w3c_slidy.last_slide();return w3c_slidy.cancel(d)}else{if(c==39){w3c_slidy.next_slide(!d.shiftKey);return w3c_slidy.cancel(d)}else{if(c==13){if(w3c_slidy.outline){if(w3c_slidy.outline.visible){w3c_slidy.fold(w3c_slidy.outline)}else{w3c_slidy.unfold(w3c_slidy.outline)}return w3c_slidy.cancel(d)}}else{if(c==188){w3c_slidy.smaller();return w3c_slidy.cancel(d)}else{if(c==190){w3c_slidy.bigger();return w3c_slidy.cancel(d)}else{if(c==189||c==109){w3c_slidy.smaller();return w3c_slidy.cancel(d)}else{if(c==187||c==191||c==107){w3c_slidy.bigger();return w3c_slidy.cancel(d)}else{if(c==83){w3c_slidy.smaller();return w3c_slidy.cancel(d)}else{if(c==66){w3c_slidy.bigger();return w3c_slidy.cancel(d)}else{if(c==90){w3c_slidy.last_slide();return w3c_slidy.cancel(d)}else{if(c==70){w3c_slidy.toggle_toolbar();return w3c_slidy.cancel(d)}else{if(c==65){w3c_slidy.toggle_view();return w3c_slidy.cancel(d)}else{if(c==75){w3c_slidy.mouse_click_enabled=!w3c_slidy.mouse_click_enabled;var b=(w3c_slidy.mouse_click_enabled?"enabled":"disabled")+" mouse click advance";alert(w3c_slidy.localize(b));return w3c_slidy.cancel(d)}else{if(c==84||c==67){if(w3c_slidy.toc){w3c_slidy.toggle_table_of_contents()}return w3c_slidy.cancel(d)}else{if(c==72){window.location=w3c_slidy.help_page;return w3c_slidy.cancel(d)}}}}}}}}}}}}}}}}}}}}return true},create_element:function(a){if(this.xhtml&&(typeof document.createElementNS!="undefined")){return document.createElementNS("http://www.w3.org/1999/xhtml",a)}return document.createElement(a)},get_element_style:function(d,b,c){if(d.currentStyle){return d.currentStyle[b]}else{if(window.getComputedStyle){var a=window.getComputedStyle(d,"");return a.getPropertyValue(c)}}return""},has_token:function(e,c){if(e){var d=/\w+/g;var a=e.match(d);for(var b=0;b<a.length;b++){if(a[b]==c){return true}}}return false},get_class_list:function(a){if(typeof a.className!="undefined"){return a.className}return a.getAttribute("class")},has_class:function(b,a){if(b.nodeType!=1){return false}var c=new RegExp("(^| )"+a+"W*");if(typeof b.className!="undefined"){return c.test(b.className)}return c.test(b.getAttribute("class"))},remove_class:function(b,a){var d=new RegExp("(^| )"+a+"W*");var c="";if(typeof b.className!="undefined"){c=b.className;if(c){c=c.replace(d,"");b.className=c}}else{c=b.getAttribute("class");if(c){c=c.replace(d,"");b.setAttribute("class",c)}}},add_class:function(b,a){if(!this.has_class(b,a)){if(typeof b.className!="undefined"){b.className+=" "+a}else{var c=b.getAttribute("class");c=c?c+" "+a:a;b.setAttribute("class",c)}}},incremental_elements:null,okay_for_incremental:function(a){if(!this.incremental_elements){var b=new Array();b.p=true;b.pre=true;b.li=true;b.blockquote=true;b.dt=true;b.dd=true;b.h2=true;b.h3=true;b.h4=true;b.h5=true;b.h6=true;b.span=true;b.address=true;b.table=true;b.tr=true;b.th=true;b.td=true;b.img=true;b.object=true;this.incremental_elements=b}return this.incremental_elements[a.toLowerCase()]},next_incremental_item:function(c){var b=this.is_xhtml?"br":"BR";var a=w3c_slidy.slides[w3c_slidy.slide_number];for(;;){c=w3c_slidy.next_node(a,c);if(c==null||c.parentNode==null){break}if(c.nodeType==1){if(c.nodeName==b){continue}if(w3c_slidy.has_class(c,"incremental")&&w3c_slidy.okay_for_incremental(c.nodeName)){return c}if(w3c_slidy.has_class(c.parentNode,"incremental")&&!w3c_slidy.has_class(c,"non-incremental")){return c}}}return c},previous_incremental_item:function(c){var b=this.is_xhtml?"br":"BR";var a=w3c_slidy.slides[w3c_slidy.slide_number];for(;;){c=w3c_slidy.previous_node(a,c);if(c==null||c.parentNode==null){break}if(c.nodeType==1){if(c.nodeName==b){continue}if(w3c_slidy.has_class(c,"incremental")&&w3c_slidy.okay_for_incremental(c.nodeName)){return c}if(w3c_slidy.has_class(c.parentNode,"incremental")&&!w3c_slidy.has_class(c,"non-incremental")){return c}}}return c},set_visibility_all_incremental:function(b){var a=this.next_incremental_item(null);if(b=="hidden"){while(a){w3c_slidy.add_class(a,"invisible");a=w3c_slidy.next_incremental_item(a)}}else{while(a){w3c_slidy.remove_class(a,"invisible");a=w3c_slidy.next_incremental_item(a)}}},reveal_next_item:function(a){a=w3c_slidy.next_incremental_item(a);if(a&&a.nodeType==1){w3c_slidy.remove_class(a,"invisible")}return a},hide_previous_item:function(a){if(a&&a.nodeType==1){w3c_slidy.add_class(a,"invisible")}return this.previous_incremental_item(a)},next_node:function(a,b){if(b==null){return a.firstChild}if(b.firstChild){return b.firstChild}if(b.nextSibling){return b.nextSibling}for(;;){b=b.parentNode;if(!b||b==a){break}if(b&&b.nextSibling){return b.nextSibling}}return null},previous_node:function(a,b){if(b==null){b=a.lastChild;if(b){while(b.lastChild){b=b.lastChild}}return b}if(b.previousSibling){b=b.previousSibling;while(b.lastChild){b=b.lastChild}return b}if(b.parentNode!=a){return b.parentNode}return null},previous_sibling_element:function(a){a=a.previousSibling;while(a&&a.nodeType!=1){a=a.previousSibling}return a},next_sibling_element:function(a){a=a.nextSibling;while(a&&a.nodeType!=1){a=a.nextSibling}return a},first_child_element:function(a){var b;for(b=a.firstChild;b;b=b.nextSibling){if(b.nodeType==1){break}}return b},first_tag:function(b,a){var c;if(!this.is_xhtml){a=a.toUpperCase()}for(c=b.firstChild;c;c=c.nextSibling){if(c.nodeType==1&&c.nodeName==a){break}}return c},hide_selection:function(){if(window.getSelection){var b=window.getSelection();if(b.rangeCount>0){var a=b.getRangeAt(0);a.collapse(false)}}else{var c=document.selection.createRange();c.collapse(false)}},get_selected_text:function(){try{if(window.getSelection){return window.getSelection().toString()}if(document.getSelection){return document.getSelection().toString()}if(document.selection){return document.selection.createRange().text}}catch(a){}return""},mouse_button_up:function(a){w3c_slidy.selected_text_len=w3c_slidy.get_selected_text().length},mouse_button_click:function(g){var c=false;var b=false;var d=false;var f;if(!g){var g=window.event}if(g.target){f=g.target}else{if(g.srcElement){f=g.srcElement}}if(f.nodeType==3){f=f.parentNode}if(g.which){b=(g.which==1);d=(g.which==2);c=(g.which==3)}else{if(g.button){if(g.button==4){d=true}c=(g.button==2)}else{b=true}}if(w3c_slidy.selected_text_len>0){w3c_slidy.stop_propagation(g);g.cancel=true;g.returnValue=false;return false}w3c_slidy.hide_table_of_contents(false);var a=f.nodeName.toLowerCase();if(w3c_slidy.mouse_click_enabled&&b&&!w3c_slidy.special_element(f)&&!f.onclick){w3c_slidy.next_slide(true);w3c_slidy.stop_propagation(g);g.cancel=true;g.returnValue=false;return false}return true},special_element:function(b){var a=b.nodeName.toLowerCase();return b.onkeydown||b.onclick||a=="a"||a=="embed"||a=="object"||a=="video"||a=="audio"||a=="input"||a=="textarea"||a=="select"||a=="option"},slidy_chrome:function(a){while(a){if(a==w3c_slidy.toc||a==w3c_slidy.toolbar||w3c_slidy.has_class(a,"outline")){return true}a=a.parentNode}return false},get_key:function(b){var a;if(typeof window.event!="undefined"){a=window.event.keyCode}else{if(b.which){a=b.which}}return a},get_target:function(b){var a;if(!b){b=window.event}if(b.target){a=b.target}else{if(b.srcElement){a=b.srcElement}}if(a.nodeType!=1){a=a.parentNode}return a},is_block:function(b){var a=b.nodeName.toLowerCase();return a=="ol"||a=="ul"||a=="p"||a=="li"||a=="table"||a=="pre"||a=="h1"||a=="h2"||a=="h3"||a=="h4"||a=="h5"||a=="h6"||a=="blockquote"||a=="address"},add_listener:function(a,c,b){if(window.addEventListener){a.addEventListener(c,b,false)}else{a.attachEvent("on"+c,b)}},stop_propagation:function(a){a=a?a:window.event;a.cancelBubble=true;if(a.stopPropagation){a.stopPropagation()}return true},cancel:function(a){if(a){a.cancel=true;a.returnValue=false;if(a.preventDefault){a.preventDefault()}}w3c_slidy.key_wanted=false;return false},strings_es:{slide:"pág.","help?":"Ayuda","contents?":"Índice","table of contents":"tabla de contenidos","Table of Contents":"Tabla de Contenidos","restart presentation":"Reiniciar presentación","restart?":"Inicio"},help_es:"Utilice el ratón, barra espaciadora, teclas Izda/Dcha, o Re pág y Av pág. Use S y B para cambiar el tamaño de fuente.",strings_ca:{slide:"pàg..","help?":"Ajuda","contents?":"Índex","table of contents":"taula de continguts","Table of Contents":"Taula de Continguts","restart presentation":"Reiniciar presentació","restart?":"Inici"},help_ca:"Utilitzi el ratolí, barra espaiadora, tecles Esq./Dta. o Re pàg y Av pàg. Usi S i B per canviar grandària de font.",strings_cs:{slide:"snímek","help?":"nápověda","contents?":"obsah","table of contents":"obsah prezentace","Table of Contents":"Obsah prezentace","restart presentation":"znovu spustit prezentaci","restart?":"restart"},help_cs:"Prezentaci můžete procházet pomocí kliknutí myši, mezerníku, šipek vlevo a vpravo nebo kláves PageUp a PageDown. Písmo se dá zvětšit a zmenšit pomocí kláves B a S.",strings_nl:{slide:"pagina","help?":"Help?","contents?":"Inhoud?","table of contents":"inhoudsopgave","Table of Contents":"Inhoudsopgave","restart presentation":"herstart presentatie","restart?":"Herstart?"},help_nl:"Navigeer d.m.v. het muis, spatiebar, Links/Rechts toetsen, of PgUp en PgDn. Gebruik S en B om de karaktergrootte te veranderen.",strings_de:{slide:"Seite","help?":"Hilfe","contents?":"Übersicht","table of contents":"Inhaltsverzeichnis","Table of Contents":"Inhaltsverzeichnis","restart presentation":"Präsentation neu starten","restart?":"Neustart"},help_de:"Benutzen Sie die Maus, Leerschlag, die Cursortasten links/rechts oder Page up/Page Down zum Wechseln der Seiten und S und B für die Schriftgrösse.",strings_pl:{slide:"slajd","help?":"pomoc?","contents?":"spis treści?","table of contents":"spis treści","Table of Contents":"Spis Treści","restart presentation":"Restartuj prezentację","restart?":"restart?"},help_pl:"Zmieniaj slajdy klikając myszą, naciskając spację, strzałki lewo/prawolub PgUp / PgDn. Użyj klawiszy S i B, aby zmienić rozmiar czczionki.",strings_fr:{slide:"page","help?":"Aide","contents?":"Index","table of contents":"table des matières","Table of Contents":"Table des matières","restart presentation":"Recommencer l'exposé","restart?":"Début"},help_fr:"Naviguez avec la souris, la barre d'espace, les flèches gauche/droite ou les touches Pg Up, Pg Dn. Utilisez les touches S et B pour modifier la taille de la police.",strings_hu:{slide:"oldal","help?":"segítség","contents?":"tartalom","table of contents":"tartalomjegyzék","Table of Contents":"Tartalomjegyzék","restart presentation":"bemutató újraindítása","restart?":"újraindítás"},help_hu:"Az oldalak közti lépkedéshez kattintson az egérrel, vagy használja a szóköz, a bal, vagy a jobb nyíl, illetve a Page Down, Page Up billentyűket. Az S és a B billentyűkkel változtathatja a szöveg méretét.",strings_it:{slide:"pag.","help?":"Aiuto","contents?":"Indice","table of contents":"indice","Table of Contents":"Indice","restart presentation":"Ricominciare la presentazione","restart?":"Inizio"},help_it:"Navigare con mouse, barra spazio, frecce sinistra/destra o PgUp e PgDn. Usare S e B per cambiare la dimensione dei caratteri.",strings_el:{slide:"σελίδα","help?":"βοήθεια;","contents?":"περιεχόμενα;","table of contents":"πίνακας περιεχομένων","Table of Contents":"Πίνακας Περιεχομένων","restart presentation":"επανεκκίνηση παρουσίασης","restart?":"επανεκκίνηση;"},help_el:"Πλοηγηθείτε με το κλίκ του ποντικιού, το space, τα βέλη αριστερά/δεξιά, ή Page Up και Page Down. Χρησιμοποιήστε τα πλήκτρα S και B για να αλλάξετε το μέγεθος της γραμματοσειράς.",strings_ja:{slide:"スライド","help?":"ヘルプ","contents?":"目次","table of contents":"目次を表示","Table of Contents":"目次","restart presentation":"最初から再生","restart?":"最初から"},help_ja:"マウス左クリック ・ スペース ・ 左右キー または Page Up ・ Page Downで操作， S ・ Bでフォントサイズ変更",strings_zh:{slide:"幻灯片","help?":"帮助?","contents?":"内容?","table of contents":"目录","Table of Contents":"目录","restart presentation":"重新启动展示","restart?":"重新启动?"},help_zh:"用鼠标点击, 空格条, 左右箭头, Pg Up 和 Pg Dn 导航. 用 S, B 改变字体大小.",strings_ru:{slide:"слайд","help?":"помощь?","contents?":"содержание?","table of contents":"оглавление","Table of Contents":"Оглавление","restart presentation":"перезапустить презентацию","restart?":"перезапуск?"},help_ru:"Перемещайтесь кликая мышкой, используя клавишу пробел, стрелкивлево/вправо или Pg Up и Pg Dn. Клавиши S и B меняют размер шрифта.",strings_sv:{slide:"sida","help?":"hjälp","contents?":"innehåll","table of contents":"innehållsförteckning","Table of Contents":"Innehållsförteckning","restart presentation":"visa presentationen från början","restart?":"börja om"},help_sv:"Bläddra med ett klick med vänstra musknappen, mellanslagstangenten, vänster- och högerpiltangenterna eller tangenterna Pg Up, Pg Dn. Använd tangenterna S och B för att ändra textens storlek.",strings:{},localize:function(d){if(d==""){return d}var b,c=w3c_slidy.strings[w3c_slidy.lang];if(c){b=c[d];if(b){return b}}var a=w3c_slidy.lang.split("-");if(a.length>1){c=w3c_slidy.strings[a[0]];if(c){b=c[d];if(b){return b}}}return d},init_localization:function(){var b=w3c_slidy;var a=w3c_slidy.help_text;this.strings={es:this.strings_es,ca:this.strings_ca,cs:this.strings_cs,nl:this.strings_nl,de:this.strings_de,pl:this.strings_pl,fr:this.strings_fr,hu:this.strings_hu,it:this.strings_it,el:this.strings_el,jp:this.strings_ja,zh:this.strings_zh,ru:this.strings_ru,sv:this.strings_sv},b.strings_es[a]=b.help_es;b.strings_ca[a]=b.help_ca;b.strings_cs[a]=b.help_cs;b.strings_nl[a]=b.help_nl;b.strings_de[a]=b.help_de;b.strings_pl[a]=b.help_pl;b.strings_fr[a]=b.help_fr;b.strings_hu[a]=b.help_hu;b.strings_it[a]=b.help_it;b.strings_el[a]=b.help_el;b.strings_ja[a]=b.help_ja;b.strings_zh[a]=b.help_zh;b.strings_ru[a]=b.help_ru;b.strings_sv[a]=b.help_sv;w3c_slidy.lang=document.body.parentNode.getAttribute("lang");if(!w3c_slidy.lang){w3c_slidy.lang=document.body.parentNode.getAttribute("xml:lang")}if(!w3c_slidy.lang){w3c_slidy.lang="en"}}};if(w3c_slidy.ie6||w3c_slidy.ie7){document.write("<iframe id='historyFrame' src='javascript:\"<html></html>\"' height='1' width='1' style='position:absolute;left:-800px'></iframe>")}w3c_slidy.set_up();setTimeout(w3c_slidy.hide_slides,50);
-  </script>
+/*]]>*/
+</script>
 </head>
 <body>
-<div class="slide cover title">
+<div class="slide titlepage">
   <h1 class="title">Zippers and such</h1>
   <p class="author">
 
   </p>
 </div>
 <div class="slide">
-<h1
->The purpose of this lecture</h1
-><p
->We're going to take a brief break from blowing your mind today.</p
-></div>
+<h1 id="the-purpose-of-this-lecture">The purpose of this lecture</h1>
+<p>We're going to take a brief break from blowing your mind today.</p>
+</div>
 <div class="slide">
-<h1
->The purpose of this lecture</h1
-><p
->We're going to take a brief break from blowing your mind today.</p
-><p
->Instead, we're going to <em
-  >really</em
-  > blow your mind.</p
-></div>
+<h1 id="the-purpose-of-this-lecture-1">The purpose of this lecture</h1>
+<p>We're going to take a brief break from blowing your mind today.</p>
+<p>Instead, we're going to <em>really</em> blow your mind.</p>
+</div>
 <div class="slide">
-<h1
->Back to basics</h1
-><p
->How many values can we construct from the following type?</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Bool</span
-    > <span class="fu"
-    >=</span
-    > <span class="kw"
-    >False</span
-    > <span class="fu"
-    >|</span
-    > <span class="kw"
-    >True</span
-    ><br
-     /></code
-  ></pre
-><p
->Note: in this discussion, we're explicitly omitting well-typed but non-terminating constructs such as the following:</p
-><pre class="sourceCode haskell"
-><code
-  >loop :: <span class="dt"
-    >Bool</span
-    ><br
-     />loop <span class="fu"
-    >=</span
-    > loop<br
-     /><br
-     />wtf :: <span class="dt"
-    >Bool</span
-    ><br
-     />wtf <span class="fu"
-    >=</span
-    > <span class="fu"
-    >undefined</span
-    ><br
-     /><br
-     />crash :: <span class="dt"
-    >Bool</span
-    ><br
-     />crash <span class="fu"
-    >=</span
-    > <span class="fu"
-    >error</span
-    > <span class="st"
-    >&quot;fnord&quot;</span
-    ><br
-     /></code
-  ></pre
-></div>
+<h1 id="back-to-basics">Back to basics</h1>
+<p>How many values can we construct from the following type?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="kw">False</span> <span class="fu">|</span> <span class="kw">True</span></code></pre>
+<p>Note: in this discussion, we're explicitly omitting well-typed but non-terminating constructs such as the following:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">loop </span><span class="ot">::</span> <span class="dt">Bool</span><br />loop <span class="fu">=</span> loop<br /><br /><span class="ot">wtf </span><span class="ot">::</span> <span class="dt">Bool</span><br />wtf <span class="fu">=</span> <span class="fu">undefined</span><br /><br /><span class="ot">crash </span><span class="ot">::</span> <span class="dt">Bool</span><br />crash <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;fnord&quot;</span></code></pre>
+</div>
 <div class="slide">
-<h1
->Ordering</h1
-><p
->Another well-known type:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Ordering</span
-    > <span class="fu"
-    >=</span
-    > <span class="kw"
-    >LT</span
-    > <span class="fu"
-    >|</span
-    > <span class="kw"
-    >EQ</span
-    > <span class="fu"
-    >|</span
-    > <span class="kw"
-    >GT</span
-    ><br
-     /></code
-  ></pre
-><p
->Clearly we can construct three different values of this type.</p
-></div>
+<h1 id="ordering">Ordering</h1>
+<p>Another well-known type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Ordering</span> <span class="fu">=</span> <span class="kw">LT</span> <span class="fu">|</span> <span class="kw">EQ</span> <span class="fu">|</span> <span class="kw">GT</span></code></pre>
+<p>Clearly we can construct three different values of this type.</p>
+</div>
 <div class="slide">
-<h1
->A zero-valued type</h1
-><p
->In Haskell 2010, we can create types from which <em
-  >no</em
-  > values can be constructed:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Empty</span
-    ><br
-     /></code
-  ></pre
-><p
->This type has no value constructors (and we can't use <code
-  >deriving</code
-  > syntax on it).</p
-></div>
+<h1 id="a-zero-valued-type">A zero-valued type</h1>
+<p>In Haskell 2010, we can create types from which <em>no</em> values can be constructed:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Empty</span></code></pre>
+<p>This type has no value constructors (and we can't use <code>deriving</code> syntax on it).</p>
+</div>
 <div class="slide">
-<h1
->Zero, one, two...</h1
-><p
->So big deal, we can create types with zero or more constructors:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Empty</span
-    ><br
-     /></code
-  ></pre
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >One</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >One</span
-    ><br
-     /></code
-  ></pre
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Bool</span
-    > <span class="fu"
-    >=</span
-    > <span class="kw"
-    >False</span
-    > <span class="fu"
-    >|</span
-    > <span class="kw"
-    >True</span
-    ><br
-     /></code
-  ></pre
-></div>
+<h1 id="zero-one-two...">Zero, one, two...</h1>
+<p>So big deal, we can create types with zero or more constructors:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Empty</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">One</span> <span class="fu">=</span> <span class="dt">One</span></code></pre>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Bool</span> <span class="fu">=</span> <span class="kw">False</span> <span class="fu">|</span> <span class="kw">True</span></code></pre>
+</div>
 <div class="slide">
-<h1
->Adding some parameters</h1
-><p
->Another type to ponder.</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >A</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >A</span
-    > <span class="dt"
-    >Bool</span
-    ><br
-     />       <span class="fu"
-    >|</span
-    > <span class="dt"
-    >B</span
-    > <span class="dt"
-    >Ordering</span
-    ><br
-     /></code
-  ></pre
-><p
->We can construct five values of this type:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="dt"
-    >A</span
-    > <span class="kw"
-    >False</span
-    ><br
-     /><span class="dt"
-    >A</span
-    > <span class="kw"
-    >True</span
-    ><br
-     /><span class="dt"
-    >B</span
-    > <span class="kw"
-    >LT</span
-    ><br
-     /><span class="dt"
-    >B</span
-    > <span class="kw"
-    >EQ</span
-    ><br
-     /><span class="dt"
-    >B</span
-    > <span class="kw"
-    >GT</span
-    ><br
-     /></code
-  ></pre
-></div>
+<h1 id="adding-some-parameters">Adding some parameters</h1>
+<p>Another type to ponder.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">A</span> <span class="fu">=</span> <span class="dt">A</span> <span class="dt">Bool</span><br />       <span class="fu">|</span> <span class="dt">B</span> <span class="dt">Ordering</span></code></pre>
+<p>We can construct five values of this type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="dt">A</span> <span class="kw">False</span><br /><span class="dt">A</span> <span class="kw">True</span><br /><span class="dt">B</span> <span class="kw">LT</span><br /><span class="dt">B</span> <span class="kw">EQ</span><br /><span class="dt">B</span> <span class="kw">GT</span></code></pre>
+</div>
 <div class="slide">
-<h1
->A different tack</h1
-><p
->How many values can this type represent?</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Fnord</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Fnord</span
-    > <span class="dt"
-    >Bool</span
-    > <span class="dt"
-    >Ordering</span
-    ><br
-     /></code
-  ></pre
-><p
->What about this one?</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Quaternion</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Point</span
-    > <span class="dt"
-    >Double</span
-    > <span class="dt"
-    >Double</span
-    > <span class="dt"
-    >Double</span
-    > <span class="dt"
-    >Double</span
-    ><br
-     /></code
-  ></pre
-></div>
+<h1 id="a-different-tack">A different tack</h1>
+<p>How many values can this type represent?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Fnord</span> <span class="fu">=</span> <span class="dt">Fnord</span> <span class="dt">Bool</span> <span class="dt">Ordering</span></code></pre>
+<p>What about this one?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Quaternion</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="dt">Double</span> <span class="dt">Double</span></code></pre>
+</div>
 <div class="slide">
-<h1
->Switching the notation: sums</h1
-><p
->Let's take a different perspective for a moment, and do some arithmetic.</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Sum</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >A</span
-    > <span class="dt"
-    >Bool</span
-    ><br
-     />         <span class="fu"
-    >|</span
-    > <span class="dt"
-    >B</span
-    > <span class="dt"
-    >Ordering</span
-    ><br
-     /></code
-  ></pre
-><p
->If we exhaustively enumerate the possible values of this type, we see that there are as many values as:</p
-><ul
-><li
-  >Values of <code
-    >Bool</code
-    >...</li
-  ><li
-  >...<em
-    >added to</em
-    >...</li
-  ><li
-  >Values of <code
-    >Ordering</code
-    ></li
-  ></ul
-><p
->Let's write that number as <span class="math"
-  ><em
-    >Bool</em
-    > + <em
-    >Ordering</em
-    ></span
-  ></p
-></div>
+<h1 id="switching-the-notation-sums">Switching the notation: sums</h1>
+<p>Let's take a different perspective for a moment, and do some arithmetic.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Sum</span> <span class="fu">=</span> <span class="dt">A</span> <span class="dt">Bool</span><br />         <span class="fu">|</span> <span class="dt">B</span> <span class="dt">Ordering</span></code></pre>
+<p>If we exhaustively enumerate the possible values of this type, we see that there are as many values as:</p>
+<ul>
+<li>Values of <code>Bool</code>...</li>
+<li>...<em>added to</em>...</li>
+<li>Values of <code>Ordering</code></li>
+</ul>
+<p>Let's write that number as <span class="math">Bool + Ordering</span></p>
+</div>
 <div class="slide">
-<h1
->Switching the notation: products</h1
-><p
->From reading this type:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Product</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Product</span
-    > <span class="dt"
-    >Bool</span
-    > <span class="dt"
-    >Ordering</span
-    ><br
-     /></code
-  ></pre
-><p
->Following the previous example, it's pretty clear that we can create as many values of type <code
-  >Ordering</code
-  > as there are:</p
-><ul
-><li
-  >Values of <code
-    >Bool</code
-    >...</li
-  ><li
-  >...<em
-    >multiplied by</em
-    >...</li
-  ><li
-  >Values of <code
-    >TrafficLight</code
-    ></li
-  ></ul
-><p
->Let's write that number as <span class="math"
-  ><em
-    >Bool</em
-    > × <em
-    >Ordering</em
-    ></span
-  ></p
-></div>
+<h1 id="switching-the-notation-products">Switching the notation: products</h1>
+<p>From reading this type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Product</span> <span class="fu">=</span> <span class="dt">Product</span> <span class="dt">Bool</span> <span class="dt">Ordering</span></code></pre>
+<p>Following the previous example, it's pretty clear that we can create as many values of type <code>Ordering</code> as there are:</p>
+<ul>
+<li>Values of <code>Bool</code>...</li>
+<li>...<em>multiplied by</em>...</li>
+<li>Values of <code>TrafficLight</code></li>
+</ul>
+<p>Let's write that number as <span class="math">Bool × Ordering</span></p>
+</div>
 <div class="slide">
-<h1
->From arithmetic to algebra: sums</h1
-><p
->Now let's introduce polymorphism into the mix.</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Either</span
-    > a b <span class="fu"
-    >=</span
-    > <span class="kw"
-    >Left</span
-    > a <span class="fu"
-    >|</span
-    > <span class="kw"
-    >Right</span
-    > b<br
-     /></code
-  ></pre
-><p
->We don't know how many values there are of this type, since neither <code
-  >a</code
-  > nor <code
-  >b</code
-  > is specified.</p
-><p
->But we can still write an algebraic expression that will compute the right number, once we plug concrete types in:</p
-><ul
-><li
-  ><span class="math"
-    ><em
-      >a</em
-      > + <em
-      >b</em
-      ></span
-    ></li
-  ></ul
-></div>
+<h1 id="from-arithmetic-to-algebra-sums">From arithmetic to algebra: sums</h1>
+<p>Now let's introduce polymorphism into the mix.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Either</span> a b <span class="fu">=</span> <span class="kw">Left</span> a <span class="fu">|</span> <span class="kw">Right</span> b</code></pre>
+<p>We don't know how many values there are of this type, since neither <code>a</code> nor <code>b</code> is specified.</p>
+<p>But we can still write an algebraic expression that will compute the right number, once we plug concrete types in:</p>
+<ul>
+<li><span class="math"><em>a</em> + <em>b</em></span></li>
+</ul>
+</div>
 <div class="slide">
-<h1
->From arithmetic to algebra: products</h1
-><p
->This should be a no-brainer:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Triple</span
-    > a b c <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Triple</span
-    > a b c<br
-     /></code
-  ></pre
-><p
->The algebraic expression that describes the number of values of this type is no surprise:</p
-><ul
-><li
-  ><span class="math"
-    ><em
-      >a</em
-      > + <em
-      >b</em
-      > + <em
-      >c</em
-      ></span
-    ></li
-  ></ul
-></div>
+<h1 id="from-arithmetic-to-algebra-products">From arithmetic to algebra: products</h1>
+<p>This should be a no-brainer:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Triple</span> a b c <span class="fu">=</span> <span class="dt">Triple</span> a b c</code></pre>
+<p>The algebraic expression that describes the number of values of this type is no surprise:</p>
+<ul>
+<li><span class="math"><em>a</em> × <em>b</em> × <em>c</em></span></li>
+</ul>
+</div>
 <div class="slide">
-<h1
->Mixing sums and products</h1
-><p
->How many values are there of this type?</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >type</span
-    > <span class="dt"
-    >Foo</span
-    > a b c <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Foo</span
-    > a b<br
-     />               <span class="fu"
-    >|</span
-    > <span class="dt"
-    >Bar</span
-    > b c<br
-     /></code
-  ></pre
-></div>
+<h1 id="mixing-sums-and-products">Mixing sums and products</h1>
+<p>How many values are there of this type?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">type</span> <span class="dt">Foo</span> a b c <span class="fu">=</span> <span class="dt">Foo</span> a b<br />               <span class="fu">|</span> <span class="dt">Bar</span> b c</code></pre>
+</div>
 <div class="slide">
-<h1
->Clarity on naming: sums</h1
-><p
->Consider a type that consists only of zero-parameter constructors:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Rainbow</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Red</span
-    > <span class="fu"
-    >|</span
-    > <span class="dt"
-    >Orange</span
-    > <span class="fu"
-    >|</span
-    > <span class="dt"
-    >Yellow</span
-    > <span class="fu"
-    >|</span
-    > <span class="dt"
-    >Green</span
-    > <span class="co"
-    >{- etc -}</span
-    ><br
-     /></code
-  ></pre
-><p
->These are often referred to as <em
-  >sum types</em
-  >.</p
-></div>
+<h1 id="clarity-on-naming-sums">Clarity on naming: sums</h1>
+<p>Consider a type that consists only of zero-parameter constructors:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Rainbow</span> <span class="fu">=</span> <span class="dt">Red</span> <span class="fu">|</span> <span class="dt">Orange</span> <span class="fu">|</span> <span class="dt">Yellow</span> <span class="fu">|</span> <span class="dt">Green</span> <span class="co">{- etc -}</span></code></pre>
+<p>These are often referred to as <em>sum types</em>.</p>
+</div>
 <div class="slide">
-<h1
->Clarity on naming: products</h1
-><p
->If a type has only one constructor, and that constructor takes parameters:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Point</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Point</span
-    > <span class="dt"
-    >Int</span
-    > <span class="dt"
-    >Int</span
-    ><br
-     /></code
-  ></pre
-><p
->We refer to this as a <em
-  >product type</em
-  >.</p
-></div>
+<h1 id="clarity-on-naming-products">Clarity on naming: products</h1>
+<p>If a type has only one constructor, and that constructor takes parameters:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> <span class="dt">Int</span> <span class="dt">Int</span></code></pre>
+<p>We refer to this as a <em>product type</em>.</p>
+</div>
 <div class="slide">
-<h1
->Algebraic data types</h1
-><p
->Haskell's type system admits sum types, product types, and types that are a mixture of both.</p
-><ul
-><li
-  >This should make it clear why the word &quot;algebraic&quot; appears in the phrase.</li
-  ></ul
-></div>
+<h1 id="algebraic-data-types">Algebraic data types</h1>
+<p>Haskell's type system admits sum types, product types, and types that are a mixture of both.</p>
+<ul>
+<li>This should make it clear why the word &quot;algebraic&quot; appears in the phrase.</li>
+</ul>
+</div>
 <div class="slide">
-<h1
->The frob merchant</h1
-><p
->This is a frob.</p
-><pre
-><code
-  >                 ___             ____
+<h1 id="the-frob-merchant">The frob merchant</h1>
+<p>This is a frob.</p>
+<pre><code>                 ___             ____
                 /__/\     ______/___/\
                 \  \ \   /          /\\
                  \  \ \_/__        /  \
@@ -611,1636 +600,300 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
               /____/  \  \  /______\/\
               \    \  /___\/     \  \ \
                \____\/            \__\/
-</code
-  ></pre
-></div>
+</code></pre>
+</div>
 <div class="slide">
-<h1
->The frob merchant's web store</h1
-><p
->Suppose we're building a web app, where we want to send frobs to customers of our web site.</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Customer</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Customer</span
-    > {<br
-     />      custID :: <span class="dt"
-    >Int</span
-    ><br
-     />    , custName :: <span class="dt"
-    >String</span
-    ><br
-     />    , custAddress :: <span class="dt"
-    >Address</span
-    ><br
-     />    }<br
-     /><br
-     /><span class="kw"
-    >newtype</span
-    > <span class="dt"
-    >Zip</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Zip</span
-    > <span class="dt"
-    >Int</span
-    ><br
-     /><br
-     /><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Address</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Address</span
-    > {<br
-     />      addrStreet :: <span class="dt"
-    >String</span
-    ><br
-     />    , addrCity :: <span class="dt"
-    >String</span
-    ><br
-     />    , addrState :: <span class="dt"
-    >String</span
-    ><br
-     />    , addrZip :: <span class="dt"
-    >Zip</span
-    ><br
-     />    }<br
-     /></code
-  ></pre
-></div>
+<h1 id="the-frob-merchants-web-store">The frob merchant's web store</h1>
+<p>Suppose we're building a web app, where we want to send frobs to customers of our web site.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Customer</span> <span class="fu">=</span> <span class="dt">Customer</span> {<br /><span class="ot">      custID </span><span class="ot">::</span> <span class="dt">Int</span><br />    ,<span class="ot"> custName </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> custAddress </span><span class="ot">::</span> <span class="dt">Address</span><br />    }<br /><br /><span class="kw">newtype</span> <span class="dt">Zip</span> <span class="fu">=</span> <span class="dt">Zip</span> <span class="dt">Int</span><br /><br /><span class="kw">data</span> <span class="dt">Address</span> <span class="fu">=</span> <span class="dt">Address</span> {<br /><span class="ot">      addrStreet </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> addrCity </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> addrState </span><span class="ot">::</span> <span class="dt">String</span><br />    ,<span class="ot"> addrZip </span><span class="ot">::</span> <span class="dt">Zip</span><br />    }</code></pre>
+</div>
 <div class="slide">
-<h1
->Oh noes!</h1
-><p
->A customer has made a mistake in entering their shipping zip code. They've called us up, irate that we've been unable to fulfil their urgent frob order.</p
-><p
->So. We need to change their zip code.</p
-><p
->In a C-like language, this would be easy:</p
-><pre class="sourceCode c"
-><code
-  ><span class="kw"
-    >struct</span
-    > Customer *cust;<br
-     /><br
-     /><span class="co"
-    >/* ... */</span
-    ><br
-     /><br
-     />cust-&gt;custAddress-&gt;addrZip = <span class="dv"
-    >94043</span
-    >;<br
-     /></code
-  ></pre
-></div>
+<h1 id="oh-noes">Oh noes!</h1>
+<p>A customer has made a mistake in entering their shipping zip code. They've called us up, irate that we've been unable to fulfil their urgent frob order.</p>
+<p>So. We need to change their zip code.</p>
+<p>In a C-like language, this would be easy:</p>
+<pre class="sourceCode"><code class="sourceCode c"><span class="kw">struct</span> Customer *cust;<br /><br /><span class="co">/* ... */</span><br /><br />cust-&gt;custAddress-&gt;addrZip = <span class="dv">94043</span>;</code></pre>
+</div>
 <div class="slide">
-<h1
->Getting at a zip code</h1
-><p
->Haskell's record syntax automatically defines &quot;accessor&quot; or &quot;getter&quot; functions for us:</p
-><pre class="sourceCode haskell"
-><code
-  >custAddress :: <span class="dt"
-    >Customer</span
-    > -&gt; <span class="dt"
-    >Address</span
-    ><br
-     />addrZip :: <span class="dt"
-    >Address</span
-    > -&gt; <span class="dt"
-    >Zip</span
-    ><br
-     /></code
-  ></pre
-><p
->Given a <code
-  >Customer</code
-  >, we can obviously use function composition to get their zip:</p
-><pre class="sourceCode haskell"
-><code
-  >custZip :: <span class="dt"
-    >Customer</span
-    > -&gt; <span class="dt"
-    >Zip</span
-    ><br
-     />custZip <span class="fu"
-    >=</span
-    > addrZip <span class="fu"
-    >.</span
-    > custAddress<br
-     /></code
-  ></pre
-><p
->Unfortunately, we lack a &quot;good&quot; facility for updating records. Let's see what that means.</p
-></div>
+<h1 id="getting-at-a-zip-code">Getting at a zip code</h1>
+<p>Haskell's record syntax automatically defines &quot;accessor&quot; or &quot;getter&quot; functions for us:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">custAddress </span><span class="ot">::</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Address</span><br /><span class="ot">addrZip </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Zip</span></code></pre>
+<p>Given a <code>Customer</code>, we can obviously use function composition to get their zip:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">custZip </span><span class="ot">::</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Zip</span><br />custZip <span class="fu">=</span> addrZip <span class="fu">.</span> custAddress</code></pre>
+<p>Unfortunately, we lack a &quot;good&quot; facility for updating records. Let's see what that means.</p>
+</div>
 <div class="slide">
-<h1
->Setting a zip code</h1
-><p
->We need to modify a zip code, but we're working in a pure language, so clearly a &quot;zip code setter&quot; is going to be a function that returns a new value that is identical to the previous value except for the zip.</p
-><pre class="sourceCode haskell"
-><code
-  >setAddrZip :: <span class="dt"
-    >Zip</span
-    > -&gt; <span class="dt"
-    >Address</span
-    > -&gt; <span class="dt"
-    >Address</span
-    ><br
-     /></code
-  ></pre
-><p
->If we have a new <code
-  >Address</code
-  > and we want to &quot;modify&quot; a <code
-  >Customer</code
-  >, we need a similar function:</p
-><pre class="sourceCode haskell"
-><code
-  >setCustAddress :: <span class="dt"
-    >Address</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    ><br
-     /></code
-  ></pre
-><p
->Ultimately, our goal is actually to write this function:</p
-><pre class="sourceCode haskell"
-><code
-  >setCustZip :: <span class="dt"
-    >Zip</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    ><br
-     /></code
-  ></pre
-></div>
+<h1 id="setting-a-zip-code">Setting a zip code</h1>
+<p>We need to modify a zip code, but we're working in a pure language, so clearly a &quot;zip code setter&quot; is going to be a function that returns a new value that is identical to the previous value except for the zip.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setAddrZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Address</span></code></pre>
+<p>If we have a new <code>Address</code> and we want to &quot;modify&quot; a <code>Customer</code>, we need a similar function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustAddress </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span></code></pre>
+<p>Ultimately, our goal is actually to write this function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span></code></pre>
+</div>
 <div class="slide">
-<h1
->Record update syntax</h1
-><p
->Along with record syntax, Haskell provides an &quot;update&quot; syntax:</p
-><pre class="sourceCode haskell"
-><code
-  >setAddrZip :: <span class="dt"
-    >Zip</span
-    > -&gt; <span class="dt"
-    >Address</span
-    > -&gt; <span class="dt"
-    >Address</span
-    ><br
-     />setAddrZip <span class="fu"
-    >zip</span
-    > addr <span class="fu"
-    >=</span
-    > addr { addrZip <span class="fu"
-    >=</span
-    > <span class="fu"
-    >zip</span
-    > }<br
-     /></code
-  ></pre
-><p
->The expression on the right means this:</p
-><ul
-><li
-  ><p
-    >Make a copy of <code
-      >addr</code
-      ></p
-    ></li
-  ><li
-  ><p
-    >All fields in the new value should be the same as in <code
-      >addr</code
-      >...</p
-    ></li
-  ><li
-  ><p
-    >...<em
-      >except</em
-      > for <code
-      >addrZip</code
-      >, which should have the value <code
-      >zip</code
-      ></p
-    ></li
-  ></ul
-></div>
+<h1 id="record-update-syntax">Record update syntax</h1>
+<p>Along with record syntax, Haskell provides an &quot;update&quot; syntax:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setAddrZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Address</span><br />setAddrZip <span class="fu">zip</span> addr <span class="fu">=</span> addr { addrZip <span class="fu">=</span> <span class="fu">zip</span> }</code></pre>
+<p>The expression on the right means this:</p>
+<ul>
+<li><p>Make a copy of <code>addr</code></p></li>
+<li><p>All fields in the new value should be the same as in <code>addr</code>...</p></li>
+<li><p>...<em>except</em> for <code>addrZip</code>, which should have the value <code>zip</code></p></li>
+</ul>
+</div>
 <div class="slide">
-<h1
->Does this solve our problem?</h1
-><p
->Here's the other &quot;setter&quot; function we need, which follows the same pattern:</p
-><pre class="sourceCode haskell"
-><code
-  >setCustAddress :: <span class="dt"
-    >Address</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    ><br
-     />setCustAddress addr cust <span class="fu"
-    >=</span
-    > cust { custAddress <span class="fu"
-    >=</span
-    > addr }<br
-     /></code
-  ></pre
-><p
->Now we can write that <code
-  >setCustZip</code
-  > function we wanted:</p
-><pre class="sourceCode haskell"
-><code
-  >setCustZip :: <span class="dt"
-    >Zip</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    > -&gt; <span class="dt"
-    >Customer</span
-    ><br
-     />setCustZip <span class="fu"
-    >zip</span
-    > cust <span class="fu"
-    >=</span
-    ><br
-     />    setCustAddress (setAddrZip <span class="fu"
-    >zip</span
-    > (custAddress cust)) cust<br
-     /></code
-  ></pre
-><p
->Trouble is, the above looks much uglier to me than the corresponding C:</p
-><pre class="sourceCode haskell"
-><code
-  >cust-&gt;custAddress-&gt;addrZip <span class="fu"
-    >=</span
-    > <span class="dv"
-    >94043</span
-    >;<br
-     /></code
-  ></pre
-><p
->Worse, we have to write each of our Haskell &quot;setter&quot; functions <em
-  >by hand</em
-  >. Ugh.</p
-></div>
+<h1 id="does-this-solve-our-problem">Does this solve our problem?</h1>
+<p>Here's the other &quot;setter&quot; function we need, which follows the same pattern:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustAddress </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span><br />setCustAddress addr cust <span class="fu">=</span> cust { custAddress <span class="fu">=</span> addr }</code></pre>
+<p>Now we can write that <code>setCustZip</code> function we wanted:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">setCustZip </span><span class="ot">::</span> <span class="dt">Zip</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span> <span class="ot">-&gt;</span> <span class="dt">Customer</span><br />setCustZip <span class="fu">zip</span> cust <span class="fu">=</span><br />    setCustAddress (setAddrZip <span class="fu">zip</span> (custAddress cust)) cust</code></pre>
+<p>Trouble is, the above looks much uglier to me than the corresponding C:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">cust<span class="ot">-&gt;</span>custAddress<span class="ot">-&gt;</span>addrZip <span class="fu">=</span> <span class="dv">94043</span>;</code></pre>
+<p>Worse, we have to write each of our Haskell &quot;setter&quot; functions <em>by hand</em>. Ugh.</p>
+</div>
 <div class="slide">
-<h1
->Is the situation hopeless?</h1
-><p
->Here are our desiderata:</p
-><ol style="list-style-type: decimal;"
-><li
-  ><p
-    >We want to be able to access fields within records.</p
-    ></li
-  ><li
-  ><p
-    >We want to be able to <em
-      >compose</em
-      > accesses, so that we can inspect fields within records that are themselves fields of records.</p
-    ></li
-  ><li
-  ><p
-    >We want to be able to update fields within records.</p
-    ></li
-  ><li
-  ><p
-    >We want to be able to <em
-      >compose</em
-      > updates, so that we can modify fields within records that are themselves fields of records.</p
-    ></li
-  ></ol
-><p
->With Haskell's record syntax, we get #1 and #2, sort of #3 (if we squint), and definitely not #4.</p
-></div>
+<h1 id="is-the-situation-hopeless">Is the situation hopeless?</h1>
+<p>Here are our desiderata:</p>
+<ol style="list-style-type: decimal">
+<li><p>We want to be able to access fields within records.</p></li>
+<li><p>We want to be able to <em>compose</em> accesses, so that we can inspect fields within records that are themselves fields of records.</p></li>
+<li><p>We want to be able to update fields within records.</p></li>
+<li><p>We want to be able to <em>compose</em> updates, so that we can modify fields within records that are themselves fields of records.</p></li>
+</ol>
+<p>With Haskell's record syntax, we get #1 and #2, sort of #3 (if we squint), and definitely not #4.</p>
+</div>
 <div class="slide">
-<h1
->Lenses</h1
-><p
->What we want is a type that behaves something like this:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Lens</span
-    > rec fld <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > {<br
-     />      get :: rec -&gt; fld<br
-     />    , set :: fld -&gt; rec -&gt; rec<br
-     />    }<br
-     /></code
-  ></pre
-><p
->This &quot;bundles together&quot; a record type <code
-  >rec</code
-  > with a field type <code
-  >fld</code
-  >, so that we know:</p
-><ul
-><li
-  ><p
-    >how to get a field out of a record, and</p
-    ></li
-  ><li
-  ><p
-    >how to update a field within a record.</p
-    ></li
-  ></ul
-><p
->(Why the name &quot;lens&quot;? Because it lets us <em
-  >focus</em
-  > on a field within a record.)</p
-></div>
+<h1 id="lenses">Lenses</h1>
+<p>What we want is a type that behaves something like this:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Lens</span> rec fld <span class="fu">=</span> <span class="dt">Lens</span> {<br /><span class="ot">      get </span><span class="ot">::</span> rec <span class="ot">-&gt;</span> fld<br />    ,<span class="ot"> set </span><span class="ot">::</span> fld <span class="ot">-&gt;</span> rec <span class="ot">-&gt;</span> rec<br />    }</code></pre>
+<p>This &quot;bundles together&quot; a record type <code>rec</code> with a field type <code>fld</code>, so that we know:</p>
+<ul>
+<li><p>how to get a field out of a record, and</p></li>
+<li><p>how to update a field within a record.</p></li>
+</ul>
+<p>(Why the name &quot;lens&quot;? Because it lets us <em>focus</em> on a field within a record.)</p>
+</div>
 <div class="slide">
-<h1
->How should lenses behave?</h1
-><p
->We need three laws to hold for lenses.</p
-><p
->If we <code
-  >put</code
-  > something into a record, we can <code
-  >get</code
-  > it back out.</p
-><pre class="sourceCode haskell"
-><code
-  >get l (put l b a) <span class="fu"
-    >==</span
-    > b <br
-     /></code
-  ></pre
-><p
->If we <code
-  >get</code
-  > something out of a record, and <code
-  >put</code
-  > it back in, the result is identical to the original record.</p
-><pre class="sourceCode haskell"
-><code
-  >put l (get l a) a <span class="fu"
-    >==</span
-    > a<br
-     /></code
-  ></pre
-><p
->Two successive <code
-  >put</code
-  > operations must give the same result as a single <code
-  >put</code
-  > of the second value:</p
-><pre class="sourceCode haskell"
-><code
-  >put l b1 (put l b2 a) <span class="fu"
-    >==</span
-    > put l b1 a<br
-     /></code
-  ></pre
-><p
->(We call these properties &quot;laws&quot; because they <em
-  >must</em
-  > hold in order for us to be able to reason about lenses.)</p
-></div>
+<h1 id="how-should-lenses-behave">How should lenses behave?</h1>
+<p>We need three laws to hold for lenses.</p>
+<p>If we <code>put</code> something into a record, we can <code>get</code> it back out.</p>
+<pre class="sourceCode"><code class="sourceCode haskell">get l (put l b a) <span class="fu">==</span> b </code></pre>
+<p>If we <code>get</code> something out of a record, and <code>put</code> it back in, the result is identical to the original record.</p>
+<pre class="sourceCode"><code class="sourceCode haskell">put l (get l a) a <span class="fu">==</span> a</code></pre>
+<p>Two successive <code>put</code> operations must give the same result as a single <code>put</code> of the second value:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">put l b1 (put l b2 a) <span class="fu">==</span> put l b1 a</code></pre>
+<p>(We call these properties &quot;laws&quot; because they <em>must</em> hold in order for us to be able to reason about lenses.)</p>
+</div>
 <div class="slide">
-<h1
->What does a real lens look like?</h1
-><p
->The following definitions correspond to those in the <a href="http://hackage.haskell.org/package/data-lens"
-  >data-lens</a
-  > package.</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >newtype</span
-    > <span class="dt"
-    >Lens</span
-    > rec fld <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > (rec -&gt; <span class="dt"
-    >Store</span
-    > fld rec)<br
-     /></code
-  ></pre
-><p
->where</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Store</span
-    > fld rec <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Store</span
-    > (fld -&gt; rec) fld<br
-     /></code
-  ></pre
-><p
->That's hard to follow, so let's dig in and try to understand. First, we'll get rid of the name <code
-  >Store</code
-  >, to give the tuple:</p
-><pre class="sourceCode haskell"
-><code
-  >(fld -&gt; rec, fld)<br
-     /></code
-  ></pre
-><p
->Then we'll substitute this into the definition of <code
-  >Lens</code
-  >:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >newtype</span
-    > <span class="dt"
-    >Lens</span
-    > rec fld <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > (rec -&gt; (fld -&gt; rec, fld))<br
-     /></code
-  ></pre
-></div>
+<h1 id="what-does-a-real-lens-look-like">What does a real lens look like?</h1>
+<p>The following definitions correspond to those in the <a href="http://hackage.haskell.org/package/data-lens">data-lens</a> package.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Lens</span> rec fld <span class="fu">=</span> <span class="dt">Lens</span> (rec <span class="ot">-&gt;</span> <span class="dt">Store</span> fld rec)</code></pre>
+<p>where</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Store</span> fld rec <span class="fu">=</span> <span class="dt">Store</span> (fld <span class="ot">-&gt;</span> rec) fld</code></pre>
+<p>That's hard to follow, so let's dig in and try to understand. First, we'll get rid of the name <code>Store</code>, to give the tuple:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(fld <span class="ot">-&gt;</span> rec, fld)</code></pre>
+<p>Then we'll substitute this into the definition of <code>Lens</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Lens</span> rec fld <span class="fu">=</span> <span class="dt">Lens</span> (rec <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec, fld))</code></pre>
+</div>
 <div class="slide">
-<h1
->Simplifying further</h1
-><p
->If we ignore all the <code
-  >newtype</code
-  > noise, we're left with a very simple type:</p
-><pre class="sourceCode haskell"
-><code
-  >rec -&gt; (fld -&gt; rec, fld)<br
-     /></code
-  ></pre
-><p
->That is, a <code
-  >Lens</code
-  > is:</p
-><ul
-><li
-  ><p
-    >A function that accepts a record type <code
-      >rec</code
-      > as its argument</p
-    ></li
-  ><li
-  ><p
-    >It returns a pair</p
-    ></li
-  ><li
-  ><p
-    >The first element is a setter: give it a field value of type <code
-      >fld</code
-      >, and it will return a new record</p
-    ></li
-  ><li
-  ><p
-    >The second element is the current value of the field</p
-    ></li
-  ></ul
-></div>
+<h1 id="simplifying-further">Simplifying further</h1>
+<p>If we ignore all the <code>newtype</code> noise, we're left with a very simple type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">rec <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec, fld)</code></pre>
+<p>That is, a <code>Lens</code> is:</p>
+<ul>
+<li><p>A function that accepts a record type <code>rec</code> as its argument</p></li>
+<li><p>It returns a pair</p></li>
+<li><p>The first element is a setter: give it a field value of type <code>fld</code>, and it will return a new record</p></li>
+<li><p>The second element is the current value of the field</p></li>
+</ul>
+</div>
 <div class="slide">
-<h1
->Why the coupling?</h1
-><p
->Why does a lens give us both the value of a field and a function for setting a new value of that field?</p
-><ul
-><li
-  ><p
-    >Suppose that computing the path to the right place in the record for the getter is expensive.</p
-    ></li
-  ><li
-  ><p
-    >This representation allows the setter to reuse that computation.</p
-    ></li
-  ></ul
-><p
->We can also reduce the number of laws that a lens must obey from 3 to 2 (but that's beyond our scope).</p
-></div>
+<h1 id="why-the-coupling">Why the coupling?</h1>
+<p>Why does a lens give us both the value of a field and a function for setting a new value of that field?</p>
+<ul>
+<li><p>Suppose that computing the path to the right place in the record for the getter is expensive.</p></li>
+<li><p>This representation allows the setter to reuse that computation.</p></li>
+</ul>
+<p>We can also reduce the number of laws that a lens must obey from 3 to 2 (but that's beyond our scope).</p>
+</div>
 <div class="slide">
-<h1
->The get operator</h1
-><p
->Here is our getter:</p
-><pre class="sourceCode haskell"
-><code
-  >(^.) :: rec -&gt; <span class="dt"
-    >Lens</span
-    > rec fld -&gt; fld<br
-     />a <span class="fu"
-    >^.</span
-    > (<span class="dt"
-    >Lens</span
-    > f) <span class="fu"
-    >=</span
-    > pos (f a)<br
-     /><span class="kw"
-    >infixr</span
-    > <span class="dv"
-    >9</span
-    > <span class="fu"
-    >^.</span
-    ><br
-     /><br
-     /><span class="co"
-    >-- internal</span
-    ><br
-     />pos :: <span class="dt"
-    >Store</span
-    > fld rec -&gt; fld<br
-     />pos (<span class="dt"
-    >Store</span
-    > _ s) <span class="fu"
-    >=</span
-    > s<br
-     /></code
-  ></pre
-></div>
+<h1 id="the-get-operator">The get operator</h1>
+<p>Here is our getter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(^.) </span><span class="ot">::</span> rec <span class="ot">-&gt;</span> <span class="dt">Lens</span> rec fld <span class="ot">-&gt;</span> fld<br />a <span class="fu">^.</span> (<span class="dt">Lens</span> f) <span class="fu">=</span> pos (f a)<br /><span class="kw">infixr</span> <span class="dv">9</span> <span class="fu">^.</span><br /><br /><span class="co">-- internal</span><br /><span class="ot">pos </span><span class="ot">::</span> <span class="dt">Store</span> fld rec <span class="ot">-&gt;</span> fld<br />pos (<span class="dt">Store</span> _ s) <span class="fu">=</span> s</code></pre>
+</div>
 <div class="slide">
-<h1
->The set operator</h1
-><p
->And here is our setter:</p
-><pre class="sourceCode haskell"
-><code
-  >(^=) :: <span class="dt"
-    >Lens</span
-    > rec fld -&gt; fld -&gt; rec -&gt; rec<br
-     />(<span class="dt"
-    >Lens</span
-    > f) <span class="fu"
-    >^=</span
-    > b <span class="fu"
-    >=</span
-    > peek b <span class="fu"
-    >.</span
-    > f<br
-     /><span class="kw"
-    >infixr</span
-    > <span class="dv"
-    >4</span
-    > <span class="fu"
-    >^=</span
-    ><br
-     /><br
-     /><span class="co"
-    >-- internal</span
-    ><br
-     />peek :: fld -&gt; <span class="dt"
-    >Store</span
-    > fld rec -&gt; rec<br
-     />peek s (<span class="dt"
-    >Store</span
-    > g _) <span class="fu"
-    >=</span
-    > g s<br
-     /></code
-  ></pre
-></div>
+<h1 id="the-set-operator">The set operator</h1>
+<p>And here is our setter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(^=) </span><span class="ot">::</span> <span class="dt">Lens</span> rec fld <span class="ot">-&gt;</span> fld <span class="ot">-&gt;</span> rec <span class="ot">-&gt;</span> rec<br />(<span class="dt">Lens</span> f) <span class="fu">^=</span> b <span class="fu">=</span> peek b <span class="fu">.</span> f<br /><span class="kw">infixr</span> <span class="dv">4</span> <span class="fu">^=</span><br /><br /><span class="co">-- internal</span><br /><span class="ot">peek </span><span class="ot">::</span> fld <span class="ot">-&gt;</span> <span class="dt">Store</span> fld rec <span class="ot">-&gt;</span> rec<br />peek s (<span class="dt">Store</span> g _) <span class="fu">=</span> g s</code></pre>
+</div>
 <div class="slide">
-<h1
->Constructing a lens</h1
-><p
->Given a getter and a setter, we can build a lens:</p
-><pre class="sourceCode haskell"
-><code
-  >lens :: (rec -&gt; fld) -&gt; (fld -&gt; rec -&gt; rec) -&gt; <span class="dt"
-    >Lens</span
-    > rec fld<br
-     />lens get set <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > <span class="fu"
-    >$</span
-    > \a -&gt; <span class="dt"
-    >Store</span
-    > (\b -&gt; set b a) (get a)<br
-     /></code
-  ></pre
-><p
->Alternatively, we can construct a lens from an <em
-  >isomorphism</em
-  > between record and field types:</p
-><pre class="sourceCode haskell"
-><code
-  >iso :: (rec -&gt; fld) -&gt; (fld -&gt; rec) -&gt; <span class="dt"
-    >Lens</span
-    > rec fld<br
-     />iso f g <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > (<span class="dt"
-    >Store</span
-    > g <span class="fu"
-    >.</span
-    > f)<br
-     /></code
-  ></pre
-></div>
+<h1 id="constructing-a-lens">Constructing a lens</h1>
+<p>Given a getter and a setter, we can build a lens:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">lens </span><span class="ot">::</span> (rec <span class="ot">-&gt;</span> fld) <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec <span class="ot">-&gt;</span> rec) <span class="ot">-&gt;</span> <span class="dt">Lens</span> rec fld<br />lens get set <span class="fu">=</span> <span class="dt">Lens</span> <span class="fu">$</span> \a <span class="ot">-&gt;</span> <span class="dt">Store</span> (\b <span class="ot">-&gt;</span> set b a) (get a)</code></pre>
+<p>Alternatively, we can construct a lens from an <em>isomorphism</em> between record and field types:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">iso </span><span class="ot">::</span> (rec <span class="ot">-&gt;</span> fld) <span class="ot">-&gt;</span> (fld <span class="ot">-&gt;</span> rec) <span class="ot">-&gt;</span> <span class="dt">Lens</span> rec fld<br />iso f g <span class="fu">=</span> <span class="dt">Lens</span> (<span class="dt">Store</span> g <span class="fu">.</span> f)</code></pre>
+</div>
 <div class="slide">
-<h1
->A lens for points</h1
-><p
->Consider our venerable <code
-  >Point</code
-  > type:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Point</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Point</span
-    > {<br
-     />      ptX :: <span class="dt"
-    >Int</span
-    ><br
-     />    , ptY :: <span class="dt"
-    >Int</span
-    ><br
-     />    } <span class="kw"
-    >deriving</span
-    > (<span class="kw"
-    >Show</span
-    >)<br
-     /></code
-  ></pre
-><p
->We need to define two lenses for this type, one to focus on the <code
-  >x</code
-  > coordinate, and another for <code
-  >y</code
-  >:</p
-><pre class="sourceCode haskell"
-><code
-  >x, y :: <span class="dt"
-    >Lens</span
-    > <span class="dt"
-    >Point</span
-    > <span class="dt"
-    >Int</span
-    ><br
-     />x <span class="fu"
-    >=</span
-    > lens ptX (\x pt -&gt; pt {ptX <span class="fu"
-    >=</span
-    > x})<br
-     />y <span class="fu"
-    >=</span
-    > lens ptY (\y pt -&gt; pt {ptY <span class="fu"
-    >=</span
-    > y})<br
-     /></code
-  ></pre
-></div>
+<h1 id="a-lens-for-points">A lens for points</h1>
+<p>Consider our venerable <code>Point</code> type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Point</span> <span class="fu">=</span> <span class="dt">Point</span> {<br /><span class="ot">      ptX </span><span class="ot">::</span> <span class="dt">Int</span><br />    ,<span class="ot"> ptY </span><span class="ot">::</span> <span class="dt">Int</span><br />    } <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>We need to define two lenses for this type, one to focus on the <code>x</code> coordinate, and another for <code>y</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">x,<span class="ot"> y </span><span class="ot">::</span> <span class="dt">Lens</span> <span class="dt">Point</span> <span class="dt">Int</span><br />x <span class="fu">=</span> lens ptX (\x pt <span class="ot">-&gt;</span> pt {ptX <span class="fu">=</span> x})<br />y <span class="fu">=</span> lens ptY (\y pt <span class="ot">-&gt;</span> pt {ptY <span class="fu">=</span> y})</code></pre>
+</div>
 <div class="slide">
-<h1
->Using our lens on points</h1
-><p
->The getter:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="fu"
-    >&gt;&gt;</span
-    > <span class="kw"
-    >let</span
-    > pt <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Point</span
-    > <span class="dv"
-    >1</span
-    > <span class="dv"
-    >1</span
-    ><br
-     /><span class="fu"
-    >&gt;&gt;</span
-    > pt <span class="fu"
-    >^.</span
-    > x<br
-     /><span class="dv"
-    >1</span
-    ><br
-     /></code
-  ></pre
-><p
->The setter:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="fu"
-    >&gt;&gt;</span
-    > (x <span class="fu"
-    >^=</span
-    > <span class="dv"
-    >2</span
-    >) pt<br
-     /><span class="dt"
-    >Point</span
-    > {ptX <span class="fu"
-    >=</span
-    > <span class="dv"
-    >2</span
-    >, ptY <span class="fu"
-    >=</span
-    > <span class="dv"
-    >1</span
-    >}<br
-     /></code
-  ></pre
-></div>
+<h1 id="using-our-lens-on-points">Using our lens on points</h1>
+<p>The getter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> <span class="kw">let</span> pt <span class="fu">=</span> <span class="dt">Point</span> <span class="dv">1</span> <span class="dv">1</span><br /><span class="fu">&gt;&gt;</span> pt <span class="fu">^.</span> x<br /><span class="dv">1</span></code></pre>
+<p>The setter:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> (x <span class="fu">^=</span> <span class="dv">2</span>) pt<br /><span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">2</span>, ptY <span class="fu">=</span> <span class="dv">1</span>}</code></pre>
+</div>
 <div class="slide">
-<h1
->Revisiting nested data</h1
-><p
->Let's define a line type, with lenses for its beginning and end points:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Line</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Line</span
-    > {<br
-     />      lnBeg :: <span class="dt"
-    >Point</span
-    ><br
-     />    , lnEnd :: <span class="dt"
-    >Point</span
-    ><br
-     />    } <span class="kw"
-    >deriving</span
-    > (<span class="kw"
-    >Show</span
-    >)<br
-     /><br
-     />beg, end :: <span class="dt"
-    >Lens</span
-    > <span class="dt"
-    >Line</span
-    > <span class="dt"
-    >Point</span
-    ><br
-     />beg <span class="fu"
-    >=</span
-    > lens lnBeg (\b l -&gt; l {lnBeg <span class="fu"
-    >=</span
-    > b})<br
-     />end <span class="fu"
-    >=</span
-    > lens lnEnd (\e l -&gt; l {lnEnd <span class="fu"
-    >=</span
-    > e})<br
-     /></code
-  ></pre
-><p
->Suppose we want to access the <code
-  >x</code
-  > coordinate of the end of the line.</p
-><p
->Using normal Haskell machinery, we know we can just use composition:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="fu"
-    >&gt;&gt;</span
-    > <span class="kw"
-    >let</span
-    > l <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Line</span
-    > (<span class="dt"
-    >Point</span
-    > <span class="dv"
-    >1</span
-    > <span class="dv"
-    >2</span
-    >) (<span class="dt"
-    >Point</span
-    > <span class="dv"
-    >3</span
-    > <span class="dv"
-    >4</span
-    >)<br
-     /><span class="fu"
-    >&gt;&gt;</span
-    > (ptX <span class="fu"
-    >.</span
-    > lnEnd) l<br
-     /><span class="dv"
-    >3</span
-    ><br
-     /></code
-  ></pre
-></div>
+<h1 id="revisiting-nested-data">Revisiting nested data</h1>
+<p>Let's define a line type, with lenses for its beginning and end points:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Line</span> <span class="fu">=</span> <span class="dt">Line</span> {<br /><span class="ot">      lnBeg </span><span class="ot">::</span> <span class="dt">Point</span><br />    ,<span class="ot"> lnEnd </span><span class="ot">::</span> <span class="dt">Point</span><br />    } <span class="kw">deriving</span> (<span class="kw">Show</span>)<br /><br />beg,<span class="ot"> end </span><span class="ot">::</span> <span class="dt">Lens</span> <span class="dt">Line</span> <span class="dt">Point</span><br />beg <span class="fu">=</span> lens lnBeg (\b l <span class="ot">-&gt;</span> l {lnBeg <span class="fu">=</span> b})<br />end <span class="fu">=</span> lens lnEnd (\e l <span class="ot">-&gt;</span> l {lnEnd <span class="fu">=</span> e})</code></pre>
+<p>Suppose we want to access the <code>x</code> coordinate of the end of the line.</p>
+<p>Using normal Haskell machinery, we know we can just use composition:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> <span class="kw">let</span> l <span class="fu">=</span> <span class="dt">Line</span> (<span class="dt">Point</span> <span class="dv">1</span> <span class="dv">2</span>) (<span class="dt">Point</span> <span class="dv">3</span> <span class="dv">4</span>)<br /><span class="fu">&gt;&gt;</span> (ptX <span class="fu">.</span> lnEnd) l<br /><span class="dv">3</span></code></pre>
+</div>
 <div class="slide">
-<h1
->Function composition: not gnar enough</h1
-><p
->By now, we are familiar with (and love) function composition:</p
-><pre class="sourceCode haskell"
-><code
-  >(.) :: (b -&gt; c) -&gt; (a -&gt; b) -&gt; (a -&gt; c)<br
-     /></code
-  ></pre
-><p
->However, we can make composition more abstract:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >import</span
-    > <span class="dt"
-    >Prelude</span
-    > <span class="kw"
-    >hiding</span
-    > (<span class="fu"
-    >id</span
-    >, (<span class="fu"
-    >.</span
-    >))<br
-     /><br
-     /><span class="kw"
-    >class</span
-    > <span class="dt"
-    >Category</span
-    > cat <span class="kw"
-    >where</span
-    ><br
-     />  id :: cat a a<br
-     />  (.) :: cat b c -&gt; cat a b -&gt; cat a c<br
-     /></code
-  ></pre
-><p
->Now we can recast function composition as just an instance of this more general <code
-  >Category</code
-  > class:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >instance</span
-    > <span class="dt"
-    >Category</span
-    > (-&gt;) <span class="kw"
-    >where</span
-    ><br
-     />    <span class="fu"
-    >id</span
-    > a <span class="fu"
-    >=</span
-    > a<br
-     />    f <span class="fu"
-    >.</span
-    > g <span class="fu"
-    >=</span
-    > \x -&gt; f (g x)<br
-     /></code
-  ></pre
-></div>
+<h1 id="function-composition-not-gnar-enough">Function composition: not gnar enough</h1>
+<p>By now, we are familiar with (and love) function composition:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(.) </span><span class="ot">::</span> (b <span class="ot">-&gt;</span> c) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> c)</code></pre>
+<p>However, we can make composition more abstract:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Prelude</span> <span class="kw">hiding</span> (<span class="fu">id</span>, (<span class="fu">.</span>))<br /><br /><span class="kw">class</span> <span class="dt">Category</span> cat <span class="kw">where</span><br /><span class="ot">  id </span><span class="ot">::</span> cat a a<br /><span class="ot">  (.) </span><span class="ot">::</span> cat b c <span class="ot">-&gt;</span> cat a b <span class="ot">-&gt;</span> cat a c</code></pre>
+<p>Now we can recast function composition as just an instance of this more general <code>Category</code> class:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Category</span> (<span class="ot">-&gt;</span>) <span class="kw">where</span><br />    <span class="fu">id</span> a <span class="fu">=</span> a<br />    f <span class="fu">.</span> g <span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g x)</code></pre>
+</div>
 <div class="slide">
-<h1
->Category? Composition? Abstraction? Huh?</h1
-><p
->We care about the <code
-  >Category</code
-  > class because it turns out we can compose lenses!</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >import</span
-    > <span class="dt"
-    >Control.Category</span
-    ><br
-     /><br
-     /><span class="kw"
-    >instance</span
-    > <span class="dt"
-    >Category</span
-    > <span class="dt"
-    >Lens</span
-    > <span class="kw"
-    >where</span
-    ><br
-     />    <span class="fu"
-    >id</span
-    > <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > (<span class="dt"
-    >Store</span
-    > <span class="fu"
-    >id</span
-    >)<br
-     /><br
-     />    <span class="dt"
-    >Lens</span
-    > f <span class="fu"
-    >.</span
-    > <span class="dt"
-    >Lens</span
-    > g <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > <span class="fu"
-    >$</span
-    > \a -&gt; <span class="kw"
-    >case</span
-    > g a <span class="kw"
-    >of</span
-    ><br
-     />      <span class="dt"
-    >Store</span
-    > wba b -&gt; <span class="kw"
-    >case</span
-    > f b <span class="kw"
-    >of</span
-    ><br
-     />    <span class="dt"
-    >Store</span
-    > wcb c -&gt; <span class="dt"
-    >Store</span
-    > (wba <span class="fu"
-    >.</span
-    > wcb) c<br
-     /></code
-  ></pre
-><p
->How do we do this in practice?</p
-><p
->Just as we compose two functions to get another function, when we compose two lenses, we get another lens.</p
-></div>
+<h1 id="category-composition-abstraction-huh">Category? Composition? Abstraction? Huh?</h1>
+<p>We care about the <code>Category</code> class because it turns out we can compose lenses!</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Control.Category</span><br /><br /><span class="kw">instance</span> <span class="dt">Category</span> <span class="dt">Lens</span> <span class="kw">where</span><br />    <span class="fu">id</span> <span class="fu">=</span> <span class="dt">Lens</span> (<span class="dt">Store</span> <span class="fu">id</span>)<br /><br />    <span class="dt">Lens</span> f <span class="fu">.</span> <span class="dt">Lens</span> g <span class="fu">=</span> <span class="dt">Lens</span> <span class="fu">$</span> \a <span class="ot">-&gt;</span> <span class="kw">case</span> g a <span class="kw">of</span><br />      <span class="dt">Store</span> wba b <span class="ot">-&gt;</span> <span class="kw">case</span> f b <span class="kw">of</span><br />    <span class="dt">Store</span> wcb c <span class="ot">-&gt;</span> <span class="dt">Store</span> (wba <span class="fu">.</span> wcb) c</code></pre>
+<p>How do we do this in practice?</p>
+<p>Just as we compose two functions to get another function, when we compose two lenses, we get another lens.</p>
+</div>
 <div class="slide">
-<h1
->Composition of lenses</h1
-><p
->Access a nested field:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="fu"
-    >&gt;&gt;</span
-    > <span class="kw"
-    >let</span
-    > l <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Line</span
-    > (<span class="dt"
-    >Point</span
-    > <span class="dv"
-    >1</span
-    > <span class="dv"
-    >2</span
-    >) (<span class="dt"
-    >Point</span
-    > <span class="dv"
-    >3</span
-    > <span class="dv"
-    >4</span
-    >)<br
-     /><span class="fu"
-    >&gt;&gt;</span
-    > l <span class="fu"
-    >^.</span
-    > (x <span class="fu"
-    >.</span
-    > beg)<br
-     /></code
-  ></pre
-><p
->Modify a nested field:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="fu"
-    >&gt;&gt;</span
-    > ((y <span class="fu"
-    >.</span
-    > end) <span class="fu"
-    >^=</span
-    > <span class="dv"
-    >7</span
-    >) l<br
-     /><span class="dt"
-    >Line</span
-    > {lnBeg <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Point</span
-    > {ptX <span class="fu"
-    >=</span
-    > <span class="dv"
-    >1</span
-    >, ptY <span class="fu"
-    >=</span
-    > <span class="dv"
-    >2</span
-    >},<br
-     />      lnEnd <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Point</span
-    > {ptX <span class="fu"
-    >=</span
-    > <span class="dv"
-    >3</span
-    >, ptY <span class="fu"
-    >=</span
-    > <span class="dv"
-    >7</span
-    >}}<br
-     /></code
-  ></pre
-></div>
+<h1 id="composition-of-lenses">Composition of lenses</h1>
+<p>Access a nested field:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> <span class="kw">let</span> l <span class="fu">=</span> <span class="dt">Line</span> (<span class="dt">Point</span> <span class="dv">1</span> <span class="dv">2</span>) (<span class="dt">Point</span> <span class="dv">3</span> <span class="dv">4</span>)<br /><span class="fu">&gt;&gt;</span> l <span class="fu">^.</span> (x <span class="fu">.</span> beg)</code></pre>
+<p>Modify a nested field:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> ((y <span class="fu">.</span> end) <span class="fu">^=</span> <span class="dv">7</span>) l<br /><span class="dt">Line</span> {lnBeg <span class="fu">=</span> <span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">1</span>, ptY <span class="fu">=</span> <span class="dv">2</span>},<br />      lnEnd <span class="fu">=</span> <span class="dt">Point</span> {ptX <span class="fu">=</span> <span class="dv">3</span>, ptY <span class="fu">=</span> <span class="dv">7</span>}}</code></pre>
+</div>
 <div class="slide">
-<h1
->A map as a lens</h1
-><p
->Algebraic data types are not the only place we can use lenses.</p
-><p
->They're just as applicable to container types, for instance:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >import</span
-    > <span class="kw"
-    >qualified</span
-    > <span class="dt"
-    >Data.Map</span
-    > <span class="kw"
-    >as</span
-    > <span class="dt"
-    >Map</span
-    ><br
-     /><span class="kw"
-    >import</span
-    > <span class="dt"
-    >Data.Map</span
-    > (<span class="dt"
-    >Map</span
-    >)<br
-     /><br
-     />mapLens :: (<span class="kw"
-    >Ord</span
-    > k) =&gt; k -&gt; <span class="dt"
-    >Lens</span
-    > (<span class="dt"
-    >Map</span
-    > k v) (<span class="dt"
-    >Maybe</span
-    > v)<br
-     />mapLens k <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Lens</span
-    > <span class="fu"
-    >$</span
-    > \m -&gt;<br
-     />            <span class="kw"
-    >let</span
-    > set <span class="kw"
-    >Nothing</span
-    >  <span class="fu"
-    >=</span
-    > Map.delete k m<br
-     />                set (<span class="kw"
-    >Just</span
-    > v) <span class="fu"
-    >=</span
-    > Map.insert k v m<br
-     />                get          <span class="fu"
-    >=</span
-    > Map.lookup k m<br
-     />            <span class="kw"
-    >in</span
-    > <span class="dt"
-    >Store</span
-    > set get<br
-     /></code
-  ></pre
-></div>
+<h1 id="a-map-as-a-lens">A map as a lens</h1>
+<p>Lenses are not restricted to use solely with algebraic data types.</p>
+<p>They're just as applicable to container types, for instance:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map</span> <span class="kw">as</span> <span class="dt">Map</span><br /><span class="kw">import</span> <span class="dt">Data.Map</span> (<span class="dt">Map</span>)<br /><br /><span class="ot">mapLens </span><span class="ot">::</span> (<span class="kw">Ord</span> k) <span class="ot">=&gt;</span> k <span class="ot">-&gt;</span> <span class="dt">Lens</span> (<span class="dt">Map</span> k v) (<span class="dt">Maybe</span> v)<br />mapLens k <span class="fu">=</span> <span class="dt">Lens</span> <span class="fu">$</span> \m <span class="ot">-&gt;</span><br />            <span class="kw">let</span> set <span class="kw">Nothing</span>  <span class="fu">=</span> Map.delete k m<br />                set (<span class="kw">Just</span> v) <span class="fu">=</span> Map.insert k v m<br />                get          <span class="fu">=</span> Map.lookup k m<br />            <span class="kw">in</span> <span class="dt">Store</span> set get</code></pre>
+</div>
 <div class="slide">
-<h1
->It's all about focus</h1
-><p
->We now know how the &quot;algebraic&quot; got into &quot;algebraic data type&quot;, and why (and how) we'd want to focus on an element within a type.</p
-><p
->What's next?</p
-></div>
+<h1 id="its-all-about-focus">It's all about focus</h1>
+<p>We now know how the &quot;algebraic&quot; got into &quot;algebraic data type&quot;, and why (and how) we'd want to focus on an element within a type.</p>
+<p>What's next?</p>
+</div>
 <div class="slide">
-<h1
->Lenses and triples</h1
-><p
->Suppose we have this type.</p
-><pre class="sourceCode haskell"
-><code
-  >(<span class="dt"
-    >Int</span
-    >,<span class="dt"
-    >Int</span
-    >,<span class="dt"
-    >Int</span
-    >)<br
-     /></code
-  ></pre
-><p
->How many lenses must we define in order to be able to work with all of its fields?</p
-></div>
+<h1 id="lenses-and-triples">Lenses and triples</h1>
+<p>Suppose we have this type.</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="dt">Int</span>,<span class="dt">Int</span>,<span class="dt">Int</span>)</code></pre>
+<p>How many lenses must we define in order to be able to work with all of its fields?</p>
+</div>
 <div class="slide">
-<h1
->Values in a triple</h1
-><p
->In our type:</p
-><pre class="sourceCode haskell"
-><code
-  >(<span class="dt"
-    >Int</span
-    >,<span class="dt"
-    >Int</span
-    >,<span class="dt"
-    >Int</span
-    >)<br
-     /></code
-  ></pre
-><p
->We can create the following number of values:</p
-><ul
-><li
-  ><span class="math"
-    ><em
-      >Int</em
-      > × <em
-      >Int</em
-      > × <em
-      >Int</em
-      ></span
-    ></li
-  ></ul
-><p
->Which of course we can shorten as <span class="math"
-  ><em
-    >Int</em
-    ><sup
-    >3</sup
-    ></span
-  > (raised to the 3rd power).</p
-><p
->Suppose we want to update the first field (using a lens, manual update, or whatever - the mechanism doesn't matter).</p
-><p
->Let's poke a hole in that field:</p
-><pre class="sourceCode haskell"
-><code
-  >(_,<span class="dt"
-    >Int</span
-    >,<span class="dt"
-    >Int</span
-    >)<br
-     /></code
-  ></pre
-><p
->Clearly we're now representing just <span class="math"
-  ><em
-    >Int</em
-    > × <em
-    >Int</em
-    ></span
-  > (or <span class="math"
-  ><em
-    >Int</em
-    ><sup
-    >2</sup
-    ></span
-  >) values, because we no longer care what value used to be present in the first field.</p
-></div>
+<h1 id="values-in-a-triple">Values in a triple</h1>
+<p>In our type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="dt">Int</span>,<span class="dt">Int</span>,<span class="dt">Int</span>)</code></pre>
+<p>We can create the following number of values:</p>
+<ul>
+<li><span class="math">Int × Int × Int</span></li>
+</ul>
+<p>Which of course we can shorten as <span class="math">Int<sup>3</sup></span> (raised to the 3rd power).</p>
+<p>Suppose we want to update the first field (using a lens, manual update, or whatever - the mechanism doesn't matter).</p>
+<p>Let's poke a hole in that field:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(_,<span class="dt">Int</span>,<span class="dt">Int</span>)</code></pre>
+<p>Clearly we're now representing just <span class="math">Int × Int</span> (or <span class="math">Int<sup>2</sup></span>) values, because we no longer care what value used to be present in the first field.</p>
+</div>
 <div class="slide">
-<h1
->Poking more holes</h1
-><p
->There are in fact three different ways we could poke holes in our triple:</p
-><pre class="sourceCode haskell"
-><code
-  >(_,<span class="dt"
-    >Int</span
-    >,<span class="dt"
-    >Int</span
-    >)<br
-     />(<span class="dt"
-    >Int</span
-    >,_,<span class="dt"
-    >Int</span
-    >)<br
-     />(<span class="dt"
-    >Int</span
-    >,<span class="dt"
-    >Int</span
-    >,_)<br
-     /></code
-  ></pre
-><p
->And each one can express <span class="math"
-  ><em
-    >Int</em
-    ><sup
-    >2</sup
-    ></span
-  > values, for a total of:</p
-><ul
-><li
-  ><span class="math"
-    >3 × <em
-      >Int</em
-      ><sup
-      >2</sup
-      ></span
-    ></li
-  ></ul
-></div>
+<h1 id="poking-more-holes">Poking more holes</h1>
+<p>There are in fact three different ways we could poke holes in our triple:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(_,<span class="dt">Int</span>,<span class="dt">Int</span>)<br />(<span class="dt">Int</span>,_,<span class="dt">Int</span>)<br />(<span class="dt">Int</span>,<span class="dt">Int</span>,_)</code></pre>
+<p>And each one can express <span class="math">Int<sup>2</sup></span> values, for a total of:</p>
+<ul>
+<li><span class="math">3 × Int<sup>2</sup></span></li>
+</ul>
+</div>
 <div class="slide">
-<h1
->Getting a little more abstract</h1
-><p
->Let's parameterise our triple, so we no longer know or care what the type in each field is:</p
-><pre class="sourceCode haskell"
-><code
-  >(x,x,x)<br
-     /></code
-  ></pre
-><p
->This can hold <span class="math"
-  ><em
-    >x</em
-    ><sup
-    >3</sup
-    ></span
-  > values.</p
-><p
->When we poke holes in each field, we find that the total number of values expressible is:</p
-><ul
-><li
-  ><span class="math"
-    >3<em
-      >x</em
-      ><sup
-      >2</sup
-      ></span
-    ></li
-  ></ul
-><p
->This ought to remind you of differential calculus.</p
-><p
->Isn't that remarkable?</p
-></div>
+<h1 id="getting-a-little-more-abstract">Getting a little more abstract</h1>
+<p>Let's parameterise our triple, so we no longer know or care what the type in each field is:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(x,x,x)</code></pre>
+<p>This can hold <span class="math"><em>x</em><sup>3</sup></span> values.</p>
+<p>When we poke holes in each field, we find that the total number of values expressible is:</p>
+<ul>
+<li><span class="math">3<em>x</em><sup>2</sup></span></li>
+</ul>
+<p>This ought to remind you of differential calculus.</p>
+<p>Isn't that remarkable?</p>
+</div>
 <div class="slide">
-<h1
->Lists - again?</h1
-><p
->We're so very familiar with the list type by now.</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >List</span
-    > x <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Null</span
-    ><br
-     />            <span class="fu"
-    >|</span
-    > <span class="dt"
-    >Cons</span
-    > x (<span class="dt"
-    >List</span
-    > x)<br
-     /></code
-  ></pre
-><p
->From the symbolic shenanigans we saw earlier, let's compute <span class="math"
-  ><em
-    >n</em
-    >(<em
-    >x</em
-    >)</span
-  >, the number of values expressible in a list of type <code
-  >x</code
-  >:</p
-><p
-><span class="math"
-  ><em
-    >n</em
-    >(<em
-    >x</em
-    >) = 1 + <em
-    >x</em
-    > × <em
-    >n</em
-    >(<em
-    >x</em
-    >)</span
-  ></p
-><p
->Just as the list is a recursive data type, this is a recurrence relation.</p
-><p
->Let's perform a symbolic differentiation on this expression:</p
-><p
-><span class="math"
-  ><em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >) = 0 + 1 × <em
-    >n</em
-    >(<em
-    >x</em
-    >) + <em
-    >x</em
-    > × <em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >)</span
-  ></p
-><p
->(The last part is from the <a href="http://en.wikipedia.org/wiki/General_Leibniz_rule"
-  >Leibniz rule</a
-  >.)</p
-></div>
+<h1 id="lists---again">Lists - again?</h1>
+<p>We're so very familiar with the list type by now.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">List</span> x <span class="fu">=</span> <span class="dt">Null</span><br />            <span class="fu">|</span> <span class="dt">Cons</span> x (<span class="dt">List</span> x)</code></pre>
+<p>From the symbolic shenanigans we saw earlier, let's compute <span class="math"><em>n</em>(<em>x</em>)</span>, the number of values expressible in a list of type <code>x</code>:</p>
+<p><span class="math"><em>n</em>(<em>x</em>) = 1 + <em>x</em> × <em>n</em>(<em>x</em>)</span></p>
+<p>Just as the list is a recursive data type, this is a recurrence relation.</p>
+<p>Let's perform a symbolic differentiation on this expression:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = 0 + 1 × <em>n</em>(<em>x</em>) + <em>x</em> × <em>n</em>ʹ(<em>x</em>)</span></p>
+<p>(The last part is from the <a href="http://en.wikipedia.org/wiki/General_Leibniz_rule">Leibniz rule</a>.)</p>
+</div>
 <div class="slide">
-<h1
->More algebraic crunching</h1
-><p
->We now have:</p
-><p
-><span class="math"
-  ><em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >) = 0 + 1 × <em
-    >n</em
-    >(<em
-    >x</em
-    >) + <em
-    >x</em
-    > × <em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >)</span
-  ></p
-><p
->Or more simply:</p
-><p
-><span class="math"
-  ><em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >) = <em
-    >n</em
-    >(<em
-    >x</em
-    >) + <em
-    >x</em
-    > × <em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >)</span
-  ></p
-><p
->Rearranging:</p
-><p
-><span class="math"
-  ><em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >)(1 - <em
-    >x</em
-    >) = <em
-    >n</em
-    >(<em
-    >x</em
-    >)</span
-  ></p
-><p
->And again:</p
-><p
-><span class="math"
-  ><em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >) = <em
-    >n</em
-    >(<em
-    >x</em
-    >) / (1 - <em
-    >x</em
-    >)</span
-  ></p
-><p
->And finally:</p
-><p
-><span class="math"
-  ><em
-    >n</em
-    >ʹ(<em
-    >x</em
-    >) = <em
-    >n</em
-    >(<em
-    >x</em
-    >)<sup
-    >2</sup
-    ></span
-  ></p
-><p
->In other words, the derivative of a list is the <em
-  >product</em
-  > of two lists.</p
-></div>
+<h1 id="more-algebraic-crunching">More algebraic crunching</h1>
+<p>We now have:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = 0 + 1 × <em>n</em>(<em>x</em>) + <em>x</em> × <em>n</em>ʹ(<em>x</em>)</span></p>
+<p>Or more simply:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = <em>n</em>(<em>x</em>) + <em>x</em> × <em>n</em>ʹ(<em>x</em>)</span></p>
+<p>Rearranging:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>)(1 - <em>x</em>) = <em>n</em>(<em>x</em>)</span></p>
+<p>And again:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = <em>n</em>(<em>x</em>) / (1 - <em>x</em>)</span></p>
+<p>And finally:</p>
+<p><span class="math"><em>n</em>ʹ(<em>x</em>) = <em>n</em>(<em>x</em>)<sup>2</sup></span></p>
+<p>In other words, the derivative of a list is the <em>product</em> of two lists.</p>
+</div>
 <div class="slide">
-<h1
->Wow! But what does this mean?</h1
-><p
->It's quite amazing that symbolic differentiation works on recursive data types. This discovery was made by <a href="http://strictlypositive.org/diff.pdf"
-  >McBride</a
-  >.</p
-><p
->But what can we do with this knowledge?</p
-><p
->Recall our earlier phrasing of &quot;poking a hole&quot; in a triple. Clearly there's a correspondence between &quot;poking a hole&quot; and modifying data.</p
-><p
->We can use these ideas to both modify a list and move around in it.</p
-></div>
+<h1 id="wow-but-what-does-this-mean">Wow! But what does this mean?</h1>
+<p>It's quite amazing that symbolic differentiation works on recursive data types. This discovery was made by <a href="http://strictlypositive.org/diff.pdf">McBride</a>.</p>
+<p>But what can we do with this knowledge?</p>
+<p>Recall our earlier phrasing of &quot;poking a hole&quot; in a triple. Clearly there's a correspondence between &quot;poking a hole&quot; and modifying data.</p>
+<p>We can use these ideas to both modify a list and move around in it.</p>
+</div>
 <div class="slide">
-<h1
->Introducing the zipper</h1
-><p
->Here is the derivative of a list, expressed as a data type:</p
-><pre class="sourceCode haskell"
-><code
-  ><span class="kw"
-    >data</span
-    > <span class="dt"
-    >Zipper</span
-    > a <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Zipper</span
-    > [a] a [a]<br
-     />              <span class="kw"
-    >deriving</span
-    > (<span class="kw"
-    >Show</span
-    >)<br
-     /></code
-  ></pre
-><p
->The unadorned <code
-  >a</code
-  > in the middle is our current focus point. (It's not required, just a detail of this particular implementation.)</p
-><p
->In a regular list, we can only move in one direction: from the head to the tail.</p
-></div>
+<h1 id="introducing-the-zipper">Introducing the zipper</h1>
+<p>Here is the derivative of a list, expressed as a data type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Zipper</span> a <span class="fu">=</span> <span class="dt">Zipper</span> [a] a [a]<br />              <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>The unadorned <code>a</code> in the middle is our current focus point. (It's not required, just a detail of this particular implementation.)</p>
+<p>In a regular list, we can only move in one direction: from the head to the tail.</p>
+</div>
 <div class="slide">
-<h1
->From a list to a zipper</h1
-><p
->This function constructs a zipper from a list:</p
-><pre class="sourceCode haskell"
-><code
-  >fromList :: [a] -&gt; <span class="dt"
-    >Zipper</span
-    > a<br
-     />fromList (x<span class="fu"
-    >:</span
-    >xs) <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Zipper</span
-    > [] x xs<br
-     />fromList _      <span class="fu"
-    >=</span
-    > <span class="fu"
-    >error</span
-    > <span class="st"
-    >&quot;empty!&quot;</span
-    ><br
-     /></code
-  ></pre
-></div>
+<h1 id="from-a-list-to-a-zipper">From a list to a zipper</h1>
+<p>This function constructs a zipper from a list:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">fromList </span><span class="ot">::</span> [a] <span class="ot">-&gt;</span> <span class="dt">Zipper</span> a<br />fromList (x<span class="fu">:</span>xs) <span class="fu">=</span> <span class="dt">Zipper</span> [] x xs<br />fromList _      <span class="fu">=</span> <span class="fu">error</span> <span class="st">&quot;empty!&quot;</span></code></pre>
+</div>
 <div class="slide">
-<h1
->List-like iteration</h1
-><p
->Here's iteration in the normal &quot;towards the tail&quot; direction:</p
-><pre class="sourceCode haskell"
-><code
-  >next :: <span class="dt"
-    >Zipper</span
-    > a -&gt; <span class="dt"
-    >Zipper</span
-    > a<br
-     />next (<span class="dt"
-    >Zipper</span
-    > ys y (x<span class="fu"
-    >:</span
-    >xs)) <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Zipper</span
-    > (y<span class="fu"
-    >:</span
-    >ys) x xs<br
-     />next z                    <span class="fu"
-    >=</span
-    > z<br
-     /></code
-  ></pre
-><p
->Notice that we save &quot;where we've been&quot; in our other list. This is critically important.</p
-></div>
+<h1 id="list-like-iteration">List-like iteration</h1>
+<p>Here's iteration in the normal &quot;towards the tail&quot; direction:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">next </span><span class="ot">::</span> <span class="dt">Zipper</span> a <span class="ot">-&gt;</span> <span class="dt">Zipper</span> a<br />next (<span class="dt">Zipper</span> ys y (x<span class="fu">:</span>xs)) <span class="fu">=</span> <span class="dt">Zipper</span> (y<span class="fu">:</span>ys) x xs<br />next z                    <span class="fu">=</span> z</code></pre>
+<p>Notice that we save &quot;where we've been&quot; in our other list. This is critically important.</p>
+</div>
 <div class="slide">
-<h1
->Going backwards</h1
-><p
->Since we have saved where we've been in the list, we can step back there again!</p
-><pre class="sourceCode haskell"
-><code
-  >prev :: <span class="dt"
-    >Zipper</span
-    > a -&gt; <span class="dt"
-    >Zipper</span
-    > a<br
-     />prev (<span class="dt"
-    >Zipper</span
-    > (y<span class="fu"
-    >:</span
-    >ys) x xs) <span class="fu"
-    >=</span
-    > <span class="dt"
-    >Zipper</span
-    > ys y (x<span class="fu"
-    >:</span
-    >xs)<br
-     />prev z                    <span class="fu"
-    >=</span
-    > z<br
-     /></code
-  ></pre
-><p
->We can use the fact that we can pattern match against nearby elements on <em
-  >both sides</em
-  > of our current focus to perform useful operations that need local context, e.g. sliding window algorithms, convolutions, etc.</p
-></div>
+<h1 id="going-backwards">Going backwards</h1>
+<p>Since we have saved where we've been in the list, we can step back there again!</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">prev </span><span class="ot">::</span> <span class="dt">Zipper</span> a <span class="ot">-&gt;</span> <span class="dt">Zipper</span> a<br />prev (<span class="dt">Zipper</span> (y<span class="fu">:</span>ys) x xs) <span class="fu">=</span> <span class="dt">Zipper</span> ys y (x<span class="fu">:</span>xs)<br />prev z                    <span class="fu">=</span> z</code></pre>
+<p>We can use the fact that we can pattern match against nearby elements on <em>both sides</em> of our current focus to perform useful operations that need local context, e.g. sliding window algorithms, convolutions, etc.</p>
+</div>
 <div class="slide">
-<h1
->Conversion back to a list</h1
-><p
->What should this function look like?</p
-></div>
+<h1 id="conversion-back-to-a-list">Conversion back to a list</h1>
+<p>What should this function look like?</p>
+</div>
 <div class="slide">
-<h1
->More general zippers</h1
-><p
->The ideas of differentiating data structures and zippers can be generalized to other recursive data structures, e.g. trees.</p
-></div>
+<h1 id="more-general-zippers">More general zippers</h1>
+<p>The ideas of differentiating data structures and zippers can be generalized to other recursive data structures, e.g. trees.</p>
+</div>
 </body>
 </html>
