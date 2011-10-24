@@ -203,7 +203,7 @@ Let's play with that in `ghci` a bit.
 
 A functor (in Haskell) is simply a pair of things:
 
-* A polymorphic type constructor
+* A polymorphic type
 
 * A definition for `fmap`
 
@@ -319,7 +319,7 @@ not going to explain why just yet.)
 
 An applicative is once again a triple of things:
 
-* A polymorphic type constructor that we know to be a functor
+* A polymorphic type that we know to be a functor
 
 * A definition for `pure`
 
@@ -439,8 +439,7 @@ class Functor m => Monad m {- ... -}
 class Applicative m => Monad m {- ... -}
 ~~~~
 
-The answer is basically "yes in principle, but for historical reasons,
-no".
+"Yes" in principle, but for historical reasons, "no".
 
 Monads and functors were introduced to Haskell around the same time,
 and I'm not sure the possible relationship between them was recognized
@@ -451,3 +450,268 @@ Applicative functors
 By the time a possible resolution to the tangle was identified, there
 was too much code "in the wild" to change things.
 
+
+# Function application as a monad
+
+Continuing our theme that just like functors and applicatives, monads
+are not limited to container types:
+
+~~~~ {.haskell}
+instance Monad ((->) r) where
+    -- same as the pure method of Applicative
+    return _ = \x -> x
+
+    f >>= g  = \x -> g (f x) x
+~~~~
+
+
+# Parsing
+
+Suppose we want to parse part of a string.
+
+We need to consume some - but probably not all - of the input, and
+return a result.  Let's return the remainder of the input that we
+haven't consumed, so someone else can deal with it.
+
+~~~~ {.haskell}
+parse :: String -> (a, String)
+~~~~
+
+
+# Purely functional random numbers
+
+Let's briefly get back to some material I didn't have time to cover a
+few weeks ago.
+
+Haskell supplies a `random` package that we can use in a purely
+functional setting.
+
+~~~~ {.haskell}
+class Random a where
+    random :: RandomGen g => g -> (a, g)
+
+class RandomGen g where
+    next   :: g -> (Int, g)
+    split  :: g -> (g, g)
+~~~~
+
+
+# "Modifying" state
+
+Notice the similarities between these types:
+
+~~~~ {.haskell}
+random :: RandomGen g => g      -> (a, g)
+parse  ::                String -> (a, String)
+~~~~
+
+In each case, we emulate "state update" by returning a new state.
+
+
+# Yuck!
+
+From that earlier lecture's unseen slides, recall that threading
+through all those updates is a pain:
+
+~~~~ {.haskell}
+guess :: (RandomGen g) => (Double,g) -> (Double,g)
+guess (_,g) = (z, g'')
+    where z        = x^2 + y^2
+          (x, g')  = random g
+          (y, g'') = random g'
+~~~~
+
+It would be really easy to reuse a piece of state by accident, and
+this is a very simple function!
+
+
+# A new look at state transformation
+
+Here's our most general setting for those state transformation
+functions:
+
+~~~~ {.haskell}
+s -> (a,s)
+~~~~
+
+If we pay no attention to the `s` parameter, we have one of the
+crucial criteria for being a `Functor`, `Applicative`, or `Monad`:
+
+* A fully polymorphic type
+
+What about the rest?
+
+
+# A little protection
+
+It would actually be a bad thing if we were to declare this type to be
+a `Functor`:
+
+~~~~ {.haskell}
+s -> (a,s)
+~~~~
+
+Why?  It would overlap with the `Functor` instance for `((->) a)`.
+
+To avoid the potential for overlapping instances, we wrap up our state
+transformation type in a `newtype`.
+
+~~~~ {.haskell}
+newtype State s a = State {
+      runState :: s -> (a,s)
+    }
+~~~~
+
+
+# A Functor instance
+
+~~~~ {.haskell}
+instance Functor (State s) where
+    fmap f (State action) = State $ \origState ->
+      let (a, newState) = action origState
+      in (f a, newState)
+~~~~
+
+The nice thing about our state transformer is that it works over *all*
+states. Some examples include:
+
+* The current state of a PRNG
+
+* The not-yet-consumed input for a parser
+
+
+# And a Monad instance
+
+~~~~ {.haskell}
+instance Monad (State s) where
+    return a = State $ \s -> (a, s)
+
+    State act >>= k = State $ \s ->
+      let (a, s') = act s
+      in runState (k a) s'
+~~~~
+
+The bind operator simply passes the result of the first operation to
+the second.
+
+
+# Manipulating state directly
+
+We can retrieve the current state by copying it into the result field
+of our pair.
+
+~~~~ {.haskell}
+get :: State s s
+get = State $ \s -> (s, s)
+~~~~
+
+If we want to replace the current state with a modified version,
+that's equally simple.
+
+~~~~ {.haskell}
+put :: s -> State s ()
+put s = State $ \_ -> ((), s)
+~~~~
+
+
+# Before
+
+Recall this function:
+
+~~~~ {.haskell}
+guess :: (RandomGen g) => (Double,g) -> (Double,g)
+guess (_,g) = (z, g'')
+    where z        = x^2 + y^2
+          (x, g')  = random g
+          (y, g'') = random g'
+~~~~
+
+
+# With a little help
+
+~~~~ {.haskell}
+import System.Random
+import Control.Monad.State
+
+modify' :: MonadState s m => (s -> (a,s)) -> m a
+modify' f = do
+  s <- get
+  let (a,s') = f s
+  put s'
+  return a
+~~~~
+
+The `MonadState` class takes the `State`-specific methods, and makes
+them available for other monads to implement:
+
+~~~~ {.haskell}
+class (Monad m) => MonadState s m | m -> s where
+    get :: m s
+    put :: s -> m ()
+~~~~
+
+
+# Functional dependencies
+
+Who noticed the vertical bar and arrow?
+
+~~~~ {.haskell}
+class (Monad m) => MonadState s m | m -> s {- ... -}
+~~~~
+
+This is called a *functional dependency*.  Fundeps are used to make
+type checking of multi-parameter type classes tractable.
+
+This fundep tells the type checker (and us) that the type of the state
+parameter `s` can be determined from the type of the monad parameter
+`m`.
+
+How does this work?
+
+~~~~ {.haskell}
+instance MonadState s (State s) where
+    get   = State $ \s -> (s, s)
+    put s = State $ \_ -> ((), s)
+~~~~
+
+Here, we're saying that the type `State s` is our monad, and the
+fundep ties its `s` parameter to the `s` parameter of the `MonadState`
+class.
+
+
+# A new guesser
+
+Here's a rewrite of our earlier `guess` function to use the `modify'`
+function that we just wrote:
+
+~~~~ {.haskell}
+guess :: RandomGen g => State g Double
+guess = do
+  a <- modify' random
+  b <- modify' random
+  return (a*a + b*b)
+~~~~
+
+Notice that we've managed to completely hide the state of the PRNG!
+
+
+# Why functional dependencies?
+
+Suppose we were to write a simpler multi-parameter type class, without
+the fundep:
+
+~~~~ {.haskell}
+class (Monad m) => MonadState s m {- ... -}
+~~~~
+
+And suppose we were to try to typecheck these type signatures:
+
+~~~~ {.haskell}
+modify' :: MonadState s m => (s -> (a,s)) -> m a
+
+guess :: RandomGen g => State g Double
+~~~~
+
+Without the fundep, the compiler would choke on these, because it has
+no information to tell it that the `g` parameter to `State` is related
+to the `s` parameter to `MonadState`.

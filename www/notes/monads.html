@@ -91,7 +91,7 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <h1 id="so-really-whats-a-functor">So really, what's a functor?</h1>
 <p>A functor (in Haskell) is simply a pair of things:</p>
 <ul>
-<li><p>A polymorphic type constructor</p></li>
+<li><p>A polymorphic type</p></li>
 <li><p>A definition for <code>fmap</code></p></li>
 </ul>
 <p>The instance has to obey two simple laws:</p>
@@ -138,7 +138,7 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <h1 id="functor-vs-applicative-revisited">Functor vs Applicative, revisited</h1>
 <p>An applicative is once again a triple of things:</p>
 <ul>
-<li><p>A polymorphic type constructor that we know to be a functor</p></li>
+<li><p>A polymorphic type that we know to be a functor</p></li>
 <li><p>A definition for <code>pure</code></p></li>
 <li><p>A definition for <code>(&lt;*&gt;)</code></p></li>
 </ul>
@@ -178,8 +178,81 @@ code.sourceCode span.er { color: red; font-weight: bold; }
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="co">{- ... -}</span></code></pre>
 <p>Shouldn't one of these hold, too?</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Functor</span> m <span class="ot">=&gt;</span> <span class="kw">Monad</span> m <span class="co">{- ... -}</span><br /><br /><span class="kw">class</span> <span class="dt">Applicative</span> m <span class="ot">=&gt;</span> <span class="kw">Monad</span> m <span class="co">{- ... -}</span></code></pre>
-<p>The answer is basically &quot;yes in principle, but for historical reasons, no&quot;.</p>
+<p>&quot;Yes&quot; in principle, but for historical reasons, &quot;no&quot;.</p>
 <p>Monads and functors were introduced to Haskell around the same time, and I'm not sure the possible relationship between them was recognized at the time.</p>
 <p>Applicative functors <a href="http://www.soi.city.ac.uk/~ross/papers/Applicative.html">arrived on the scene much later</a>. By the time a possible resolution to the tangle was identified, there was too much code &quot;in the wild&quot; to change things.</p>
+<h1 id="function-application-as-a-monad">Function application as a monad</h1>
+<p>Continuing our theme that just like functors and applicatives, monads are not limited to container types:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Monad</span> ((<span class="ot">-&gt;</span>) r) <span class="kw">where</span><br />    <span class="co">-- same as the pure method of Applicative</span><br />    <span class="fu">return</span> _ <span class="fu">=</span> \x <span class="ot">-&gt;</span> x<br /><br />    f <span class="fu">&gt;&gt;=</span> g  <span class="fu">=</span> \x <span class="ot">-&gt;</span> g (f x) x</code></pre>
+<h1 id="parsing">Parsing</h1>
+<p>Suppose we want to parse part of a string.</p>
+<p>We need to consume some - but probably not all - of the input, and return a result. Let's return the remainder of the input that we haven't consumed, so someone else can deal with it.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">parse </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (a, <span class="dt">String</span>)</code></pre>
+<h1 id="purely-functional-random-numbers">Purely functional random numbers</h1>
+<p>Let's briefly get back to some material I didn't have time to cover a few weeks ago.</p>
+<p>Haskell supplies a <code>random</code> package that we can use in a purely functional setting.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Random</span> a <span class="kw">where</span><br /><span class="ot">    random </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> g <span class="ot">-&gt;</span> (a, g)<br /><br /><span class="kw">class</span> <span class="dt">RandomGen</span> g <span class="kw">where</span><br /><span class="ot">    next   </span><span class="ot">::</span> g <span class="ot">-&gt;</span> (<span class="dt">Int</span>, g)<br /><span class="ot">    split  </span><span class="ot">::</span> g <span class="ot">-&gt;</span> (g, g)</code></pre>
+<h1 id="modifying-state">&quot;Modifying&quot; state</h1>
+<p>Notice the similarities between these types:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">random </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> g      <span class="ot">-&gt;</span> (a, g)<br /><span class="ot">parse  </span><span class="ot">::</span>                <span class="dt">String</span> <span class="ot">-&gt;</span> (a, <span class="dt">String</span>)</code></pre>
+<p>In each case, we emulate &quot;state update&quot; by returning a new state.</p>
+<h1 id="yuck">Yuck!</h1>
+<p>From that earlier lecture's unseen slides, recall that threading through all those updates is a pain:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">guess </span><span class="ot">::</span> (<span class="dt">RandomGen</span> g) <span class="ot">=&gt;</span> (<span class="dt">Double</span>,g) <span class="ot">-&gt;</span> (<span class="dt">Double</span>,g)<br />guess (_,g) <span class="fu">=</span> (z, g'')<br />    <span class="kw">where</span> z        <span class="fu">=</span> x<span class="fu">^</span><span class="dv">2</span> <span class="fu">+</span> y<span class="fu">^</span><span class="dv">2</span><br />          (x, g')  <span class="fu">=</span> random g<br />          (y, g'') <span class="fu">=</span> random g'</code></pre>
+<p>It would be really easy to reuse a piece of state by accident, and this is a very simple function!</p>
+<h1 id="a-new-look-at-state-transformation">A new look at state transformation</h1>
+<p>Here's our most general setting for those state transformation functions:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">s <span class="ot">-&gt;</span> (a,s)</code></pre>
+<p>If we pay no attention to the <code>s</code> parameter, we have one of the crucial criteria for being a <code>Functor</code>, <code>Applicative</code>, or <code>Monad</code>:</p>
+<ul>
+<li>A fully polymorphic type</li>
+</ul>
+<p>What about the rest?</p>
+<h1 id="a-little-protection">A little protection</h1>
+<p>It would actually be a bad thing if we were to declare this type to be a <code>Functor</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">s <span class="ot">-&gt;</span> (a,s)</code></pre>
+<p>Why? It would overlap with the <code>Functor</code> instance for <code>((-&gt;) a)</code>.</p>
+<p>To avoid the potential for overlapping instances, we wrap up our state transformation type in a <code>newtype</code>.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">State</span> s a <span class="fu">=</span> <span class="dt">State</span> {<br /><span class="ot">      runState </span><span class="ot">::</span> s <span class="ot">-&gt;</span> (a,s)<br />    }</code></pre>
+<h1 id="a-functor-instance">A Functor instance</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> (<span class="dt">State</span> s) <span class="kw">where</span><br />    <span class="fu">fmap</span> f (<span class="dt">State</span> action) <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \origState <span class="ot">-&gt;</span><br />      <span class="kw">let</span> (a, newState) <span class="fu">=</span> action origState<br />      <span class="kw">in</span> (f a, newState)</code></pre>
+<p>The nice thing about our state transformer is that it works over <em>all</em> states. Some examples include:</p>
+<ul>
+<li><p>The current state of a PRNG</p></li>
+<li><p>The not-yet-consumed input for a parser</p></li>
+</ul>
+<h1 id="and-a-monad-instance">And a Monad instance</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Monad</span> (<span class="dt">State</span> s) <span class="kw">where</span><br />    <span class="fu">return</span> a <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span> (a, s)<br /><br />    <span class="dt">State</span> act <span class="fu">&gt;&gt;=</span> k <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span><br />      <span class="kw">let</span> (a, s') <span class="fu">=</span> act s<br />      <span class="kw">in</span> runState (k a) s'</code></pre>
+<p>The bind operator simply passes the result of the first operation to the second.</p>
+<h1 id="manipulating-state-directly">Manipulating state directly</h1>
+<p>We can retrieve the current state by copying it into the result field of our pair.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">get </span><span class="ot">::</span> <span class="dt">State</span> s s<br />get <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span> (s, s)</code></pre>
+<p>If we want to replace the current state with a modified version, that's equally simple.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">put </span><span class="ot">::</span> s <span class="ot">-&gt;</span> <span class="dt">State</span> s ()<br />put s <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \_ <span class="ot">-&gt;</span> ((), s)</code></pre>
+<h1 id="before">Before</h1>
+<p>Recall this function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">guess </span><span class="ot">::</span> (<span class="dt">RandomGen</span> g) <span class="ot">=&gt;</span> (<span class="dt">Double</span>,g) <span class="ot">-&gt;</span> (<span class="dt">Double</span>,g)<br />guess (_,g) <span class="fu">=</span> (z, g'')<br />    <span class="kw">where</span> z        <span class="fu">=</span> x<span class="fu">^</span><span class="dv">2</span> <span class="fu">+</span> y<span class="fu">^</span><span class="dv">2</span><br />          (x, g')  <span class="fu">=</span> random g<br />          (y, g'') <span class="fu">=</span> random g'</code></pre>
+<h1 id="with-a-little-help">With a little help</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">System.Random</span><br /><span class="kw">import</span> <span class="dt">Control.Monad.State</span><br /><br /><span class="ot">modify' </span><span class="ot">::</span> <span class="dt">MonadState</span> s m <span class="ot">=&gt;</span> (s <span class="ot">-&gt;</span> (a,s)) <span class="ot">-&gt;</span> m a<br />modify' f <span class="fu">=</span> <span class="kw">do</span><br />  s <span class="ot">&lt;-</span> get<br />  <span class="kw">let</span> (a,s') <span class="fu">=</span> f s<br />  put s'<br />  <span class="fu">return</span> a</code></pre>
+<p>The <code>MonadState</code> class takes the <code>State</code>-specific methods, and makes them available for other monads to implement:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="fu">|</span> m <span class="ot">-&gt;</span> s <span class="kw">where</span><br /><span class="ot">    get </span><span class="ot">::</span> m s<br /><span class="ot">    put </span><span class="ot">::</span> s <span class="ot">-&gt;</span> m ()</code></pre>
+<h1 id="functional-dependencies">Functional dependencies</h1>
+<p>Who noticed the vertical bar and arrow?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="fu">|</span> m <span class="ot">-&gt;</span> s <span class="co">{- ... -}</span></code></pre>
+<p>This is called a <em>functional dependency</em>. Fundeps are used to make type checking of multi-parameter type classes tractable.</p>
+<p>This fundep tells the type checker (and us) that the type of the state parameter <code>s</code> can be determined from the type of the monad parameter <code>m</code>.</p>
+<p>How does this work?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">MonadState</span> s (<span class="dt">State</span> s) <span class="kw">where</span><br />    get   <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span> (s, s)<br />    put s <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \_ <span class="ot">-&gt;</span> ((), s)</code></pre>
+<p>Here, we're saying that the type <code>State s</code> is our monad, and the fundep ties its <code>s</code> parameter to the <code>s</code> parameter of the <code>MonadState</code> class.</p>
+<h1 id="a-new-guesser">A new guesser</h1>
+<p>Here's a rewrite of our earlier <code>guess</code> function to use the <code>modify'</code> function that we just wrote:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">guess </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> <span class="dt">State</span> g <span class="dt">Double</span><br />guess <span class="fu">=</span> <span class="kw">do</span><br />  a <span class="ot">&lt;-</span> modify' random<br />  b <span class="ot">&lt;-</span> modify' random<br />  <span class="fu">return</span> (a<span class="fu">*</span>a <span class="fu">+</span> b<span class="fu">*</span>b)</code></pre>
+<p>Notice that we've managed to completely hide the state of the PRNG!</p>
+<h1 id="why-functional-dependencies">Why functional dependencies?</h1>
+<p>Suppose we were to write a simpler multi-parameter type class, without the fundep:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="co">{- ... -}</span></code></pre>
+<p>And suppose we were to try to typecheck these type signatures:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modify' </span><span class="ot">::</span> <span class="dt">MonadState</span> s m <span class="ot">=&gt;</span> (s <span class="ot">-&gt;</span> (a,s)) <span class="ot">-&gt;</span> m a<br /><br /><span class="ot">guess </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> <span class="dt">State</span> g <span class="dt">Double</span></code></pre>
+<p>Without the fundep, the compiler would choke on these, because it has no information to tell it that the <code>g</code> parameter to <code>State</code> is related to the <code>s</code> parameter to <code>MonadState</code>.</p>
 </body>
 </html>
