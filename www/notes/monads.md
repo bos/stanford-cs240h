@@ -704,7 +704,7 @@ the fundep:
 class (Monad m) => MonadState s m {- ... -}
 ~~~~
 
-And suppose we were to try to typecheck these type signatures:
+And if we were to try to typecheck these type signatures:
 
 ~~~~ {.haskell}
 modify' :: MonadState s m => (s -> (a,s)) -> m a
@@ -713,5 +713,116 @@ guess :: RandomGen g => State g Double
 ~~~~
 
 Without the fundep, the compiler would choke on these, because it has
-no information to tell it that the `g` parameter to `State` is related
-to the `s` parameter to `MonadState`.
+no information to assure it that the `g` parameter to `State` is
+related to the `s` parameter to `MonadState`.
+
+
+# Using the state monad
+
+Suppose we're running a social network, and we want to know who is
+connected to whom.
+
+To build a matrix of connections, we need to represent user addresses
+as integer positions on each axis.
+
+~~~~ {.haskell}
+import Control.Applicative
+import Control.Monad.State
+import qualified Data.Map as Map
+
+type Address = String
+
+data Number = N !(Map.Map Address Int) !Int
+              deriving (Show)
+~~~~
+
+The `Number` type is the state we'll use (and possibly modify) while
+numbering.
+
+
+# Getting started
+
+This is the top-level address-numbering function.
+
+~~~~ {.haskell}
+renumber :: [(Address,Address)] -> [(Int,Int)]
+renumber xs = evalState (mapM pair xs) (N Map.empty 0)
+  where pair (x,y) = (,) <$> number x <*> number y
+~~~~
+
+This depends on a few functions we haven't seen before.
+
+Monadic mapping:
+
+~~~~ {.haskell}
+mapM :: Monad m => (a -> m b) -> [a] -> m [b]
+~~~~
+
+The second of the three "run me a state monad" functions:
+
+~~~~ {.haskell}
+runState  :: State s a -> s -> (a, s)
+evalState :: State s a -> s ->  a
+execState :: State s a -> s ->     s
+~~~~
+
+The super-useful `<$>` operator is nothing but shorthand for `fmap`.
+
+And finally, a use in the wild for the `<*>` operator!
+
+
+# What about the number function?
+
+This is where the real work happens.
+
+If an address is already stored in the numbering map, our function
+returns the number associated with the address.
+
+~~~~ {.haskell}
+number :: Address -> State Number Int
+number addr = do
+  N numMap highest <- get
+  case Map.lookup addr numMap of
+    Just j  -> return j
+    Nothing -> do let highest' = highest + 1
+                      newMap = Map.insert addr highest numMap
+                  put $! N newMap highest'
+                  return highest'
+~~~~
+
+Otherwise, we increment the highest number seen, associate the
+previous number with the address, store the modified state, and return
+the number.
+
+
+# The Reader monad
+
+Reader is another widely used monad, and in fact we've already seen a
+form of it:
+
+~~~~ {.haskell}
+((->) a)
+~~~~
+
+This is best understood in comparison to the state monad:
+
+* In `State`, every function got passed a piece of state that it could
+  transform.  This lets us achieve shared mutable state.
+
+* In `Reader`, every function is passed a piece of state
+  that it is not allowed to change.  This lets us achieve shared
+  *read-only* state.
+  
+As an example of a piece of immutable data that we might want to
+thread around all over the place, think "application configuration".
+
+The reader monad lets us hide the plumbing of passing that information
+around.
+
+
+# Reader vs reader
+
+The `Reader` type is defined in `Control.Monad.Reader`.
+
+The *only* difference between it and `((->) a)` is that `Reader` is a
+`newtype` wrapper around `((->) a)`.

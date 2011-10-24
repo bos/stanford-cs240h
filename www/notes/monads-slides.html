@@ -418,9 +418,62 @@ var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator
 <h1>Why functional dependencies?</h1>
 <p>Suppose we were to write a simpler multi-parameter type class, without the fundep:</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="co">{- ... -}</span></code></pre>
-<p>And suppose we were to try to typecheck these type signatures:</p>
+<p>And if we were to try to typecheck these type signatures:</p>
 <pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modify' </span><span class="ot">::</span> <span class="dt">MonadState</span> s m <span class="ot">=&gt;</span> (s <span class="ot">-&gt;</span> (a,s)) <span class="ot">-&gt;</span> m a<br /><br /><span class="ot">guess </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> <span class="dt">State</span> g <span class="dt">Double</span></code></pre>
-<p>Without the fundep, the compiler would choke on these, because it has no information to tell it that the <code>g</code> parameter to <code>State</code> is related to the <code>s</code> parameter to <code>MonadState</code>.</p>
+<p>Without the fundep, the compiler would choke on these, because it has no information to assure it that the <code>g</code> parameter to <code>State</code> is related to the <code>s</code> parameter to <code>MonadState</code>.</p>
+</div>
+
+<div class="slide">
+
+<h1>Using the state monad</h1>
+<p>Suppose we're running a social network, and we want to know who is connected to whom.</p>
+<p>To build a matrix of connections, we need to represent user addresses as integer positions on each axis.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Control.Applicative</span><br /><span class="kw">import</span> <span class="dt">Control.Monad.State</span><br /><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map</span> <span class="kw">as</span> <span class="dt">Map</span><br /><br /><span class="kw">type</span> <span class="dt">Address</span> <span class="fu">=</span> <span class="dt">String</span><br /><br /><span class="kw">data</span> <span class="dt">Number</span> <span class="fu">=</span> <span class="dt">N</span> <span class="fu">!</span>(<span class="dt">Map.Map</span> <span class="dt">Address</span> <span class="dt">Int</span>) <span class="fu">!</span><span class="dt">Int</span><br />              <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>The <code>Number</code> type is the state we'll use (and possibly modify) while numbering.</p>
+</div>
+
+<div class="slide">
+
+<h1>Getting started</h1>
+<p>This is the top-level address-numbering function.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">renumber </span><span class="ot">::</span> [(<span class="dt">Address</span>,<span class="dt">Address</span>)] <span class="ot">-&gt;</span> [(<span class="dt">Int</span>,<span class="dt">Int</span>)]<br />renumber xs <span class="fu">=</span> evalState (<span class="fu">mapM</span> pair xs) (<span class="dt">N</span> Map.empty <span class="dv">0</span>)<br />  <span class="kw">where</span> pair (x,y) <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> number x <span class="fu">&lt;*&gt;</span> number y</code></pre>
+<p>This depends on a few functions we haven't seen before.</p>
+<p>Monadic mapping:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">mapM</span><span class="ot"> </span><span class="ot">::</span> <span class="kw">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> m [b]</code></pre>
+<p>The second of the three &quot;run me a state monad&quot; functions:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">runState  </span><span class="ot">::</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (a, s)<br /><span class="ot">evalState </span><span class="ot">::</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span>  a<br /><span class="ot">execState </span><span class="ot">::</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span>     s</code></pre>
+<p>The super-useful <code>&lt;$&gt;</code> operator is nothing but shorthand for <code>fmap</code>.</p>
+<p>And finally, a use in the wild for the <code>&lt;*&gt;</code> operator!</p>
+</div>
+
+<div class="slide">
+
+<h1>What about the number function?</h1>
+<p>This is where the real work happens.</p>
+<p>If an address is already stored in the numbering map, our function returns the number associated with the address.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">number </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="dt">Number</span> <span class="dt">Int</span><br />number addr <span class="fu">=</span> <span class="kw">do</span><br />  <span class="dt">N</span> numMap highest <span class="ot">&lt;-</span> get<br />  <span class="kw">case</span> Map.lookup addr numMap <span class="kw">of</span><br />    <span class="kw">Just</span> j  <span class="ot">-&gt;</span> <span class="fu">return</span> j<br />    <span class="kw">Nothing</span> <span class="ot">-&gt;</span> <span class="kw">do</span> <span class="kw">let</span> highest' <span class="fu">=</span> highest <span class="fu">+</span> <span class="dv">1</span><br />                      newMap <span class="fu">=</span> Map.insert addr highest numMap<br />                  put <span class="fu">$!</span> <span class="dt">N</span> newMap highest'<br />                  <span class="fu">return</span> highest'</code></pre>
+<p>Otherwise, we increment the highest number seen, associate the previous number with the address, store the modified state, and return the number.</p>
+</div>
+
+<div class="slide">
+
+<h1>The Reader monad</h1>
+<p>Reader is another widely used monad, and in fact we've already seen a form of it:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">((<span class="ot">-&gt;</span>) a)</code></pre>
+<p>This is best understood in comparison to the state monad:</p>
+<ul>
+<li><p>In <code>State</code>, every function got passed a piece of state that it could transform. This lets us achieve shared mutable state.</p></li>
+<li><p>In <code>Reader</code>, every function is passed a piece of state that it is not allowed to change. This lets us achieve shared <em>read-only</em> state.</p></li>
+</ul>
+<p>As an example of a piece of immutable data that we might want to thread around all over the place, think &quot;application configuration&quot;.</p>
+<p>The reader monad lets us hide the plumbing of passing that information around.</p>
+</div>
+
+<div class="slide">
+
+<h1>Reader vs reader</h1>
+<p>The <code>Reader</code> type is defined in <code>Control.Monad.Reader</code>.</p>
+<p>The <em>only</em> difference between it and <code>((-&gt;) a)</code> is that <code>Reader</code> is a <code>newtype</code> wrapper around <code>((-&gt;) a)</code>.</p>
 </div>
 </body>
 </html>
