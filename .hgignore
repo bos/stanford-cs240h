@@ -1,4 +1,5 @@
 \#.*
+\.(?:orig)$
 ~$
 syntax: glob
 .\#*

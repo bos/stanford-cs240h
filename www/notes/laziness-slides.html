@@ -1,0 +1,2609 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+ "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"> 
+<head>
+  <title>Phantoms and mutants</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+pre.sourceCode span.kw { color: #007020; font-weight: bold; } 
+pre.sourceCode span.dt { color: #902000; }
+pre.sourceCode span.dv { color: #40a070; }
+pre.sourceCode span.bn { color: #40a070; }
+pre.sourceCode span.fl { color: #40a070; }
+pre.sourceCode span.ch { color: #4070a0; }
+pre.sourceCode span.st { color: #4070a0; }
+pre.sourceCode span.co { color: #60a0b0; font-style: italic; }
+pre.sourceCode span.ot { color: #007020; }
+pre.sourceCode span.al { color: red; font-weight: bold; }
+pre.sourceCode span.fu { color: #06287e; }
+pre.sourceCode span.re { }
+pre.sourceCode span.er { color: red; font-weight: bold; }
+  </style>
+  <style type="text/css">
+body{margin:0;padding:0;width:100%;height:100%;color:black;background-color:white;font-family:"Gill Sans MT","Gill Sans",GillSans,sans-serif;font-size:14pt;}.hidden{display:none;visibility:hidden;}div.toolbar{position:fixed;z-index:200;top:auto;bottom:0;left:0;right:0;height:1.2em;text-align:right;padding-left:1em;padding-right:1em;font-size:60%;color:red;background:#f0f0f0;}div.background{display:none;}div.handout{margin-left:20px;margin-right:20px;}div.slide.titlepage{text-align:center;}div.slide.titlepage.h1{padding-top:40%;}div.slide{z-index:20;margin:0;padding-top:0;padding-bottom:0;padding-left:20px;padding-right:20px;border-width:0;clear:both;top:0;bottom:0;left:0;right:0;line-height:120%;background-color:transparent;}div.slide+div[class].slide{page-break-before:always;}div.slide h1{padding-left:0;padding-right:20pt;padding-top:4pt;padding-bottom:4pt;margin-top:0;margin-left:0;margin-right:60pt;margin-bottom:.5em;display:block;font-size:160%;line-height:1.2em;background:transparent;}div.toc{position:absolute;top:auto;bottom:4em;left:4em;right:auto;width:60%;max-width:30em;height:30em;border:solid thin black;padding:1em;background:#f0f0f0;color:black;z-index:300;overflow:auto;display:block;visibility:visible;}div.toc-heading{width:100%;border-bottom:solid 1px #b4b4b4;margin-bottom:1em;text-align:center;}pre{font-size:80%;font-weight:bold;line-height:120%;padding-top:.2em;padding-bottom:.2em;padding-left:1em;padding-right:1em;border-style:solid;border-left-width:1em;border-top-width:thin;border-right-width:thin;border-bottom-width:thin;border-color:#95ABD0;color:#00428C;background-color:#E4E5E7;}li pre{margin-left:0;}@media print{div.slide{display:block;visibility:visible;position:relative;border-top-style:solid;border-top-width:thin;border-top-color:black;}div.slide pre{font-size:60%;padding-left:.5em;}div.handout{display:block;visibility:visible;}}blockquote{font-style:italic;}img{background-color:transparent;}p.copyright{font-size:smaller;}.center{text-align:center;}.footnote{font-size:smaller;margin-left:2em;}a img{border-width:0;border-style:none;}a:visited{color:navy;}a:link{color:navy;}a:hover{color:red;text-decoration:underline;}a:active{color:red;text-decoration:underline;}a{text-decoration:none;}.navbar a:link{color:white;}.navbar a:visited{color:yellow;}.navbar a:active{color:red;}.navbar a:hover{color:red;}ul{list-style-type:square;}ul ul{list-style-type:disc;}ul ul ul{list-style-type:circle;}ul ul ul ul{list-style-type:disc;}li{margin-left:.5em;margin-top:.5em;}li li{font-size:85%;font-style:italic;}li li li{font-size:85%;font-style:normal;}div dt{margin-left:0;margin-top:1em;margin-bottom:.5em;font-weight:bold;}div dd{margin-left:2em;margin-bottom:.5em;}p,pre,ul,ol,blockquote,h2,h3,h4,h5,h6,dl,table{margin-left:1em;margin-right:1em;}p.subhead{font-weight:bold;margin-top:2em;}.smaller{font-size:smaller;}.bigger{font-size:130%;}td,th{padding:.2em;}ul{margin:.5em 1.5em .5em 1.5em;padding:0;}ol{margin:.5em 1.5em .5em 1.5em;padding:0;}ul{list-style-type:square;}ul ul{list-style-type:disc;}ul ul ul{list-style-type:circle;}ul ul ul ul{list-style-type:disc;}ul li{list-style:square;margin:.1em 0 .6em 0;padding:0;line-height:140%;}ol li{margin:.1em 0 .6em 1.5em;padding:0;line-height:140%;list-style-type:decimal;}li ul li{font-size:85%;font-style:italic;list-style-type:disc;background:transparent;padding:0;}li li ul li{font-size:85%;font-style:normal;list-style-type:circle;background:transparent;padding:0;}li li li ul li{list-style-type:disc;background:transparent;padding:0;}li ol li{list-style-type:decimal;}li li ol li{list-style-type:decimal;}ol.outline li:hover{cursor:pointer;}ol.outline li.nofold:hover{cursor:default;}ul.outline li:hover{cursor:pointer;}ul.outline li.nofold:hover{cursor:default;}ol.outline{list-style:decimal;}ol.outline ol{list-style-type:lower-alpha;}ol.outline li.nofold{padding:0 0 0 20px;background:transparent url(nofold-dim.gif) no-repeat 0 .5em;}ol.outline li.unfolded{padding:0 0 0 20px;background:transparent url(fold-dim.gif) no-repeat 0 .5em;}ol.outline li.folded{padding:0 0 0 20px;background:transparent url(unfold-dim.gif) no-repeat 0 .5em;}ol.outline li.unfolded:hover{padding:0 0 0 20px;background:transparent url(fold.gif) no-repeat 0 .5em;}ol.outline li.folded:hover{padding:0 0 0 20px;background:transparent url(unfold.gif) no-repeat 0 .5em;}ul.outline li.nofold{padding:0 0 0 20px;background:transparent url(nofold-dim.gif) no-repeat 0 .5em;}ul.outline li.unfolded{padding:0 0 0 20px;background:transparent url(fold-dim.gif) no-repeat 0 .5em;}ul.outline li.folded{padding:0 0 0 20px;background:transparent url(unfold-dim.gif) no-repeat 0 .5em;}ul.outline li.unfolded:hover{padding:0 0 0 20px;background:transparent url(fold.gif) no-repeat 0 .5em;}ul.outline li.folded:hover{padding:0 0 0 20px;background:transparent url(unfold.gif) no-repeat 0 .5em;}a.titleslide{font-weight:bold;font-style:italic;}
+  </style>
+  <script type="text/javascript" charset="utf-8">
+var w3c_slidy={ns_pos:(typeof window.pageYOffset!="undefined"),khtml:((navigator.userAgent).indexOf("KHTML")>=0?true:false),opera:((navigator.userAgent).indexOf("Opera")>=0?true:false),ipad:((navigator.userAgent).indexOf("iPad")>=0?true:false),iphone:((navigator.userAgent).indexOf("iPhone")>=0?true:false),ie:(typeof document.all!="undefined"&&!this.opera),ie6:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 6")!=-1),ie7:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 7")!=-1),ie8:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 8")!=-1),ie9:(!this.ns_pos&&navigator.userAgent.indexOf("MSIE 9")!=-1),keyboardless:(this.ipad||this.iphone),is_xhtml:/xml/.test(document.contentType),slide_number:0,slide_number_element:null,slides:[],notes:[],backgrounds:[],toolbar:null,title:null,last_shown:null,eos:null,toc:null,outline:null,selected_text_len:0,view_all:0,want_toolbar:true,mouse_click_enabled:true,scroll_hack:0,disable_slide_click:false,lang:"en",help_anchor:null,help_page:"http://www.w3.org/Talks/Tools/Slidy2/help/help.html",help_text:"Navigate with mouse click, space bar, Cursor Left/Right, or Pg Up and Pg Dn. Use S and B to change font size.",size_index:0,size_adjustment:0,sizes:new Array("10pt","12pt","14pt","16pt","18pt","20pt","22pt","24pt","26pt","28pt","30pt","32pt"),last_width:0,last_height:0,objects:[],set_up:function(){var a=function(){w3c_slidy.init()};if(typeof window.addEventListener!="undefined"){window.addEventListener("load",a,false)}else{window.attachEvent("onload",a)}},hide_slides:function(){if(document.body&&!w3c_slidy.initialized){document.body.style.visibility="hidden"}else{setTimeout(w3c_slidy.hide_slides,50)}},ie_hack:function(){window.resizeBy(0,-1);window.resizeBy(0,1)},init:function(){document.body.style.visibility="visible";this.init_localization();this.add_toolbar();this.wrap_implicit_slides();this.collect_slides();this.collect_notes();this.collect_backgrounds();this.objects=document.body.getElementsByTagName("object");this.patch_anchors();this.slide_number=this.find_slide_number(location.href);window.offscreenbuffering=true;this.size_adjustment=this.find_size_adjust();this.time_left=this.find_duration();this.hide_image_toolbar();this.init_outliner();this.title=document.title;this.is_xhtml=(document.body.tagName=="BODY"?false:true);if(this.slides.length>0){var a=this.slides[this.slide_number];if(this.slide_number>0){this.set_visibility_all_incremental("visible");this.last_shown=this.previous_incremental_item(null);this.set_eos_status(true)}else{this.last_shown=null;this.set_visibility_all_incremental("hidden");this.set_eos_status(!this.next_incremental_item(this.last_shown))}this.set_location();this.add_class(this.slides[0],"first-slide");w3c_slidy.show_slide(a)}this.toc=this.table_of_contents();this.add_initial_prompt();if(!this.keyboardless){this.add_listener(document.body,"click",this.mouse_button_click)}this.add_listener(document,"keydown",this.key_down);this.add_listener(document,"keypress",this.key_press);this.add_listener(window,"resize",this.resized);this.add_listener(window,"scroll",this.scrolled);this.add_listener(window,"unload",this.unloaded);this.single_slide_view();this.resized();if(this.ie7){setTimeout(w3c_slidy.ie_hack,100)}this.show_toolbar();setInterval(function(){w3c_slidy.check_location()},200);w3c_slidy.initialized=true},table_of_contents:function(){var c=this.create_element("div");this.add_class(c,"slidy_toc hidden");var k=this.create_element("div");this.add_class(k,"toc-heading");k.innerHTML=this.localize("Table of Contents");c.appendChild(k);var f=null;for(var d=0;d<this.slides.length;++d){var g=this.has_class(this.slides[d],"title");var e=document.createTextNode((d+1)+". ");c.appendChild(e);var h=this.create_element("a");h.setAttribute("href","#("+(d+1)+")");if(g){this.add_class(h,"titleslide")}var b=document.createTextNode(this.slide_name(d));h.appendChild(b);h.onclick=w3c_slidy.toc_click;h.onkeydown=w3c_slidy.toc_key_down;h.previous=f;if(f){f.next=h}c.appendChild(h);if(d==0){c.first=h}if(d<this.slides.length-1){var j=this.create_element("br");c.appendChild(j)}f=h}c.focus=function(){if(this.first){this.first.focus()}};c.onmouseup=w3c_slidy.mouse_button_up;c.onclick=function(a){a||(a=window.event);if(w3c_slidy.selected_text_len<=0){w3c_slidy.hide_table_of_contents(true)}w3c_slidy.stop_propagation(a);if(a.cancel!=undefined){a.cancel=true}if(a.returnValue!=undefined){a.returnValue=false}return false};document.body.insertBefore(c,document.body.firstChild);return c},is_shown_toc:function(){return !w3c_slidy.has_class(w3c_slidy.toc,"hidden")},show_table_of_contents:function(){w3c_slidy.remove_class(w3c_slidy.toc,"hidden");var a=w3c_slidy.toc;a.focus();if(w3c_slidy.ie7&&w3c_slidy.slide_number==0){setTimeout(w3c_slidy.ie_hack,100)}},hide_table_of_contents:function(a){w3c_slidy.add_class(w3c_slidy.toc,"hidden");if(a&&!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}},toggle_table_of_contents:function(){if(w3c_slidy.is_shown_toc()){w3c_slidy.hide_table_of_contents(true)}else{w3c_slidy.show_table_of_contents()}},toc_click:function(d){if(!d){d=window.event}var c=w3c_slidy.get_target(d);if(c&&c.nodeType==1){var b=c.getAttribute("href");if(b){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.find_slide_number(b);a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_location();w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));w3c_slidy.show_slide(a);try{if(!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}}catch(d){}}}w3c_slidy.hide_table_of_contents(true);if(w3c_slidy.ie7){w3c_slidy.ie_hack()}w3c_slidy.stop_propagation(d);return w3c_slidy.cancel(d)},toc_key_down:function(d){var b;if(!d){var d=window.event}if(window.event){b=window.event.keyCode}else{if(d.which){b=d.which}else{return true}}if(!b){return true}if(d.ctrlKey||d.altKey){return true}if(b==13){var c=this.getAttribute("href");if(c){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.find_slide_number(c);a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_location();w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));w3c_slidy.show_slide(a);try{if(!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}}catch(f){}}w3c_slidy.hide_table_of_contents(true);if(self.ie7){w3c_slidy.ie_hack()}return w3c_slidy.cancel(d)}if(b==40&&this.next){this.next.focus();return w3c_slidy.cancel(d)}if(b==38&&this.previous){this.previous.focus();return w3c_slidy.cancel(d)}return true},before_print:function(){this.show_all_slides();this.hide_toolbar();alert("before print")},after_print:function(){if(!this.view_all){this.single_slide_view();this.show_toolbar()}alert("after print")},print_slides:function(){this.before_print();window.print();this.after_print()},toggle_view:function(){if(this.view_all){this.single_slide_view();this.show_toolbar();this.view_all=0}else{this.show_all_slides();this.hide_toolbar();this.view_all=1}},show_all_slides:function(){this.remove_class(document.body,"single_slide");this.set_visibility_all_incremental("visible")},single_slide_view:function(){this.add_class(document.body,"single_slide");this.set_visibility_all_incremental("visible");this.last_shown=this.previous_incremental_item(null)},hide_image_toolbar:function(){if(!this.ns_pos){var a=document.getElementsByTagName("IMG");for(var b=0;b<a.length;++b){a[b].setAttribute("galleryimg","no")}}},unloaded:function(a){},is_KHTML:function(){var a=navigator.userAgent;return(a.indexOf("KHTML")>=0?true:false)},slide_name:function(c){var b=null;var a=this.slides[c];var d=this.find_heading(a);if(d){b=this.extract_text(d)}if(!b){b=this.title+"("+(c+1)+")"}b.replace(/\&/g,"&amp;");b.replace(/\</g,"&lt;");b.replace(/\>/g,"&gt;");return b},find_heading:function(a){if(!a||a.nodeType!=1){return null}if(a.nodeName=="H1"||a.nodeName=="h1"){return a}var b=a.firstChild;while(b){a=this.find_heading(b);if(a){return a}b=b.nextSibling}return null},extract_text:function(a){if(!a){return""}if(a.nodeType==3){return a.nodeValue}if(a.nodeType==1){a=a.firstChild;var b="";while(a){b=b+this.extract_text(a);a=a.nextSibling}return b}return""},find_copyright:function(){var a,c;var d=document.getElementsByTagName("meta");for(var b=0;b<d.length;++b){a=d[b].getAttribute("name");c=d[b].getAttribute("content");if(a=="copyright"){return c}}return null},find_size_adjust:function(){var a,c,e;var d=document.getElementsByTagName("meta");for(var b=0;b<d.length;++b){a=d[b].getAttribute("name");c=d[b].getAttribute("content");if(a=="font-size-adjustment"){return 1*c}}return 1},find_duration:function(){var a,c,e;var d=document.getElementsByTagName("meta");for(var b=0;b<d.length;++b){a=d[b].getAttribute("name");c=d[b].getAttribute("content");if(a=="duration"){return 60000*c}}return null},replace_by_non_breaking_space:function(b){for(var a=0;a<b.length;++a){b[a]=160}},init_outliner:function(){var a=document.getElementsByTagName("li");for(var b=0;b<a.length;++b){var c=a[b];if(!this.has_class(c.parentNode,"outline")){continue}c.onclick=this.outline_click;if(this.foldable(c)){c.foldable=true;c.onfocus=function(){w3c_slidy.outline=this};c.onblur=function(){w3c_slidy.outline=null};if(!c.getAttribute("tabindex")){c.setAttribute("tabindex","0")}if(this.has_class(c,"expand")){this.unfold(c)}else{this.fold(c)}}else{this.add_class(c,"nofold");c.visible=true;c.foldable=false}}},foldable:function(b){if(!b||b.nodeType!=1){return false}var a=b.firstChild;while(a){if(a.nodeType==1&&this.is_block(a)){return true}a=a.nextSibling}return false},fold:function(b){if(b){this.remove_class(b,"unfolded");this.add_class(b,"folded")}var a=b?b.firstChild:null;while(a){if(a.nodeType==1&&this.is_block(a)){w3c_slidy.add_class(a,"hidden")}a=a.nextSibling}b.visible=false},unfold:function(b){if(b){this.add_class(b,"unfolded");this.remove_class(b,"folded")}var a=b?b.firstChild:null;while(a){if(a.nodeType==1&&this.is_block(a)){w3c_slidy.remove_class(a,"hidden")}a=a.nextSibling}b.visible=true},outline_click:function(c){if(!c){c=window.event}var a=false;var b=w3c_slidy.get_target(c);while(b&&b.visible==undefined){b=b.parentNode}if(!b){return true}if(c.which){a=(c.which==3)}else{if(c.button){a=(c.button==2)}}if(!a&&b.visible!=undefined){if(b.foldable){if(b.visible){w3c_slidy.fold(b)}else{w3c_slidy.unfold(b)}}w3c_slidy.stop_propagation(c);c.cancel=true;c.returnValue=false}return false},add_initial_prompt:function(){var a=this.create_element("div");a.setAttribute("class","initial_prompt");var b=this.create_element("p");a.appendChild(b);b.setAttribute("class","help");if(this.keyboardless){b.innerHTML="Tap footer to move to next slide"}else{b.innerHTML="Space or Right Arrow to move to next slide, click help below for more details"}this.add_listener(a,"click",function(c){document.body.removeChild(a);w3c_slidy.stop_propagation(c);if(c.cancel!=undefined){c.cancel=true}if(c.returnValue!=undefined){c.returnValue=false}return false});document.body.appendChild(a);this.initial_prompt=a;setTimeout(function(){document.body.removeChild(a)},5000)},add_toolbar:function(){var a,i;this.toolbar=this.create_element("div");this.toolbar.setAttribute("class","toolbar");if(this.ns_pos||!this.ie6){var k=this.create_element("div");k.setAttribute("style","float: right; text-align: right");a=this.create_element("span");a.innerHTML=this.localize("slide")+" n/m";k.appendChild(a);this.toolbar.appendChild(k);var e=this.create_element("div");e.setAttribute("style","text-align: left");this.eos=this.create_element("span");this.eos.innerHTML="* ";e.appendChild(this.eos);var g=this.create_element("a");g.setAttribute("href",this.help_page);g.setAttribute("title",this.localize(this.help_text));g.innerHTML=this.localize("help?");e.appendChild(g);this.help_anchor=g;var d=document.createTextNode(" ");e.appendChild(d);var f=this.create_element("a");f.setAttribute("href","javascript:w3c_slidy.toggle_table_of_contents()");f.setAttribute("title",this.localize("table of contents"));f.innerHTML=this.localize("contents?");e.appendChild(f);var b=document.createTextNode(" ");e.appendChild(b);var h=this.find_copyright();if(h){var j=this.create_element("span");j.className="copyright";j.innerHTML=h;e.appendChild(j)}this.toolbar.setAttribute("tabindex","0");this.toolbar.appendChild(e)}else{this.toolbar.style.position=(this.ie7?"fixed":"absolute");this.toolbar.style.zIndex="200";this.toolbar.style.width="99.9%";this.toolbar.style.height="1.2em";this.toolbar.style.top="auto";this.toolbar.style.bottom="0";this.toolbar.style.left="0";this.toolbar.style.right="0";this.toolbar.style.textAlign="left";this.toolbar.style.fontSize="60%";this.toolbar.style.color="red";this.toolbar.borderWidth=0;this.toolbar.className="toolbar";this.toolbar.style.background="rgb(240,240,240)";var c=this.create_element("span");c.innerHTML="&nbsp;&nbsp;*&nbsp;";this.toolbar.appendChild(c);this.eos=c;var g=this.create_element("a");g.setAttribute("href",this.help_page);g.setAttribute("title",this.localize(this.help_text));g.innerHTML=this.localize("help?");this.toolbar.appendChild(g);this.help_anchor=g;var d=document.createTextNode(" ");this.toolbar.appendChild(d);var f=this.create_element("a");f.setAttribute("href","javascript:toggleTableOfContents()");f.setAttribute("title",this.localize("table of contents".localize));f.innerHTML=this.localize("contents?");this.toolbar.appendChild(f);var b=document.createTextNode(" ");this.toolbar.appendChild(b);var h=this.find_copyright();if(h){var j=this.create_element("span");j.innerHTML=h;j.style.color="black";j.style.marginLeft="0.5em";this.toolbar.appendChild(j)}a=this.create_element("div");a.style.position="absolute";a.style.width="auto";a.style.height="1.2em";a.style.top="auto";a.style.bottom=0;a.style.right="0";a.style.textAlign="right";a.style.color="red";a.style.background="rgb(240,240,240)";a.innerHTML=this.localize("slide")+" n/m";this.toolbar.appendChild(a)}this.toolbar.onclick=function(m){if(!m){m=window.event}var l=m.target;if(!l&&m.srcElement){l=m.srcElement}if(l&&l.nodeType==3){l=l.parentNode}w3c_slidy.stop_propagation(m);if(l&&l.nodeName.toLowerCase()!="a"){w3c_slidy.mouse_button_click(m)}};this.slide_number_element=a;this.set_eos_status(false);document.body.appendChild(this.toolbar)},wrap_implicit_slides:function(){var a,d,c,b,f;var e=document.getElementsByTagName("h1");if(!e){return}for(a=0;a<e.length;++a){d=e[a];if(d.parentNode!=document.body){continue}c=d.nextSibling;f=document.createElement("div");this.add_class(f,"slide");document.body.replaceChild(f,d);f.appendChild(d);while(c){if(c.nodeType==1&&(c.nodeName=="H1"||c.nodeName=="h1"||c.nodeName=="DIV"||c.nodeName=="div")){break}b=c.nextSibling;c=document.body.removeChild(c);f.appendChild(c);c=b}}},collect_slides:function(){var e=new Array();var d=document.body.getElementsByTagName("div");for(var c=0;c<d.length;++c){div=d.item(c);if(this.has_class(div,"slide")){e[e.length]=div;this.add_class(div,"hidden");var b=document.createElement("br");div.appendChild(b);var a=document.createElement("br");div.appendChild(a)}else{if(this.has_class(div,"background")){div.style.display="block"}}}this.slides=e},collect_notes:function(){var b=new Array();var c=document.body.getElementsByTagName("div");for(var a=0;a<c.length;++a){div=c.item(a);if(this.has_class(div,"handout")){b[b.length]=div;this.add_class(div,"hidden")}}this.notes=b},collect_backgrounds:function(){var c=new Array();var b=document.body.getElementsByTagName("div");for(var a=0;a<b.length;++a){div=b.item(a);if(this.has_class(div,"background")){c[c.length]=div;this.add_class(div,"hidden")}}this.backgrounds=c},patch_anchors:function(){var a=w3c_slidy;var c=function(g){if(a.page_address(this.href)==a.page_address(location.href)){var f=a.find_slide_number(this.href);if(f!=a.slide_number){var e=a.slides[a.slide_number];a.hide_slide(e);a.slide_number=f;e=a.slides[a.slide_number];a.show_slide(e);a.set_location()}}else{w3c_slidy.stop_propagation(g)}this.blur();a.disable_slide_click=true};var d=document.body.getElementsByTagName("a");for(var b=0;b<d.length;++b){if(window.addEventListener){d[b].addEventListener("click",c,false)}else{d[b].attachEvent("onclick",c)}}},show_slide_number:function(){var a=w3c_slidy.get_timer();w3c_slidy.slide_number_element.innerHTML=a+w3c_slidy.localize("slide")+" "+(w3c_slidy.slide_number+1)+"/"+w3c_slidy.slides.length},check_location:function(){var b=location.hash;if(w3c_slidy.slide_number>0&&(b==""||b=="#")){w3c_slidy.goto_slide(0)}else{if(b.length>2&&b!="#("+(w3c_slidy.slide_number+1)+")"){var a=parseInt(location.hash.substr(2));if(!isNaN(a)){w3c_slidy.goto_slide(a-1)}}}if(w3c_slidy.time_left&&w3c_slidy.slide_number>0){w3c_slidy.show_slide_number();if(w3c_slidy.time_left>0){w3c_slidy.time_left-=200}}},get_timer:function(){var c="";if(w3c_slidy.time_left){var b,a;a=Math.floor(w3c_slidy.time_left/1000);b=Math.floor(a/60);a=a%60;c=(b?b+"m":"")+a+"s "}return c},set_location:function(){var a=w3c_slidy.page_address(location.href);var b="#("+(w3c_slidy.slide_number+1)+")";if(w3c_slidy.slide_number>=0){a=a+b}if(w3c_slidy.ie&&(w3c_slidy.ie6||w3c_slidy.ie7)){w3c_slidy.push_hash(b)}if(a!=location.href){location.href=a}if(this.khtml){b="("+(w3c_slidy.slide_number+1)+")"}if(!this.ie&&location.hash!=b&&location.hash!=""){location.hash=b}document.title=w3c_slidy.title+" ("+(w3c_slidy.slide_number+1)+")";w3c_slidy.show_slide_number()},page_address:function(b){var a=b.indexOf("#");if(a<0){a=b.indexOf("%23")}if(a<0){return b}return b.substr(0,a)},on_frame_loaded:function(b){location.hash=b;var a=w3c_slidy.page_address(location.href);location.href=a+b},push_hash:function(b){if(b==""){b="#(1)"}window.location.hash=b;var a=document.getElementById("historyFrame").contentWindow.document;a.open("javascript:'<html></html>'");a.write('<html><head><script type="text/javascript">window.parent.w3c_slidy.on_frame_loaded(\''+(b)+"');\74/script></head><body>hello mum</body></html>");a.close()},find_slide_number:function(e){var c=e.indexOf("#");if(c<0){return 0}var b=unescape(e.substr(c+1));var f=document.getElementById(b);if(!f){var d=/\((\d)+\)/;if(b.match(d)){var a=parseInt(b.substring(1,b.length-1));if(a>this.slides.length){a=1}if(--a<0){a=0}return a}d=/\[(\d)+\]/;if(b.match(d)){var a=parseInt(b.substring(1,b.length-1));if(a>this.slides.length){a=1}if(--a<0){a=0}return a}return 0}while(true){if(f.nodeName.toLowerCase()=="div"&&this.has_class(f,"slide")){break}f=f.parentNode;if(!f){return 0}}for(c=0;c<slides.length;++c){if(slides[c]==f){return c}}return 0},previous_slide:function(b){if(!w3c_slidy.view_all){var a;if((b||w3c_slidy.slide_number==0)&&w3c_slidy.last_shown!=null){w3c_slidy.last_shown=w3c_slidy.hide_previous_item(w3c_slidy.last_shown);w3c_slidy.set_eos_status(false)}else{if(w3c_slidy.slide_number>0){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.slide_number-1;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.set_visibility_all_incremental("visible");w3c_slidy.last_shown=w3c_slidy.previous_incremental_item(null);w3c_slidy.set_eos_status(true);w3c_slidy.show_slide(a)}}w3c_slidy.set_location();if(!w3c_slidy.ns_pos){w3c_slidy.refresh_toolbar(200)}}},next_slide:function(c){if(!w3c_slidy.view_all){var a,b=w3c_slidy.last_shown;if(c||w3c_slidy.slide_number==w3c_slidy.slides.length-1){w3c_slidy.last_shown=w3c_slidy.reveal_next_item(w3c_slidy.last_shown)}if((!c||w3c_slidy.last_shown==null)&&w3c_slidy.slide_number<w3c_slidy.slides.length-1){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.slide_number+1;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.show_slide(a)}else{if(!w3c_slidy.last_shown){if(b&&c){w3c_slidy.last_shown=b}}}w3c_slidy.set_location();w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));if(!w3c_slidy.ns_pos){w3c_slidy.refresh_toolbar(200)}}},first_slide:function(){if(!w3c_slidy.view_all){var a;if(w3c_slidy.slide_number!=0){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=0;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.show_slide(a)}w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));w3c_slidy.set_location()}},last_slide:function(){if(!w3c_slidy.view_all){var a;w3c_slidy.last_shown=null;if(w3c_slidy.last_shown==null&&w3c_slidy.slide_number<w3c_slidy.slides.length-1){a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=w3c_slidy.slides.length-1;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.set_visibility_all_incremental("visible");w3c_slidy.last_shown=w3c_slidy.previous_incremental_item(null);w3c_slidy.show_slide(a)}else{w3c_slidy.set_visibility_all_incremental("visible");w3c_slidy.last_shown=w3c_slidy.previous_incremental_item(null)}w3c_slidy.set_eos_status(true);w3c_slidy.set_location()}},set_eos_status:function(a){if(this.eos){this.eos.style.color=(a?"rgb(240,240,240)":"red")}},goto_slide:function(b){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.slide_number=b;a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.last_shown=null;w3c_slidy.set_visibility_all_incremental("hidden");w3c_slidy.set_eos_status(!w3c_slidy.next_incremental_item(w3c_slidy.last_shown));document.title=w3c_slidy.title+" ("+(w3c_slidy.slide_number+1)+")";w3c_slidy.show_slide(a);w3c_slidy.show_slide_number()},show_slide:function(a){this.sync_background(a);window.scrollTo(0,0);this.remove_class(a,"hidden")},hide_slide:function(a){this.add_class(a,"hidden")},sync_background:function(a){var e;var g;if(a.currentStyle){g=a.currentStyle.backgroundColor}else{if(document.defaultView){var f=document.defaultView.getComputedStyle(a,null);if(f){g=f.getPropertyValue("background-color")}else{g="transparent"}}else{g=="transparent"}}if(g=="transparent"||g.indexOf("rgba")>=0||g.indexOf("opacity")>=0){var c=this.get_class_list(a);for(var d=0;d<this.backgrounds.length;d++){e=this.backgrounds[d];var b=this.get_class_list(e);if(this.matching_background(c,b)){this.remove_class(e,"hidden")}else{this.add_class(e,"hidden")}}}else{this.hide_backgrounds()}},hide_backgrounds:function(){for(var a=0;a<this.backgrounds.length;a++){background=this.backgrounds[a];this.add_class(background,"hidden")}},matching_background:function(c,b){var d,e,f,a;f=/\w+/g;a=b.match(f);for(d=e=0;d<a.length;d++){if(a[d]=="hidden"){continue}if(a[d]=="background"){continue}++e}if(e==0){return true}a=c.match(f);for(d=e=0;d<a.length;d++){if(a[d]=="hidden"){continue}if(this.has_token(b,a[d])){return true}}return false},resized:function(){var c=0;if(typeof(window.innerWidth)=="number"){c=window.innerWidth}else{if(document.documentElement&&document.documentElement.clientWidth){c=document.documentElement.clientWidth}else{if(document.body&&document.body.clientWidth){c=document.body.clientWidth}}}var b=0;if(typeof(window.innerHeight)=="number"){b=window.innerHeight}else{if(document.documentElement&&document.documentElement.clientHeight){b=document.documentElement.clientHeight}else{if(document.body&&document.body.clientHeight){b=document.body.clientHeight}}}if(b&&(c/b>1.05*1024/768)){c=b*1024/768}if(c!=w3c_slidy.last_width||b!=w3c_slidy.last_height){if(c>=1100){w3c_slidy.size_index=5}else{if(c>=1000){w3c_slidy.size_index=4}else{if(c>=800){w3c_slidy.size_index=3}else{if(c>=600){w3c_slidy.size_index=2}else{if(c){w3c_slidy.size_index=0}}}}}if(0<=w3c_slidy.size_index+w3c_slidy.size_adjustment&&w3c_slidy.size_index+w3c_slidy.size_adjustment<w3c_slidy.sizes.length){w3c_slidy.size_index=w3c_slidy.size_index+w3c_slidy.size_adjustment}w3c_slidy.adjust_object_dimensions(c,b);if(document.body.style.fontSize!=w3c_slidy.sizes[w3c_slidy.size_index]){document.body.style.fontSize=w3c_slidy.sizes[w3c_slidy.size_index]}w3c_slidy.last_width=c;w3c_slidy.last_height=b;if(w3c_slidy.ns_pos){var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.show_slide(a)}w3c_slidy.refresh_toolbar(200)}},scrolled:function(){if(w3c_slidy.toolbar&&!w3c_slidy.ns_pos&&!w3c_slidy.ie7){w3c_slidy.hack_offset=w3c_slidy.scroll_x_offset();w3c_slidy.toolbar.style.display="none";if(w3c_slidy.scrollhack==0&&!w3c_slidy.view_all){setTimeout(function(){w3c_slidy.show_toolbar()},1000);w3c_slidy.scrollhack=1}}},hide_toolbar:function(){w3c_slidy.add_class(w3c_slidy.toolbar,"hidden");window.focus()},refresh_toolbar:function(a){if(!w3c_slidy.ns_pos&&!w3c_slidy.ie7){w3c_slidy.hide_toolbar();setTimeout(function(){w3c_slidy.show_toolbar()},a)}},show_toolbar:function(){if(w3c_slidy.want_toolbar){w3c_slidy.toolbar.style.display="block";if(!w3c_slidy.ns_pos){var b=w3c_slidy.scroll_x_offset();w3c_slidy.toolbar.style.left=b;w3c_slidy.toolbar.style.right=b;w3c_slidy.toolbar.style.bottom=0}w3c_slidy.remove_class(w3c_slidy.toolbar,"hidden")}w3c_slidy.scrollhack=0;try{if(!w3c_slidy.opera){w3c_slidy.help_anchor.focus()}}catch(a){}},toggle_toolbar:function(){if(!w3c_slidy.view_all){if(w3c_slidy.has_class(w3c_slidy.toolbar,"hidden")){w3c_slidy.remove_class(w3c_slidy.toolbar,"hidden");w3c_slidy.want_toolbar=1}else{w3c_slidy.add_class(w3c_slidy.toolbar,"hidden");w3c_slidy.want_toolbar=0}}},scroll_x_offset:function(){if(window.pageXOffset){return self.pageXOffset}if(document.documentElement&&document.documentElement.scrollLeft){return document.documentElement.scrollLeft}if(document.body){return document.body.scrollLeft}return 0},scroll_y_offset:function(){if(window.pageYOffset){return self.pageYOffset}if(document.documentElement&&document.documentElement.scrollTop){return document.documentElement.scrollTop}if(document.body){return document.body.scrollTop}return 0},optimize_font_size:function(){var a=w3c_slidy.slides[w3c_slidy.slide_number];var d=a.scrollHeight;var b=getWindowHeight();var c=100*d/b;alert("window utilization = "+c+"% (doc "+d+" win "+b+")")},get_doc_height:function(a){if(!a){a=document}if(a&&a.body&&a.body.offsetHeight){return a.body.offsetHeight}if(a&&a.body&&a.body.scrollHeight){return a.body.scrollHeight}alert("couldn't determine document height")},get_window_height:function(){if(typeof(window.innerHeight)=="number"){return window.innerHeight}if(document.documentElement&&document.documentElement.clientHeight){return document.documentElement.clientHeight}if(document.body&&document.body.clientHeight){return document.body.clientHeight}},document_height:function(){var a,b;a=document.body.scrollHeight;b=document.body.offsetHeight;if(a&&b){return(a>b?a:b)}return 0},smaller:function(){if(w3c_slidy.size_index>0){--w3c_slidy.size_index}w3c_slidy.toolbar.style.display="none";document.body.style.fontSize=w3c_slidy.sizes[w3c_slidy.size_index];var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.show_slide(a);setTimeout(function(){w3c_slidy.show_toolbar()},50)},bigger:function(){if(w3c_slidy.size_index<w3c_slidy.sizes.length-1){++w3c_slidy.size_index}w3c_slidy.toolbar.style.display="none";document.body.style.fontSize=w3c_slidy.sizes[w3c_slidy.size_index];var a=w3c_slidy.slides[w3c_slidy.slide_number];w3c_slidy.hide_slide(a);w3c_slidy.show_slide(a);setTimeout(function(){w3c_slidy.show_toolbar()},50)},adjust_object_dimensions:function(c,k){for(var e=0;e<w3c_slidy.objects.length;e++){var d=this.objects[e];var b=d.getAttribute("type");if(b=="image/svg+xml"||b=="application/x-shockwave-flash"){if(!d.initialWidth){d.initialWidth=d.getAttribute("width")}if(!d.initialHeight){d.initialHeight=d.getAttribute("height")}if(d.initialWidth&&d.initialWidth.charAt(d.initialWidth.length-1)=="%"){var j=parseInt(d.initialWidth.slice(0,d.initialWidth.length-1));var a=c*(j/100);d.setAttribute("width",a)}if(d.initialHeight&&d.initialHeight.charAt(d.initialHeight.length-1)=="%"){var f=parseInt(d.initialHeight.slice(0,d.initialHeight.length-1));var g=k*(f/100);d.setAttribute("height",g)}}}},key_press:function(a){if(!a){a=window.event}if(!w3c_slidy.key_wanted){return w3c_slidy.cancel(a)}return true},key_down:function(d){var c,e,a;w3c_slidy.key_wanted=true;if(!d){d=window.event}if(window.event){c=window.event.keyCode;e=window.event.srcElement}else{if(d.which){c=d.which;e=d.target}else{return true}}if(!c){return true}if(!w3c_slidy.slidy_chrome(e)&&w3c_slidy.special_element(e)){return true}if(d.ctrlKey||d.altKey||d.metaKey){return true}if(w3c_slidy.is_shown_toc()&&c!=9&&c!=16&&c!=38&&c!=40){w3c_slidy.hide_table_of_contents(true);if(c==27||c==84||c==67){return w3c_slidy.cancel(d)}}if(c==34){if(w3c_slidy.view_all){return true}w3c_slidy.next_slide(false);return w3c_slidy.cancel(d)}else{if(c==33){if(w3c_slidy.view_all){return true}w3c_slidy.previous_slide(false);return w3c_slidy.cancel(d)}else{if(c==32){w3c_slidy.next_slide(true);return w3c_slidy.cancel(d)}else{if(c==37){w3c_slidy.previous_slide(!d.shiftKey);return w3c_slidy.cancel(d)}else{if(c==36){w3c_slidy.first_slide();return w3c_slidy.cancel(d)}else{if(c==35){w3c_slidy.last_slide();return w3c_slidy.cancel(d)}else{if(c==39){w3c_slidy.next_slide(!d.shiftKey);return w3c_slidy.cancel(d)}else{if(c==13){if(w3c_slidy.outline){if(w3c_slidy.outline.visible){w3c_slidy.fold(w3c_slidy.outline)}else{w3c_slidy.unfold(w3c_slidy.outline)}return w3c_slidy.cancel(d)}}else{if(c==188){w3c_slidy.smaller();return w3c_slidy.cancel(d)}else{if(c==190){w3c_slidy.bigger();return w3c_slidy.cancel(d)}else{if(c==189||c==109){w3c_slidy.smaller();return w3c_slidy.cancel(d)}else{if(c==187||c==191||c==107){w3c_slidy.bigger();return w3c_slidy.cancel(d)}else{if(c==83){w3c_slidy.smaller();return w3c_slidy.cancel(d)}else{if(c==66){w3c_slidy.bigger();return w3c_slidy.cancel(d)}else{if(c==90){w3c_slidy.last_slide();return w3c_slidy.cancel(d)}else{if(c==70){w3c_slidy.toggle_toolbar();return w3c_slidy.cancel(d)}else{if(c==65){w3c_slidy.toggle_view();return w3c_slidy.cancel(d)}else{if(c==75){w3c_slidy.mouse_click_enabled=!w3c_slidy.mouse_click_enabled;var b=(w3c_slidy.mouse_click_enabled?"enabled":"disabled")+" mouse click advance";alert(w3c_slidy.localize(b));return w3c_slidy.cancel(d)}else{if(c==84||c==67){if(w3c_slidy.toc){w3c_slidy.toggle_table_of_contents()}return w3c_slidy.cancel(d)}else{if(c==72){window.location=w3c_slidy.help_page;return w3c_slidy.cancel(d)}}}}}}}}}}}}}}}}}}}}return true},create_element:function(a){if(this.xhtml&&(typeof document.createElementNS!="undefined")){return document.createElementNS("http://www.w3.org/1999/xhtml",a)}return document.createElement(a)},get_element_style:function(d,b,c){if(d.currentStyle){return d.currentStyle[b]}else{if(window.getComputedStyle){var a=window.getComputedStyle(d,"");return a.getPropertyValue(c)}}return""},has_token:function(e,c){if(e){var d=/\w+/g;var a=e.match(d);for(var b=0;b<a.length;b++){if(a[b]==c){return true}}}return false},get_class_list:function(a){if(typeof a.className!="undefined"){return a.className}return a.getAttribute("class")},has_class:function(b,a){if(b.nodeType!=1){return false}var c=new RegExp("(^| )"+a+"W*");if(typeof b.className!="undefined"){return c.test(b.className)}return c.test(b.getAttribute("class"))},remove_class:function(b,a){var d=new RegExp("(^| )"+a+"W*");var c="";if(typeof b.className!="undefined"){c=b.className;if(c){c=c.replace(d,"");b.className=c}}else{c=b.getAttribute("class");if(c){c=c.replace(d,"");b.setAttribute("class",c)}}},add_class:function(b,a){if(!this.has_class(b,a)){if(typeof b.className!="undefined"){b.className+=" "+a}else{var c=b.getAttribute("class");c=c?c+" "+a:a;b.setAttribute("class",c)}}},incremental_elements:null,okay_for_incremental:function(a){if(!this.incremental_elements){var b=new Array();b.p=true;b.pre=true;b.li=true;b.blockquote=true;b.dt=true;b.dd=true;b.h2=true;b.h3=true;b.h4=true;b.h5=true;b.h6=true;b.span=true;b.address=true;b.table=true;b.tr=true;b.th=true;b.td=true;b.img=true;b.object=true;this.incremental_elements=b}return this.incremental_elements[a.toLowerCase()]},next_incremental_item:function(c){var b=this.is_xhtml?"br":"BR";var a=w3c_slidy.slides[w3c_slidy.slide_number];for(;;){c=w3c_slidy.next_node(a,c);if(c==null||c.parentNode==null){break}if(c.nodeType==1){if(c.nodeName==b){continue}if(w3c_slidy.has_class(c,"incremental")&&w3c_slidy.okay_for_incremental(c.nodeName)){return c}if(w3c_slidy.has_class(c.parentNode,"incremental")&&!w3c_slidy.has_class(c,"non-incremental")){return c}}}return c},previous_incremental_item:function(c){var b=this.is_xhtml?"br":"BR";var a=w3c_slidy.slides[w3c_slidy.slide_number];for(;;){c=w3c_slidy.previous_node(a,c);if(c==null||c.parentNode==null){break}if(c.nodeType==1){if(c.nodeName==b){continue}if(w3c_slidy.has_class(c,"incremental")&&w3c_slidy.okay_for_incremental(c.nodeName)){return c}if(w3c_slidy.has_class(c.parentNode,"incremental")&&!w3c_slidy.has_class(c,"non-incremental")){return c}}}return c},set_visibility_all_incremental:function(b){var a=this.next_incremental_item(null);if(b=="hidden"){while(a){w3c_slidy.add_class(a,"invisible");a=w3c_slidy.next_incremental_item(a)}}else{while(a){w3c_slidy.remove_class(a,"invisible");a=w3c_slidy.next_incremental_item(a)}}},reveal_next_item:function(a){a=w3c_slidy.next_incremental_item(a);if(a&&a.nodeType==1){w3c_slidy.remove_class(a,"invisible")}return a},hide_previous_item:function(a){if(a&&a.nodeType==1){w3c_slidy.add_class(a,"invisible")}return this.previous_incremental_item(a)},next_node:function(a,b){if(b==null){return a.firstChild}if(b.firstChild){return b.firstChild}if(b.nextSibling){return b.nextSibling}for(;;){b=b.parentNode;if(!b||b==a){break}if(b&&b.nextSibling){return b.nextSibling}}return null},previous_node:function(a,b){if(b==null){b=a.lastChild;if(b){while(b.lastChild){b=b.lastChild}}return b}if(b.previousSibling){b=b.previousSibling;while(b.lastChild){b=b.lastChild}return b}if(b.parentNode!=a){return b.parentNode}return null},previous_sibling_element:function(a){a=a.previousSibling;while(a&&a.nodeType!=1){a=a.previousSibling}return a},next_sibling_element:function(a){a=a.nextSibling;while(a&&a.nodeType!=1){a=a.nextSibling}return a},first_child_element:function(a){var b;for(b=a.firstChild;b;b=b.nextSibling){if(b.nodeType==1){break}}return b},first_tag:function(b,a){var c;if(!this.is_xhtml){a=a.toUpperCase()}for(c=b.firstChild;c;c=c.nextSibling){if(c.nodeType==1&&c.nodeName==a){break}}return c},hide_selection:function(){if(window.getSelection){var b=window.getSelection();if(b.rangeCount>0){var a=b.getRangeAt(0);a.collapse(false)}}else{var c=document.selection.createRange();c.collapse(false)}},get_selected_text:function(){try{if(window.getSelection){return window.getSelection().toString()}if(document.getSelection){return document.getSelection().toString()}if(document.selection){return document.selection.createRange().text}}catch(a){}return""},mouse_button_up:function(a){w3c_slidy.selected_text_len=w3c_slidy.get_selected_text().length},mouse_button_click:function(g){var c=false;var b=false;var d=false;var f;if(!g){var g=window.event}if(g.target){f=g.target}else{if(g.srcElement){f=g.srcElement}}if(f.nodeType==3){f=f.parentNode}if(g.which){b=(g.which==1);d=(g.which==2);c=(g.which==3)}else{if(g.button){if(g.button==4){d=true}c=(g.button==2)}else{b=true}}if(w3c_slidy.selected_text_len>0){w3c_slidy.stop_propagation(g);g.cancel=true;g.returnValue=false;return false}w3c_slidy.hide_table_of_contents(false);var a=f.nodeName.toLowerCase();if(w3c_slidy.mouse_click_enabled&&b&&!w3c_slidy.special_element(f)&&!f.onclick){w3c_slidy.next_slide(true);w3c_slidy.stop_propagation(g);g.cancel=true;g.returnValue=false;return false}return true},special_element:function(b){var a=b.nodeName.toLowerCase();return b.onkeydown||b.onclick||a=="a"||a=="embed"||a=="object"||a=="video"||a=="audio"||a=="input"||a=="textarea"||a=="select"||a=="option"},slidy_chrome:function(a){while(a){if(a==w3c_slidy.toc||a==w3c_slidy.toolbar||w3c_slidy.has_class(a,"outline")){return true}a=a.parentNode}return false},get_key:function(b){var a;if(typeof window.event!="undefined"){a=window.event.keyCode}else{if(b.which){a=b.which}}return a},get_target:function(b){var a;if(!b){b=window.event}if(b.target){a=b.target}else{if(b.srcElement){a=b.srcElement}}if(a.nodeType!=1){a=a.parentNode}return a},is_block:function(b){var a=b.nodeName.toLowerCase();return a=="ol"||a=="ul"||a=="p"||a=="li"||a=="table"||a=="pre"||a=="h1"||a=="h2"||a=="h3"||a=="h4"||a=="h5"||a=="h6"||a=="blockquote"||a=="address"},add_listener:function(a,c,b){if(window.addEventListener){a.addEventListener(c,b,false)}else{a.attachEvent("on"+c,b)}},stop_propagation:function(a){a=a?a:window.event;a.cancelBubble=true;if(a.stopPropagation){a.stopPropagation()}return true},cancel:function(a){if(a){a.cancel=true;a.returnValue=false;if(a.preventDefault){a.preventDefault()}}w3c_slidy.key_wanted=false;return false},strings_es:{slide:"pág.","help?":"Ayuda","contents?":"Índice","table of contents":"tabla de contenidos","Table of Contents":"Tabla de Contenidos","restart presentation":"Reiniciar presentación","restart?":"Inicio"},help_es:"Utilice el ratón, barra espaciadora, teclas Izda/Dcha, o Re pág y Av pág. Use S y B para cambiar el tamaño de fuente.",strings_ca:{slide:"pàg..","help?":"Ajuda","contents?":"Índex","table of contents":"taula de continguts","Table of Contents":"Taula de Continguts","restart presentation":"Reiniciar presentació","restart?":"Inici"},help_ca:"Utilitzi el ratolí, barra espaiadora, tecles Esq./Dta. o Re pàg y Av pàg. Usi S i B per canviar grandària de font.",strings_cs:{slide:"snímek","help?":"nápověda","contents?":"obsah","table of contents":"obsah prezentace","Table of Contents":"Obsah prezentace","restart presentation":"znovu spustit prezentaci","restart?":"restart"},help_cs:"Prezentaci můžete procházet pomocí kliknutí myši, mezerníku, šipek vlevo a vpravo nebo kláves PageUp a PageDown. Písmo se dá zvětšit a zmenšit pomocí kláves B a S.",strings_nl:{slide:"pagina","help?":"Help?","contents?":"Inhoud?","table of contents":"inhoudsopgave","Table of Contents":"Inhoudsopgave","restart presentation":"herstart presentatie","restart?":"Herstart?"},help_nl:"Navigeer d.m.v. het muis, spatiebar, Links/Rechts toetsen, of PgUp en PgDn. Gebruik S en B om de karaktergrootte te veranderen.",strings_de:{slide:"Seite","help?":"Hilfe","contents?":"Übersicht","table of contents":"Inhaltsverzeichnis","Table of Contents":"Inhaltsverzeichnis","restart presentation":"Präsentation neu starten","restart?":"Neustart"},help_de:"Benutzen Sie die Maus, Leerschlag, die Cursortasten links/rechts oder Page up/Page Down zum Wechseln der Seiten und S und B für die Schriftgrösse.",strings_pl:{slide:"slajd","help?":"pomoc?","contents?":"spis treści?","table of contents":"spis treści","Table of Contents":"Spis Treści","restart presentation":"Restartuj prezentację","restart?":"restart?"},help_pl:"Zmieniaj slajdy klikając myszą, naciskając spację, strzałki lewo/prawolub PgUp / PgDn. Użyj klawiszy S i B, aby zmienić rozmiar czczionki.",strings_fr:{slide:"page","help?":"Aide","contents?":"Index","table of contents":"table des matières","Table of Contents":"Table des matières","restart presentation":"Recommencer l'exposé","restart?":"Début"},help_fr:"Naviguez avec la souris, la barre d'espace, les flèches gauche/droite ou les touches Pg Up, Pg Dn. Utilisez les touches S et B pour modifier la taille de la police.",strings_hu:{slide:"oldal","help?":"segítség","contents?":"tartalom","table of contents":"tartalomjegyzék","Table of Contents":"Tartalomjegyzék","restart presentation":"bemutató újraindítása","restart?":"újraindítás"},help_hu:"Az oldalak közti lépkedéshez kattintson az egérrel, vagy használja a szóköz, a bal, vagy a jobb nyíl, illetve a Page Down, Page Up billentyűket. Az S és a B billentyűkkel változtathatja a szöveg méretét.",strings_it:{slide:"pag.","help?":"Aiuto","contents?":"Indice","table of contents":"indice","Table of Contents":"Indice","restart presentation":"Ricominciare la presentazione","restart?":"Inizio"},help_it:"Navigare con mouse, barra spazio, frecce sinistra/destra o PgUp e PgDn. Usare S e B per cambiare la dimensione dei caratteri.",strings_el:{slide:"σελίδα","help?":"βοήθεια;","contents?":"περιεχόμενα;","table of contents":"πίνακας περιεχομένων","Table of Contents":"Πίνακας Περιεχομένων","restart presentation":"επανεκκίνηση παρουσίασης","restart?":"επανεκκίνηση;"},help_el:"Πλοηγηθείτε με το κλίκ του ποντικιού, το space, τα βέλη αριστερά/δεξιά, ή Page Up και Page Down. Χρησιμοποιήστε τα πλήκτρα S και B για να αλλάξετε το μέγεθος της γραμματοσειράς.",strings_ja:{slide:"スライド","help?":"ヘルプ","contents?":"目次","table of contents":"目次を表示","Table of Contents":"目次","restart presentation":"最初から再生","restart?":"最初から"},help_ja:"マウス左クリック ・ スペース ・ 左右キー または Page Up ・ Page Downで操作， S ・ Bでフォントサイズ変更",strings_zh:{slide:"幻灯片","help?":"帮助?","contents?":"内容?","table of contents":"目录","Table of Contents":"目录","restart presentation":"重新启动展示","restart?":"重新启动?"},help_zh:"用鼠标点击, 空格条, 左右箭头, Pg Up 和 Pg Dn 导航. 用 S, B 改变字体大小.",strings_ru:{slide:"слайд","help?":"помощь?","contents?":"содержание?","table of contents":"оглавление","Table of Contents":"Оглавление","restart presentation":"перезапустить презентацию","restart?":"перезапуск?"},help_ru:"Перемещайтесь кликая мышкой, используя клавишу пробел, стрелкивлево/вправо или Pg Up и Pg Dn. Клавиши S и B меняют размер шрифта.",strings_sv:{slide:"sida","help?":"hjälp","contents?":"innehåll","table of contents":"innehållsförteckning","Table of Contents":"Innehållsförteckning","restart presentation":"visa presentationen från början","restart?":"börja om"},help_sv:"Bläddra med ett klick med vänstra musknappen, mellanslagstangenten, vänster- och högerpiltangenterna eller tangenterna Pg Up, Pg Dn. Använd tangenterna S och B för att ändra textens storlek.",strings:{},localize:function(d){if(d==""){return d}var b,c=w3c_slidy.strings[w3c_slidy.lang];if(c){b=c[d];if(b){return b}}var a=w3c_slidy.lang.split("-");if(a.length>1){c=w3c_slidy.strings[a[0]];if(c){b=c[d];if(b){return b}}}return d},init_localization:function(){var b=w3c_slidy;var a=w3c_slidy.help_text;this.strings={es:this.strings_es,ca:this.strings_ca,cs:this.strings_cs,nl:this.strings_nl,de:this.strings_de,pl:this.strings_pl,fr:this.strings_fr,hu:this.strings_hu,it:this.strings_it,el:this.strings_el,jp:this.strings_ja,zh:this.strings_zh,ru:this.strings_ru,sv:this.strings_sv},b.strings_es[a]=b.help_es;b.strings_ca[a]=b.help_ca;b.strings_cs[a]=b.help_cs;b.strings_nl[a]=b.help_nl;b.strings_de[a]=b.help_de;b.strings_pl[a]=b.help_pl;b.strings_fr[a]=b.help_fr;b.strings_hu[a]=b.help_hu;b.strings_it[a]=b.help_it;b.strings_el[a]=b.help_el;b.strings_ja[a]=b.help_ja;b.strings_zh[a]=b.help_zh;b.strings_ru[a]=b.help_ru;b.strings_sv[a]=b.help_sv;w3c_slidy.lang=document.body.parentNode.getAttribute("lang");if(!w3c_slidy.lang){w3c_slidy.lang=document.body.parentNode.getAttribute("xml:lang")}if(!w3c_slidy.lang){w3c_slidy.lang="en"}}};if(w3c_slidy.ie6||w3c_slidy.ie7){document.write("<iframe id='historyFrame' src='javascript:\"<html></html>\"' height='1' width='1' style='position:absolute;left:-800px'></iframe>")}w3c_slidy.set_up();setTimeout(w3c_slidy.hide_slides,50);
+  </script>
+</head>
+<body>
+<div class="slide cover title">
+  <h1 class="title">Phantoms and mutants</h1>
+  <p class="author">
+
+  </p>
+</div>
+<div class="slide">
+<h1
+>Language hacking</h1
+><p
+>Let's create a very small fragment of a programming language:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >data</span
+    > <span class="dt"
+    >Expr</span
+    > <span class="fu"
+    >=</span
+    > <span class="kw"
+    >Num</span
+    > <span class="dt"
+    >Int</span
+    >             <span class="co"
+    >-- atom</span
+    ><br
+     />          <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Str</span
+    > <span class="dt"
+    >String</span
+    >          <span class="co"
+    >-- atom</span
+    ><br
+     />          <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Op</span
+    > <span class="dt"
+    >BinOp</span
+    > <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >Expr</span
+    >  <span class="co"
+    >-- compound</span
+    ><br
+     />            <span class="kw"
+    >deriving</span
+    > (<span class="kw"
+    >Show</span
+    >)<br
+     /><br
+     /><span class="kw"
+    >data</span
+    > <span class="dt"
+    >BinOp</span
+    > <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Add</span
+    > <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Concat</span
+    ><br
+     />             <span class="kw"
+    >deriving</span
+    > (<span class="kw"
+    >Show</span
+    >)<br
+     /></code
+  ></pre
+><p
+>And an interpreter for it:</p
+><pre class="sourceCode haskell"
+><code
+  >interp x<span class="fu"
+    >@</span
+    >(<span class="kw"
+    >Num</span
+    > _)                     <span class="fu"
+    >=</span
+    > x<br
+     />interp x<span class="fu"
+    >@</span
+    >(<span class="dt"
+    >Str</span
+    > _)                     <span class="fu"
+    >=</span
+    > x<br
+     />interp (<span class="dt"
+    >Op</span
+    > <span class="dt"
+    >Add</span
+    > a b)                  <span class="fu"
+    >=</span
+    > <span class="kw"
+    >Num</span
+    > (i a <span class="fu"
+    >+</span
+    > i b)<br
+     />  <span class="kw"
+    >where</span
+    > i x <span class="fu"
+    >=</span
+    > <span class="kw"
+    >case</span
+    > interp x <span class="kw"
+    >of</span
+    > <span class="kw"
+    >Num</span
+    > a -&gt; a<br
+     />interp (<span class="dt"
+    >Op</span
+    > <span class="dt"
+    >Concat</span
+    > (<span class="dt"
+    >Str</span
+    > a) (<span class="dt"
+    >Str</span
+    > b))   <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Str</span
+    > (a <span class="fu"
+    >++</span
+    > b)<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Does it work?</h1
+><p
+>Our very quick round of prototyping gave us a tiny interpreter that actually seems to work:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="fu"
+    >&gt;&gt;</span
+    > interp (<span class="dt"
+    >Op</span
+    > <span class="dt"
+    >Add</span
+    > (<span class="kw"
+    >Num</span
+    > <span class="dv"
+    >2</span
+    >) (<span class="kw"
+    >Num</span
+    > <span class="dv"
+    >3</span
+    >))<br
+     /><span class="kw"
+    >Num</span
+    > <span class="dv"
+    >5</span
+    ><br
+     /></code
+  ></pre
+><p
+>Please help me to spot some problems with my interpreter!</p
+></div>
+<div class="slide">
+<h1
+>Two sides of the same problem</h1
+><ol style="list-style-type: decimal;"
+><li
+  ><p
+    >We can construct ill-formed expressions (&quot;add a <code
+      >Num</code
+      > to a <code
+      >Str</code
+      >&quot;).</p
+    ></li
+  ><li
+  ><p
+    >Our interpreter crashes on these expressions, because we (quite reasonably) didn't take their possible existence into account.</p
+    ></li
+  ></ol
+></div>
+<div class="slide">
+<h1
+>Watch your language!</h1
+><p
+>Here's a slightly modified version of our language:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >data</span
+    > <span class="dt"
+    >Expr</span
+    > a <span class="fu"
+    >=</span
+    > <span class="kw"
+    >Num</span
+    > <span class="dt"
+    >Int</span
+    ><br
+     />            <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Str</span
+    > <span class="dt"
+    >String</span
+    ><br
+     />            <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Op</span
+    > <span class="dt"
+    >BinOp</span
+    > (<span class="dt"
+    >Expr</span
+    > a) (<span class="dt"
+    >Expr</span
+    > a)<br
+     />              <span class="kw"
+    >deriving</span
+    > (<span class="kw"
+    >Show</span
+    >)<br
+     /><br
+     /><span class="co"
+    >-- This is unchanged.</span
+    ><br
+     /><span class="kw"
+    >data</span
+    > <span class="dt"
+    >BinOp</span
+    > <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Add</span
+    > <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Concat</span
+    ><br
+     />             <span class="kw"
+    >deriving</span
+    > (<span class="kw"
+    >Show</span
+    >)<br
+     /></code
+  ></pre
+><p
+>We've introduced a type parameter here...</p
+><p
+>...But we never actually use it to represent a <em
+  >value</em
+  > of whatever type <code
+  >a</code
+  > is.</p
+><p
+>Let's see where that takes us.</p
+></div>
+<div class="slide">
+<h1
+>Some modifications to our interpreter</h1
+><p
+>Here is our modified interpreter.</p
+><pre class="sourceCode haskell"
+><code
+  >interp x<span class="fu"
+    >@</span
+    >(<span class="kw"
+    >Num</span
+    > _)       <span class="fu"
+    >=</span
+    > x<br
+     />interp x<span class="fu"
+    >@</span
+    >(<span class="dt"
+    >Str</span
+    > _)       <span class="fu"
+    >=</span
+    > x<br
+     />interp (<span class="dt"
+    >Op</span
+    > <span class="dt"
+    >Add</span
+    > a b)    <span class="fu"
+    >=</span
+    > <span class="kw"
+    >Num</span
+    > (i a <span class="fu"
+    >+</span
+    > i b)<br
+     />  <span class="kw"
+    >where</span
+    > i x <span class="fu"
+    >=</span
+    > <span class="kw"
+    >case</span
+    > interp x <span class="kw"
+    >of</span
+    > <span class="kw"
+    >Num</span
+    > a -&gt; a<br
+     />interp (<span class="dt"
+    >Op</span
+    > <span class="dt"
+    >Concat</span
+    > a b) <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Str</span
+    > (i a <span class="fu"
+    >++</span
+    > i b)<br
+     />  <span class="kw"
+    >where</span
+    > i x <span class="fu"
+    >=</span
+    > <span class="kw"
+    >case</span
+    > interp x <span class="kw"
+    >of</span
+    > <span class="dt"
+    >Str</span
+    > y -&gt; y<br
+     /></code
+  ></pre
+><p
+>Our only change is to apply <code
+  >interp</code
+  > recursively if we're asked to perform a <code
+  >Concat</code
+  >.</p
+><p
+>We could have done this in our original interpreter, so that can't be the real fix. But what <em
+  >is</em
+  >?</p
+><p
+>What's the type of the rewritten <code
+  >interp</code
+  >?</p
+></div>
+<div class="slide">
+<h1
+>Our new type</h1
+><p
+>The interpreter function now has this type:</p
+><pre class="sourceCode haskell"
+><code
+  >interp :: <span class="dt"
+    >Expr</span
+    > a -&gt; <span class="dt"
+    >Expr</span
+    > a<br
+     /></code
+  ></pre
+><p
+>But we know from the definitions of <code
+  >Expr</code
+  > and <code
+  >BinOp</code
+  > that we never use a value of type <code
+  >a</code
+  >. Then what purpose does this type parameter serve?</p
+><p
+>Recall the type of <code
+  >Expr</code
+  >:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >data</span
+    > <span class="dt"
+    >Expr</span
+    > a <span class="fu"
+    >=</span
+    > <span class="fu"
+    >...</span
+    ><br
+     />            <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Op</span
+    > <span class="dt"
+    >BinOp</span
+    > (<span class="dt"
+    >Expr</span
+    > a) (<span class="dt"
+    >Expr</span
+    > a)<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Some context</h1
+><p
+>Let's think of that <code
+  >a</code
+  > parameter as expressing our <em
+  >intent</em
+  > that:</p
+><ul
+><li
+  ><p
+    >The operands of an <code
+      >Op</code
+      > expression should have the same types.</p
+    ></li
+  ><li
+  ><p
+    >The resulting <code
+      >Expr</code
+      > value should <em
+      >also</em
+      > have this type.</p
+    ></li
+  ></ul
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >data</span
+    > <span class="dt"
+    >Expr</span
+    > a <span class="fu"
+    >=</span
+    > <span class="fu"
+    >...</span
+    ><br
+     />            <span class="fu"
+    >|</span
+    > <span class="dt"
+    >Op</span
+    > <span class="dt"
+    >BinOp</span
+    > (<span class="dt"
+    >Expr</span
+    > a) (<span class="dt"
+    >Expr</span
+    > a)<br
+     /></code
+  ></pre
+><p
+>In fact, the type system will enforce these constraints for us.</p
+></div>
+<div class="slide">
+<h1
+>Building blocks</h1
+><p
+>The first step in making all of this machinery work is to define some functions with the right types.</p
+><p
+>These two functions will construct atoms (values that can't be reduced any further) in our language:</p
+><pre class="sourceCode haskell"
+><code
+  >num :: <span class="dt"
+    >Int</span
+    > -&gt; <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >Int</span
+    ><br
+     />num <span class="fu"
+    >=</span
+    > <span class="kw"
+    >Num</span
+    ><br
+     /><br
+     />str :: <span class="dt"
+    >String</span
+    > -&gt; <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >String</span
+    ><br
+     />str <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Str</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Applying operators safely</h1
+><p
+>These two functions construct compound expressions:</p
+><pre class="sourceCode haskell"
+><code
+  >add :: <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >Int</span
+    > -&gt; <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >Int</span
+    > -&gt; <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >Int</span
+    ><br
+     />add <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Op</span
+    > <span class="dt"
+    >Add</span
+    ><br
+     /><br
+     />cat :: <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >String</span
+    > -&gt; <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >String</span
+    > -&gt; <span class="dt"
+    >Expr</span
+    > <span class="dt"
+    >String</span
+    ><br
+     />cat <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Op</span
+    > <span class="dt"
+    >Concat</span
+    ><br
+     /></code
+  ></pre
+><p
+>Notice that each one enforces the restriction that its parameters must be compatible.</p
+></div>
+<div class="slide">
+<h1
+>A trusted computing base</h1
+><p
+>One we have our functions defined, the last step is to lock our world down.</p
+><p
+>Here's what the beginning of my module looks like:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >module</span
+    > <span class="dt"
+    >Interp</span
+    ><br
+     />    (<br
+     />      <span class="dt"
+    >Expr</span
+    >,       <span class="co"
+    >-- type constructor</span
+    ><br
+     />      interp,     <span class="co"
+    >-- interpreter</span
+    ><br
+     />      num, str,   <span class="co"
+    >-- atom constructors</span
+    ><br
+     />      add, cat,   <span class="co"
+    >-- expression constructors</span
+    ><br
+     />    ) <span class="kw"
+    >where</span
+    ><br
+     /></code
+  ></pre
+><p
+>Notice that we've exercised <em
+  >careful control</em
+  > over what we're exporting.</p
+><ul
+><li
+  ><p
+    >We export the <code
+      >Expr</code
+      > type constructor, but <em
+      >none</em
+      > of its value constructors.</p
+    ></li
+  ><li
+  ><p
+    >Users of our module don't need <code
+      >BinOp</code
+      >, so we don't export that at all.</p
+    ></li
+  ></ul
+></div>
+<div class="slide">
+<h1
+>More about our type and export choices</h1
+><p
+>Consequences of exporting only the type constructor for <code
+  >Expr</code
+  >:</p
+><ul
+><li
+  ><p
+    >Clients cannot use the value constructors to create new values.</p
+    ></li
+  ><li
+  ><p
+    >The <em
+      >only</em
+      > way for a client to construct expressions is using our handwritten &quot;smart constructor&quot; functions with their carefully chosen types.</p
+    ></li
+  ><li
+  ><p
+    >Clients cannot pattern-match on an <code
+      >Expr</code
+      > value. Our internals are opaque; we could change our implementation without clients being able to tell.</p
+    ></li
+  ></ul
+><p
+>These are in fact the completely standard techniques for creating abstract data types in Haskell. So where does the type parameter come in?</p
+></div>
+<div class="slide">
+<h1
+>Consequences of that type parameter</h1
+><p
+>Due to our judicious use of both abstraction and that type parameter:</p
+><ul
+><li
+  >Clients cannot construct ill-formed expressions. Any attempts will be rejected by the type checker.</li
+  ></ul
+><p
+>This additional safety comes &quot;for free&quot;:</p
+><ul
+><li
+  ><p
+    >We don't need runtime checks for ill-formed expressions, because they cannot occur.</p
+    ></li
+  ><li
+  ><p
+    >Our added type parameter never represents data at runtime, so it has zero cost when the program runs.</p
+    ></li
+  ></ul
+></div>
+<div class="slide">
+<h1
+>Phantom types</h1
+><p
+>When we refer to a type parameter on the left of a type definition, without ever using <em
+  >values</em
+  > of that type on the right, we call it a <em
+  >phantom type</em
+  >.</p
+><p
+>We're essentially encoding <em
+  >compile-time data</em
+  > using types, and the compiler computes with this data before our program is ever run.</p
+></div>
+<div class="slide">
+<h1
+>Mutable variables</h1
+><p
+>We've already seen the very handy <code
+  >MVar</code
+  > type, which represents a &quot;blocking mutable box&quot;: we can put a value in or take one out, but we'll block if we put when full or take when empty.</p
+><p
+>Even though <code
+  >MVar</code
+  >s are the fastest blocking concurrent structure in the industry (they made the the Kessel Run in less than twelve parsecs!), we don't always want blocking semantics.</p
+><p
+>For cases where we want <em
+  >non-</em
+  >blocking updates, there's the <code
+  >IORef</code
+  > type, which gives us mutable references.</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >import</span
+    > <span class="dt"
+    >Data.IORef</span
+    ><br
+     /><br
+     />newIORef    :: a -&gt; <span class="dt"
+    >IO</span
+    > (<span class="dt"
+    >IORef</span
+    > a)<br
+     /><br
+     />readIORef   :: <span class="dt"
+    >IORef</span
+    > a -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     />writeIORef  :: <span class="dt"
+    >IORef</span
+    > a -&gt; a -&gt; <span class="dt"
+    >IO</span
+    > ()<br
+     /><br
+     />modifyIORef :: <span class="dt"
+    >IORef</span
+    > a -&gt; (a -&gt; a) -&gt; <span class="dt"
+    >IO</span
+    > ()<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Managing mutation</h1
+><p
+>Application writers are often faced with a question like this:</p
+><ul
+><li
+  >I have a big app, and parts of it need their behaviour tweaked by an administrator at runtime.</li
+  ></ul
+><p
+>There are of course many ways to address this sort of problem.</p
+><p
+>Let's consider one where we use a reference to a piece of config data.</p
+><p
+>Any code that's executing in the <code
+  >IO</code
+  > monad can, if it knows the name of the config reference, retrieve the current config:</p
+><pre class="sourceCode haskell"
+><code
+  >curCfg &lt;- readIORef cfgRef<br
+     /></code
+  ></pre
+><p
+>The trouble is, ill-behaved code could clearly also <em
+  >modify</em
+  > the current configuration, and leave us with a debugging nightmare.</p
+></div>
+<div class="slide">
+<h1
+>Phantom types to the rescue!</h1
+><p
+>Let's create a new type of mutable reference.</p
+><p
+>We use a phantom type <code
+  >t</code
+  > to statically track whether a piece of code is allowed to modify the reference or not.</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >import</span
+    > <span class="dt"
+    >Data.IORef</span
+    ><br
+     /><br
+     /><span class="kw"
+    >newtype</span
+    > <span class="dt"
+    >Ref</span
+    > t a <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Ref</span
+    > (<span class="dt"
+    >IORef</span
+    > a)<br
+     /></code
+  ></pre
+><p
+>Remember, our use of <code
+  >newtype</code
+  > here means that the <code
+  >Ref</code
+  > type only exists at compile time: it imposes <em
+  >no</em
+  > runtime cost.</p
+><p
+>Since we are using a phantom type, we don't even need values of our access control types:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >data</span
+    > <span class="dt"
+    >ReadOnly</span
+    ><br
+     /><span class="kw"
+    >data</span
+    > <span class="dt"
+    >ReadWrite</span
+    ><br
+     /></code
+  ></pre
+><p
+>We're already in a good spot! Not only are we creating compiler-enforced access control, but it will have <em
+  >zero</em
+  > runtime cost.</p
+></div>
+<div class="slide">
+<h1
+>Creating a mutable reference</h1
+><p
+>To create a new reference, we just have to ensure that it has the right type.</p
+><pre class="sourceCode haskell"
+><code
+  >newRef :: a -&gt; <span class="dt"
+    >IO</span
+    > (<span class="dt"
+    >Ref</span
+    > <span class="dt"
+    >ReadWrite</span
+    > a)<br
+     />newRef a <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Ref</span
+    > <span class="ot"
+    >`fmap`</span
+    > newIORef a<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Reading and writing a mutable reference</h1
+><p
+>Since we want to be able to read both read-only and read-write references, we don't need to mention the access mode when writing a type signature for <code
+  >readRef</code
+  >.</p
+><pre class="sourceCode haskell"
+><code
+  >readRef :: <span class="dt"
+    >Ref</span
+    > t a -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     />readRef (<span class="dt"
+    >Ref</span
+    > ref) <span class="fu"
+    >=</span
+    > readIORef ref<br
+     /></code
+  ></pre
+><p
+>Of course, code can only write to a reference if the compiler can statically prove (via the type system) that it has write access.</p
+><pre class="sourceCode haskell"
+><code
+  >writeRef :: <span class="dt"
+    >Ref</span
+    > <span class="dt"
+    >ReadWrite</span
+    > a -&gt; a -&gt; <span class="dt"
+    >IO</span
+    > ()<br
+     />writeRef (<span class="dt"
+    >Ref</span
+    > ref) v <span class="fu"
+    >=</span
+    > writeIORef ref v<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Converting a reference to read-only</h1
+><p
+>This function allows us to convert any kind of reference into a read-only reference:</p
+><pre class="sourceCode haskell"
+><code
+  >readOnly :: <span class="dt"
+    >Ref</span
+    > t a -&gt; <span class="dt"
+    >Ref</span
+    > <span class="dt"
+    >ReadOnly</span
+    > a<br
+     />readOnly (<span class="dt"
+    >Ref</span
+    > ref) <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Ref</span
+    > ref<br
+     /></code
+  ></pre
+><p
+>In order to prevent clients from promoting a reference from read-only to read-write, we do <em
+  >not</em
+  > provide a function that goes in the opposite direction.</p
+><p
+>We also use the familiar technique of constructor hiding at the top of our source file:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >module</span
+    > <span class="dt"
+    >Ref</span
+    ><br
+     />    (<br
+     />      <span class="dt"
+    >Ref</span
+    >, <span class="co"
+    >-- export type ctor, but not value ctor</span
+    ><br
+     />      newRef, readOnly,<br
+     />      readRef, writeRef<br
+     />    ) <span class="kw"
+    >where</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Meaning: that slippery thing</h1
+><p
+>What does this type signature mean?</p
+><pre class="sourceCode haskell"
+><code
+  >something :: a -&gt; a<br
+     /></code
+  ></pre
+><p
+>What are all of the possible behaviours of a code with this type?</p
+><p
+>What about this signature?</p
+><pre class="sourceCode haskell"
+><code
+  >another :: [a]<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Being more explicit</h1
+><p
+>What does this type signature mean?</p
+><pre class="sourceCode haskell"
+><code
+  >something :: a -&gt; a<br
+     /></code
+  ></pre
+><p
+>We know that for <em
+  >all possible types</em
+  > <code
+  >a</code
+  >, this function accepts a value of that type, and returns a value of that type.</p
+><p
+>We <em
+  >clearly</em
+  > cannot enumerate all possible types, so we equally clearly cannot create all (or indeed <em
+  >any</em
+  >) values of these types.</p
+><p
+>Therefore, if we exclude crashes and infinite loops, the only possible behaviour for this function is to return its input.</p
+></div>
+<div class="slide">
+<h1
+>Being even more explicit: quantifiers</h1
+><p
+>In fact, Haskell provides a keyword, <code
+  >forall</code
+  >, to make this quantification over type parameters more explicit:</p
+><pre class="sourceCode haskell"
+><code
+  >something :: forall a<span class="fu"
+    >.</span
+    > a -&gt; a<br
+     /></code
+  ></pre
+><p
+>The same &quot;universal quantification&quot; syntax works with typeclass constraints:</p
+><pre class="sourceCode haskell"
+><code
+  >something :: forall a<span class="fu"
+    >.</span
+    > (<span class="kw"
+    >Show</span
+    > a) -&gt; <span class="dt"
+    >String</span
+    ><br
+     /></code
+  ></pre
+><p
+>Here, our quantifier is &quot;for all types <code
+  >a</code
+  >, where the <em
+  >only thing we know about</em
+  > <code
+  >a</code
+  > is what the <code
+  >Show</code
+  > typeclass tells us we can do&quot;.</p
+><p
+>These <code
+  >forall</code
+  > keywords are implied if they're not explicitly written.</p
+></div>
+<div class="slide">
+<h1
+>Building blocks</h1
+><p
+>Love 'em or hate 'em, everybody has to deal with databases.</p
+><p
+>Here are some typical functions that a low-level database library will provide, for clients that have to modify data concurrently:</p
+><pre class="sourceCode haskell"
+><code
+  >begin    :: <span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > <span class="dt"
+    >Transaction</span
+    ><br
+     />commit   :: <span class="dt"
+    >Transaction</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > ()<br
+     />rollback :: <span class="dt"
+    >Transaction</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > ()<br
+     /></code
+  ></pre
+><p
+>We can create a new transaction with <code
+  >begin</code
+  >, finish an existing one with <code
+  >commit</code
+  >, or cancel one with <code
+  >rollback</code
+  >.</p
+><p
+>Typically, once a transaction has been committed or rolled back, accessing it afterwards will result in an exception.</p
+></div>
+<div class="slide">
+<h1
+>Shaky foundations build a shaky house</h1
+><p
+>Clearly, these constructs make it easy to inadvertantly write bad code.</p
+><pre class="sourceCode haskell"
+><code
+  >oops conn <span class="fu"
+    >=</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />  txn &lt;- begin conn<br
+     />  throwIO (<span class="dt"
+    >AssertionFailed</span
+    > <span class="st"
+    >&quot;forgot to roll back!&quot;</span
+    >)<br
+     />  <span class="co"
+    >-- also forgot to commit!</span
+    ><br
+     /></code
+  ></pre
+><p
+>We can avoid <code
+  >rollback</code
+  > and <code
+  >commit</code
+  > forgetfulness with a suitable combinator:</p
+><pre class="sourceCode haskell"
+><code
+  >withTxn :: <span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > a -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     />withTxn conn act <span class="fu"
+    >=</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />  txn &lt;- begin conn<br
+     />  r &lt;- act <span class="ot"
+    >`onException`</span
+    > rollback txn<br
+     />  commit txn<br
+     />  <span class="fu"
+    >return</span
+    > r<br
+     /></code
+  ></pre
+><p
+>All right! The code running in <code
+  >act</code
+  > never sees a <code
+  >Transaction</code
+  > value, so it can't leak a committed or rolled back transaction.</p
+></div>
+<div class="slide">
+<h1
+>But still...</h1
+><p
+>We're not out of the woods yet!</p
+><p
+>High-performance web apps typically use a dynamically managed pool of database connections.</p
+><pre class="sourceCode haskell"
+><code
+  >getConn :: <span class="dt"
+    >Pool</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > <span class="dt"
+    >Connection</span
+    ><br
+     />returnConn :: <span class="dt"
+    >Pool</span
+    > -&gt; <span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > ()<br
+     /></code
+  ></pre
+><p
+>It's a major bug if a database connection is not returned to the pool at the end of a handler.</p
+><p
+>So we write a combinator to handle this for us:</p
+><pre class="sourceCode haskell"
+><code
+  >withConn :: <span class="dt"
+    >Pool</span
+    > -&gt; (<span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > a) -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     />withConn pool act <span class="fu"
+    >=</span
+    ><br
+     />  bracket (getConn pool) (returnConn pool) act<br
+     /></code
+  ></pre
+><p
+>Nice and elegant. But correct? Read on!</p
+></div>
+<div class="slide">
+<h1
+>Connections vs transactions</h1
+><p
+>In a typical database API, once we enter a transaction, we don't need to refer to the handle we got until we either commit or roll back the transaction.</p
+><p
+>So it was fine for us to write a transaction wrapper like this:</p
+><pre class="sourceCode haskell"
+><code
+  >withTxn :: <span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > a -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     /></code
+  ></pre
+><p
+>On other other hand, if we're talking to a database, we definitely need a connection handle.</p
+><pre class="sourceCode haskell"
+><code
+  >query :: <span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >String</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > [<span class="dt"
+    >String</span
+    >]<br
+     /></code
+  ></pre
+><p
+>So we have to pass that handle into our combinator:</p
+><pre class="sourceCode haskell"
+><code
+  >withConn :: <span class="dt"
+    >Pool</span
+    > -&gt; (<span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > a) -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>&quot;Ouch, sorry about that!&quot;</h1
+><p
+>Unfortunately, since <code
+  >withConn</code
+  > gives us a connection handle, we can defeat the intention of the combinator (sometimes accidentally).</p
+><p
+>What is the type of this function?</p
+><pre class="sourceCode haskell"
+><code
+  >evil pool <span class="fu"
+    >=</span
+    > withConn pool <span class="fu"
+    >return</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Phantom types! They'll save us again!</h1
+><p
+>Here, we are using the <code
+  >newtype</code
+  > keyword to associate a phantom type with the <code
+  >IO</code
+  > monad.</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >newtype</span
+    > <span class="dt"
+    >DB</span
+    > c a <span class="fu"
+    >=</span
+    > <span class="dt"
+    >DB</span
+    > {<br
+     />      fromDB :: <span class="dt"
+    >IO</span
+    > a<br
+     />    }<br
+     /></code
+  ></pre
+><p
+>We're going to run some code in the <code
+  >IO</code
+  > monad, and pass around a little extra bit of type information at compile time.</p
+><p
+>Let's create a phantom-typed wrapper for our earlier <code
+  >Connection</code
+  > type:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >newtype</span
+    > <span class="dt"
+    >SafeConn</span
+    > c <span class="fu"
+    >=</span
+    > <span class="dt"
+    >Safe</span
+    > <span class="dt"
+    >Connection</span
+    ><br
+     /></code
+  ></pre
+><p
+>Where are these phantom types taking us?</p
+></div>
+<div class="slide">
+<h1
+>Safe querying</h1
+><p
+>The easiest place to start to understand with a little use of our new code, in the form of a function we'll export to clients.</p
+><p
+>This is just a wrapper around the <code
+  >query</code
+  > function we saw earlier, making sure that our <code
+  >newtype</code
+  > machinery is in the right places to keep the type checker happy.</p
+><pre class="sourceCode haskell"
+><code
+  >safeQuery :: <span class="dt"
+    >SafeConn</span
+    > c -&gt; <span class="dt"
+    >String</span
+    > -&gt; <span class="dt"
+    >DB</span
+    > c [<span class="dt"
+    >String</span
+    >]<br
+     />safeQuery (<span class="dt"
+    >Safe</span
+    > conn) str <span class="fu"
+    >=</span
+    > <span class="dt"
+    >DB</span
+    > (query conn str)<br
+     /></code
+  ></pre
+><p
+>Notice that our phantom type <code
+  >c</code
+  > is mentioned in both our uses of <code
+  >SafeConn c</code
+  > and <code
+  >DB c</code
+  >: we're treating it as a token that we have to pass around.</p
+><p
+>Our library will <em
+  >not</em
+  > be exporting the value constructors for <code
+  >SafeConn</code
+  > or <code
+  >DB</code
+  > to clients. Once again, this <code
+  >newtype</code
+  > machinery is internal to us!</p
+></div>
+<div class="slide">
+<h1
+>Giving a client a connection from a pool</h1
+><p
+>Here, we'll use our earlier exception-safe <code
+  >withConn</code
+  > combinator. Recall its type:</p
+><pre class="sourceCode haskell"
+><code
+  >withConn :: <span class="dt"
+    >Pool</span
+    > -&gt; (<span class="dt"
+    >Connection</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > a) -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     /></code
+  ></pre
+><p
+>To make it useful in our new setting, we have to wrap the <code
+  >Connection</code
+  >, and unwrap the <code
+  >DB c</code
+  > that is our <code
+  >act</code
+  > to get an action in the <code
+  >IO</code
+  > monad.</p
+><pre class="sourceCode haskell"
+><code
+  >withSafeConn pool act <span class="fu"
+    >=</span
+    ><br
+     />  withConn pool <span class="fu"
+    >$</span
+    > \conn -&gt;<br
+     />    fromDB (act (<span class="dt"
+    >Safe</span
+    > conn))<br
+     /></code
+  ></pre
+><p
+>It's not at all obvious what this is doing for us until we see the type of <code
+  >withSafeConn</code
+  >.</p
+></div>
+<div class="slide">
+<h1
+>Scariness</h1
+><p
+>Here's a burly type for you:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="ot"
+    >{-# LANGUAGE Rank2Types #-}</span
+    ><br
+     /><br
+     />withConnection :: <span class="dt"
+    >Pool</span
+    ><br
+     />               -&gt; (forall c<span class="fu"
+    >.</span
+    > <span class="dt"
+    >SafeConn</span
+    > c -&gt; <span class="dt"
+    >DB</span
+    > c a) <br
+     />               -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     /></code
+  ></pre
+><p
+>We've introduced a universal quantifier (that <code
+  >forall</code
+  >) into our type signature. And we've added a <code
+  >LANGUAGE</code
+  > pragma! Whoa. Duuude.</p
+><p
+>Relax! Let's not worry about those details just yet. What does our signature seem to want to tell us?</p
+><ul
+><li
+  ><p
+    >We accept a <code
+      >Pool</code
+      >.</p
+    ></li
+  ><li
+  ><p
+    >And an &quot;I have a connection, so I can talk to the database now&quot; action that accepts a <code
+      >SafeConn c</code
+      >, returning a value <code
+      >a</code
+      > embedded in the type <code
+      >DB c</code
+      >.</p
+    ></li
+  ></ul
+><p
+>Not so scary after all. Well, except for the details we're ignoring.</p
+></div>
+<div class="slide">
+<h1
+>Universal quantification to the rescue!</h1
+><p
+>Let's start with the obviously bothersome part of the type signature.</p
+><pre class="sourceCode haskell"
+><code
+  >(forall c<span class="fu"
+    >.</span
+    > <span class="dt"
+    >SafeConn</span
+    > c -&gt; <span class="dt"
+    >DB</span
+    > c a)<br
+     /></code
+  ></pre
+><p
+>This is the same universal quantification we've seen before, meaning:</p
+><ul
+><li
+  ><p
+    >Our &quot;I can haz connection&quot; action must work <em
+      >over all types</em
+      > <code
+      >c</code
+      >.</p
+    ></li
+  ><li
+  ><p
+    >The <em
+      >scope</em
+      > of <code
+      >c</code
+      > extends only to the rightmost parenthesis here.</p
+    ></li
+  ></ul
+><p
+>Putting it back into context:</p
+><pre class="sourceCode haskell"
+><code
+  >withConnection :: <span class="dt"
+    >Pool</span
+    ><br
+     />               -&gt; (forall c<span class="fu"
+    >.</span
+    > <span class="dt"
+    >SafeConn</span
+    > c -&gt; <span class="dt"
+    >DB</span
+    > c a) <br
+     />               -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     /></code
+  ></pre
+><p
+>The type variable <code
+  >c</code
+  > can't escape from its scope, so <code
+  >a</code
+  > <em
+  >cannot be related</em
+  > to <code
+  >c</code
+  >.</p
+></div>
+<div class="slide">
+<h1
+>Wait, wait. What, exactly, got rescued?</h1
+><pre class="sourceCode haskell"
+><code
+  >withConnection :: <span class="dt"
+    >Pool</span
+    ><br
+     />               -&gt; (forall c<span class="fu"
+    >.</span
+    > <span class="dt"
+    >SafeConn</span
+    > c -&gt; <span class="dt"
+    >DB</span
+    > c a) <br
+     />               -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     /></code
+  ></pre
+><p
+>Because <code
+  >SafeConn c</code
+  > shares the same phantom type as <code
+  >DB c</code
+  >, and the quantified <code
+  >c</code
+  > type cannot escape to the outer <code
+  >IO</code
+  >, there is no way for a <code
+  >SafeConn c</code
+  > <em
+  >value</em
+  > to escape, either!</p
+><p
+>In other words, we have ensured that a user of <code
+  >withConnection</code
+  > cannot either accidentally allow or force a connection to escape from the place where we've deemed them legal to use.</p
+></div>
+<div class="slide">
+<h1
+>Rank-2 types</h1
+><p
+>Standard Haskell types and functions have just one scope for universal quantification.</p
+><pre class="sourceCode haskell"
+><code
+  >foo :: forall a b<span class="fu"
+    >.</span
+    > a -&gt; b -&gt; a<br
+     /></code
+  ></pre
+><p
+>When an extra level of scoping for universal quantification is introduced, this is called a rank-2 type.</p
+><pre class="sourceCode haskell"
+><code
+  >fnord :: forall b<span class="fu"
+    >.</span
+    > (forall a<span class="fu"
+    >.</span
+    > a -&gt; a) -&gt; b<br
+     /></code
+  ></pre
+><p
+>(Normal types are thus called rank-1 types.)</p
+><p
+>Although widely used, rank-2 types are not yet a part of the Haskell standard, hence our use of a pragma earlier:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="ot"
+    >{-# LANGUAGE Rank2Types #-}</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Bonus question 1</h1
+><p
+>What expressions can we write that have this type?</p
+><pre class="sourceCode haskell"
+><code
+  >[forall a<span class="fu"
+    >.</span
+    > a]<br
+     /></code
+  ></pre
+><p
+>What about this one?</p
+><pre class="sourceCode haskell"
+><code
+  >[forall a<span class="fu"
+    >.</span
+    > (<span class="kw"
+    >Enum</span
+    > a) =&gt; a]<br
+     /></code
+  ></pre
+><p
+>Or this?</p
+><pre class="sourceCode haskell"
+><code
+  >[forall a<span class="fu"
+    >.</span
+    > (<span class="kw"
+    >Num</span
+    > a) =&gt; a]<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Bonus question 2</h1
+><p
+>Do we have time to talk about how to write a <code
+  >Monad</code
+  > instance for <code
+  >DB</code
+  >?</p
+></div>
+<div class="slide">
+<h1
+>Purity in the face of change</h1
+><p
+>We've now seen several cases where phantom types and rank-2 types let us use the compiler to automatically prevent ourselves from writing bad code.</p
+><p
+>We can also use them to introduce safe, controlled mutation into our programs.</p
+></div>
+<div class="slide">
+<h1
+>Sad face</h1
+><p
+>A typical lament of a functional programmer:</p
+><ul
+><li
+  >&quot;Alas! Woe is me! Etc., etc.! There is no known purely functional algorithm for my problem that performs as well as this seductive imperative code!&quot;</li
+  ></ul
+><p
+>:-(</p
+><p
+>:-(</p
+><p
+>Of course, in the worst case, we can emulate a flat, mutable memory with a purely functional map, thus incurring only <span class="math"
+  ><em
+    >O</em
+    >(log <em
+    >n</em
+    >)</span
+  > of additional overhead.</p
+></div>
+<div class="slide">
+<h1
+>Cake: having and eating</h1
+><p
+>Enter the <code
+  >ST</code
+  > monad!</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >import</span
+    > <span class="dt"
+    >Control.Monad.ST</span
+    ><br
+     /></code
+  ></pre
+><p
+>This defines for us a function with a glorious rank-2 type:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="fu"
+    >&gt;&gt;</span
+    > <span class="fu"
+    >:</span
+    >t runST<br
+     />runST :: (forall s<span class="fu"
+    >.</span
+    > <span class="dt"
+    >ST</span
+    > s a) -&gt; a<br
+     /></code
+  ></pre
+><p
+>Since we've only just been introduced to rank-2 types, we know exactly what this implies:</p
+><ul
+><li
+  ><p
+    >What happens in the <code
+      >ST</code
+      > monad <em
+      >stays</em
+      > in the <code
+      >ST</code
+      > monad.</p
+    ></li
+  ><li
+  ><p
+    >Nevertheles, we can obtain a pure result when we run an action in this monad. That's an exciting prospect!</p
+    ></li
+  ></ul
+></div>
+<div class="slide">
+<h1
+>Mutable references, ST style</h1
+><p
+>The <code
+  >STRef</code
+  > type gives us the same mutable references as <code
+  >IORef</code
+  >, but in the <code
+  >ST</code
+  > monad.</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >import</span
+    > <span class="dt"
+    >Control.Monad.ST</span
+    ><br
+     /><span class="kw"
+    >import</span
+    > <span class="dt"
+    >Data.STRef</span
+    ><br
+     /><br
+     />whee :: <span class="dt"
+    >ST</span
+    > s <span class="dt"
+    >Int</span
+    ><br
+     />whee z <span class="fu"
+    >=</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />  r &lt;- newSTRef z<br
+     />  modifySTRef r (<span class="fu"
+    >+</span
+    ><span class="dv"
+    >1</span
+    >)<br
+     />  readSTRef r<br
+     /></code
+  ></pre
+><p
+>Let's try this in <code
+  >ghci</code
+  >:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="fu"
+    >&gt;&gt;</span
+    > runST (whee <span class="dv"
+    >1</span
+    >)<br
+     /><span class="dv"
+    >2</span
+    ><br
+     /></code
+  ></pre
+><p
+>Thanks to chaining of the universally quantified <code
+  >s</code
+  >, there is no way for an <code
+  >STRef</code
+  > to escape from the <code
+  >ST</code
+  > monad, save by the approved route of reading its current value with <code
+  >readSTRef</code
+  >.</p
+><pre class="sourceCode haskell"
+><code
+  >newSTRef  :: a -&gt; <span class="dt"
+    >ST</span
+    > s (<span class="dt"
+    >STRef</span
+    > s a)<br
+     />readSTRef :: <span class="dt"
+    >STRef</span
+    > s a -&gt; <span class="dt"
+    >ST</span
+    > s a<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Arrays and vectors</h1
+><p
+>For working with large collections of uniform data, the usual representation in most languages is an array.</p
+><p
+>The longtime standard for working with arrays in Haskell is the <code
+  >Array</code
+  > type, from the <code
+  >array</code
+  > package, but I don't like it: it has an API that is simultaneously bizarre, too general, and puny.</p
+><p
+>I much prefer its modern cousin, the <code
+  >vector</code
+  > package:</p
+><ul
+><li
+  ><p
+    ><code
+      >vector</code
+      > provides a <em
+      >vastly</em
+      > richer API than <code
+      >array</code
+      >.</p
+    ></li
+  ><li
+  ><p
+    >A <code
+      >Vector</code
+      > is one-dimensional and indexed by <code
+      >Int</code
+      >s counting from zero, so it's easy to reason about.</p
+    ></li
+  ><li
+  ><p
+    >An <code
+      >Array</code
+      > is indexed by an instance of the <code
+      >Ix</code
+      > class, can have arbitrary bounds, and makes my brain hurt.</p
+    ></li
+  ></ul
+></div>
+<div class="slide">
+<h1
+>Families and flavours of vectors</h1
+><p
+>The <code
+  >vector</code
+  > package provides two &quot;flavours&quot; of vector type:</p
+><ul
+><li
+  ><p
+    ><code
+      >Vector</code
+      > types are immutable.</p
+    ></li
+  ><li
+  ><p
+    ><code
+      >MVector</code
+      > types can be modified in either the <code
+      >ST</code
+      > or <code
+      >IO</code
+      > monad, and cannot be read by purely functional code.</p
+    ></li
+  ></ul
+><p
+>Within these flavours, there are two &quot;families&quot; of vector type:</p
+><ul
+><li
+  ><p
+    >Unboxed vectors are tightly packed in contiguous memory. They are very fast, but it is only possible to create unboxed vectors of certain types, and an unboxed vector can't store thunks.</p
+    ></li
+  ><li
+  ><p
+    >Normal vectors are boxed, just like ordinary Haskell values. Any value can be stored in a plain old vector, at the cost of an additional level of indirection.</p
+    ></li
+  ></ul
+><p
+>We can thus have an immutable unboxed vector, a mutable boxed vector, and so on.</p
+></div>
+<div class="slide">
+<h1
+>Mutable vectors in action</h1
+><p
+>The classic Haskell implementation of a &quot;quicksort&quot;:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >import</span
+    > <span class="dt"
+    >Data.List</span
+    > (partition)<br
+     /><br
+     />qsort (p<span class="fu"
+    >:</span
+    >xs) <span class="fu"
+    >=</span
+    > qsort lt <span class="fu"
+    >++</span
+    > [p] <span class="fu"
+    >++</span
+    > qsort ge<br
+     />  <span class="kw"
+    >where</span
+    > (lt,ge) <span class="fu"
+    >=</span
+    > partition (<span class="fu"
+    >&lt;</span
+    >p) xs<br
+     />qsort _      <span class="fu"
+    >=</span
+    > []<br
+     /></code
+  ></pre
+><p
+>This isn't <em
+  >really</em
+  > a quicksort, because it doesn't operate in-place.</p
+><p
+>We can apply our newfound knowledge to this problem:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >import</span
+    > <span class="kw"
+    >qualified</span
+    > <span class="dt"
+    >Data.Vector.Unboxed.Mutable</span
+    > <span class="kw"
+    >as</span
+    > <span class="dt"
+    >V</span
+    ><br
+     /><span class="kw"
+    >import</span
+    > <span class="dt"
+    >Control.Monad.ST</span
+    > (<span class="dt"
+    >ST</span
+    >)<br
+     /><br
+     />quicksort :: <span class="dt"
+    >V.MVector</span
+    > s <span class="dt"
+    >Int</span
+    > -&gt; <span class="dt"
+    >ST</span
+    > s ()<br
+     />quicksort vec <span class="fu"
+    >=</span
+    > go <span class="dv"
+    >0</span
+    > (V.length vec)<br
+     />  <span class="kw"
+    >where</span
+    ><br
+     />    <span class="co"
+    >{- ... -}</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>The recursive step</h1
+><pre class="sourceCode haskell"
+><code
+  >    recur left right<br
+     />      <span class="fu"
+    >|</span
+    > left <span class="fu"
+    >&gt;=</span
+    > right <span class="fu"
+    >=</span
+    > <span class="fu"
+    >return</span
+    > ()<br
+     />      <span class="fu"
+    >|</span
+    > <span class="fu"
+    >otherwise</span
+    >     <span class="fu"
+    >=</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />      idx &lt;- partition left right<br
+     />             (left <span class="fu"
+    >+</span
+    > (right<span class="fu"
+    >-</span
+    >left) <span class="ot"
+    >`div`</span
+    > <span class="dv"
+    >2</span
+    >)<br
+     />      recur left (idx<span class="fu"
+    >-</span
+    ><span class="dv"
+    >1</span
+    >)<br
+     />      recur (idx<span class="fu"
+    >+</span
+    ><span class="dv"
+    >1</span
+    >) right<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Partitioning the vector</h1
+><p
+>(Remember, <code
+  >vec</code
+  > is in scope here.)</p
+><pre class="sourceCode haskell"
+><code
+  >    partition left right pivotIdx <span class="fu"
+    >=</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />      pivot &lt;- V.read vec pivotIdx<br
+     />      V.swap vec pivotIdx right<br
+     />      <span class="kw"
+    >let</span
+    > loop i k<br
+     />            <span class="fu"
+    >|</span
+    > i <span class="fu"
+    >==</span
+    > right <span class="fu"
+    >=</span
+    > V.swap vec k right <span class="fu"
+    >&gt;&gt;</span
+    ><br
+     />                           <span class="fu"
+    >return</span
+    > k<br
+     />            <span class="fu"
+    >|</span
+    > <span class="fu"
+    >otherwise</span
+    > <span class="fu"
+    >=</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />            v &lt;- V.read vec i<br
+     />            <span class="kw"
+    >if</span
+    > v <span class="fu"
+    >&lt;</span
+    > pivot<br
+     />              <span class="kw"
+    >then</span
+    > V.swap vec i k <span class="fu"
+    >&gt;&gt;</span
+    ><br
+     />                   loop (i<span class="fu"
+    >+</span
+    ><span class="dv"
+    >1</span
+    >) (k<span class="fu"
+    >+</span
+    ><span class="dv"
+    >1</span
+    >)<br
+     />              <span class="kw"
+    >else</span
+    > loop (i<span class="fu"
+    >+</span
+    ><span class="dv"
+    >1</span
+    >) k<br
+     />      loop left left<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>From immutable to mutable, and back</h1
+><p
+>We can even use this in-place sort to efficiently perform an in-place sort of an immutable array!</p
+><p
+>Our building blocks:</p
+><pre class="sourceCode haskell"
+><code
+  >thaw   :: <span class="dt"
+    >Vector</span
+    > a -&gt; <span class="dt"
+    >ST</span
+    > s (<span class="dt"
+    >MVector</span
+    > s a)<br
+     />create :: (forall s<span class="fu"
+    >.</span
+    > <span class="dt"
+    >ST</span
+    > s (<span class="dt"
+    >MVector</span
+    > s a)) -&gt; <span class="dt"
+    >Vector</span
+    > a<br
+     /></code
+  ></pre
+><ul
+><li
+  ><p
+    ><code
+      >thaw</code
+      > creates a new mutable vector, and copies the contents of the immutable vector into it.</p
+    ></li
+  ><li
+  ><p
+    ><code
+      >create</code
+      > runs an <code
+      >ST</code
+      > action that returns a mutable vector, and &quot;freezes&quot; its result to be immutable, and hence usable in pure code.</p
+    ></li
+  ></ul
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >import</span
+    > <span class="kw"
+    >qualified</span
+    > <span class="dt"
+    >Data.Vector.Unboxed</span
+    > <span class="kw"
+    >as</span
+    > <span class="dt"
+    >U</span
+    ><br
+     /><br
+     />vsort :: <span class="dt"
+    >U.Vector</span
+    > <span class="dt"
+    >Int</span
+    > -&gt; <span class="dt"
+    >U.Vector</span
+    > <span class="dt"
+    >Int</span
+    ><br
+     />vsort v <span class="fu"
+    >=</span
+    > U.create <span class="fu"
+    >$</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />            vec &lt;- U.thaw v<br
+     />            quicksort vec<br
+     />            <span class="fu"
+    >return</span
+    > vec<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Mutability, purity, and determinism</h1
+><p
+>The big advantage of the <code
+  >ST</code
+  > monad is that it gives us the ability to efficiently run computations that require mutability, while both the inputs to and results of our computations remain pure.</p
+><p
+>In order to achieve this, we sacrifice some power:</p
+><ul
+><li
+  ><p
+    >We can't run arbitrary <code
+      >IO</code
+      > actions. No database accesses, no filesystem, etc.</p
+    ></li
+  ><li
+  ><p
+    >Other potential sources of nondeterminism (e.g. threads) are thus also off limits.</p
+    ></li
+  ></ul
+></div>
+<div class="slide">
+<h1
+>Laziness</h1
+><p
+>Originally, this lecture was supposed to be all about the joys of lazy evaluation, but we hijacked much of our time to serve other purposes.</p
+><p
+>I'm going to talk a little bit about it anyway.</p
+><p
+>In a minute.</p
+></div>
+<div class="slide">
+<h1
+>A digression</h1
+><p
+>How can we use random numbers to approximate the value of <span class="math"
+  >π</span
+  >?</p
+></div>
+<div class="slide">
+<h1
+>A digression</h1
+><p
+>How can we use random numbers to approximate the value of pi?</p
+><ul
+><li
+  ><p
+    >Take two random numbers, <span class="math"
+      ><em
+	>x</em
+	></span
+      > and <span class="math"
+      ><em
+	>y</em
+	></span
+      >, on the interval <span class="math"
+      >[0, 1]</span
+      ></p
+    ></li
+  ><li
+  ><p
+    >Add their squares: <span class="math"
+      ><em
+	>r</em
+	> = <em
+	>x</em
+	><sup
+	>2</sup
+	> + <em
+	>y</em
+	><sup
+	>2</sup
+	></span
+      ></p
+    ></li
+  ><li
+  ><p
+    >We have a <span class="math"
+      >π / 4</span
+      > probability of <span class="math"
+      ><em
+	>r</em
+	> ≤ 1</span
+      ></p
+    ></li
+  ></ul
+><p
+>What can we do with this knowledge?</p
+></div>
+<div class="slide">
+<h1
+>Purely functional random numbers</h1
+><p
+>Haskell supplies a <code
+  >random</code
+  > package that we can use in a purely functional setting.</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >class</span
+    > <span class="dt"
+    >Random</span
+    > a <span class="kw"
+    >where</span
+    ><br
+     />    random :: <span class="dt"
+    >RandomGen</span
+    > g =&gt; g -&gt; (a, g)<br
+     /><br
+     /><span class="kw"
+    >class</span
+    > <span class="dt"
+    >RandomGen</span
+    > g <span class="kw"
+    >where</span
+    ><br
+     />    next   :: g -&gt; (<span class="dt"
+    >Int</span
+    >, g)<br
+     />    split  :: g -&gt; (g, g)<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>RandomGen</h1
+><p
+>The <code
+  >RandomGen</code
+  > class is a building block: it specifies an interface for a generator that can generate uniformly distributed pseudo-random <code
+  >Int</code
+  >s.</p
+><p
+>There is one default instance of this class:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >data</span
+    > <span class="dt"
+    >StdGen</span
+    > <span class="co"
+    >{- opaque -}</span
+    ><br
+     /><br
+     /><span class="kw"
+    >instance</span
+    > <span class="dt"
+    >RandomGen</span
+    > <span class="dt"
+    >StdGen</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Random</h1
+><p
+>The <code
+  >Random</code
+  > class specifies how to generate a pseudo-random value of some type, given the random numbers generated by a <code
+  >Gen</code
+  > instance.</p
+><p
+>Quite a few common types have <code
+  >Random</code
+  > instances.</p
+><ul
+><li
+  ><p
+    >For <code
+      >Int</code
+      >, the instance will generate any representable value.</p
+    ></li
+  ><li
+  ><p
+    >For <code
+      >Double</code
+      >, the instance will generate a value in the range <span class="math"
+      >[0, 1]</span
+      >.</p
+    ></li
+  ></ul
+></div>
+<div class="slide">
+<h1
+>Generators are pure</h1
+><p
+>Since we want to use a PRNG in pure code, we obviously can't modify the state of a PRNG when we generate a new value.</p
+><p
+>This is why <code
+  >next</code
+  > and <code
+  >random</code
+  > return a <em
+  >new</em
+  > state for the PRNG every time we generate a new pseudo-random value.</p
+></div>
+<div class="slide">
+<h1
+>Throwing darts at the board</h1
+><p
+>Here's how we can generate a guess at <span class="math"
+  ><em
+    >x</em
+    ><sup
+    >2</sup
+    > + <em
+    >y</em
+    ><sup
+    >2</sup
+    ></span
+  >:</p
+><pre class="sourceCode haskell"
+><code
+  >guess :: (<span class="dt"
+    >RandomGen</span
+    > g) =&gt; (<span class="dt"
+    >Double</span
+    >,g) -&gt; (<span class="dt"
+    >Double</span
+    >,g)<br
+     />guess (_,g) <span class="fu"
+    >=</span
+    > (z, g'')<br
+     />    <span class="kw"
+    >where</span
+    > z        <span class="fu"
+    >=</span
+    > x<span class="fu"
+    >^</span
+    ><span class="dv"
+    >2</span
+    > <span class="fu"
+    >+</span
+    > y<span class="fu"
+    >^</span
+    ><span class="dv"
+    >2</span
+    ><br
+     />          (x, g')  <span class="fu"
+    >=</span
+    > random g<br
+     />          (y, g'') <span class="fu"
+    >=</span
+    > random g'<br
+     /></code
+  ></pre
+><p
+>Note that we have to hand back the <em
+  >final</em
+  > state of the PRNG along with our result!</p
+><p
+>If we handed back <code
+  >g</code
+  > or <code
+  >g'</code
+  > instead, our numbers would either be all identical or disastrously correlated (every <code
+  >x</code
+  > would just be a repeat of the previous <code
+  >y</code
+  >).</p
+></div>
+<div class="slide">
+<h1
+>Global state</h1
+><p
+>We can use the <code
+  >getStdGen</code
+  > function to get a handy global PRNG state:</p
+><pre class="sourceCode haskell"
+><code
+  >getStdGen :: <span class="dt"
+    >IO</span
+    > <span class="dt"
+    >StdGen</span
+    ><br
+     /></code
+  ></pre
+><p
+>This does <em
+  >not</em
+  > modify the state, though. If we use <code
+  >getStdGen</code
+  > twice in succession, we'll get the same result each time.</p
+><p
+>To be safe, we should update the global PRNG state with the final PRNG state returned by our pure code:</p
+><pre class="sourceCode haskell"
+><code
+  >setStdGen :: <span class="dt"
+    >StdGen</span
+    > -&gt; <span class="dt"
+    >IO</span
+    > ()<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Ugh - let's split!</h1
+><p
+>Calling <code
+  >getStdGen</code
+  > and <code
+  >setStdGen</code
+  > from <code
+  >ghci</code
+  > is a pain, so let's write a combinator to help us.</p
+><p
+>Remember that <code
+  >split</code
+  > method from earlier?</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="kw"
+    >class</span
+    > <span class="dt"
+    >RandomGen</span
+    > g <span class="kw"
+    >where</span
+    ><br
+     />    split  :: g -&gt; (g, g)<br
+     /></code
+  ></pre
+><p
+>This &quot;forks&quot; the PRNG, creating two children with different states.</p
+><p
+>The hope is that the states will be different enough that pseudo-random values generated from each will not be obviously correlated.</p
+><pre class="sourceCode haskell"
+><code
+  >withGen :: (<span class="dt"
+    >StdGen</span
+    > -&gt; a) -&gt; <span class="dt"
+    >IO</span
+    > a<br
+     />withGen f <span class="fu"
+    >=</span
+    > <span class="kw"
+    >do</span
+    ><br
+     />  g &lt;- getStdGen<br
+     />  <span class="kw"
+    >let</span
+    > (g',g'') <span class="fu"
+    >=</span
+    > split g<br
+     />  setStdGen g'<br
+     />  <span class="fu"
+    >return</span
+    > (f g'')<br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Living in ghci</h1
+><p
+>Now we can use our <code
+  >guess</code
+  > function reasonably easily.</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="fu"
+    >&gt;&gt;</span
+    > <span class="kw"
+    >let</span
+    > f <span class="fu"
+    >=</span
+    > <span class="fu"
+    >fst</span
+    > <span class="ot"
+    >`fmap`</span
+    > withGen (guess <span class="fu"
+    >.</span
+    > ((,) <span class="dv"
+    >0</span
+    >))<br
+     /><span class="fu"
+    >&gt;&gt;</span
+    > f<br
+     /><span class="dv"
+    >1</span
+    ><span class="fu"
+    >.</span
+    ><span class="dv"
+    >2397265526054513</span
+    ><br
+     /><span class="fu"
+    >&gt;&gt;</span
+    > f<br
+     /><span class="dv"
+    >0</span
+    ><span class="fu"
+    >.</span
+    ><span class="dv"
+    >9506331164887969</span
+    ><br
+     /></code
+  ></pre
+></div>
+<div class="slide">
+<h1
+>Let's iterate</h1
+><p
+>Here's a useful function from the <code
+  >Prelude</code
+  >:</p
+><pre class="sourceCode haskell"
+><code
+  ><span class="fu"
+    >iterate</span
+    > :: (a -&gt; a) -&gt; a -&gt; [a]<br
+     /><span class="fu"
+    >iterate</span
+    > f x <span class="fu"
+    >=</span
+    > x <span class="fu"
+    >:</span
+    > <span class="fu"
+    >iterate</span
+    > f (f x)<br
+     /></code
+  ></pre
+><p
+>Obviously that list is infinite.</p
+><p
+>Let's use <code
+  >iterate</code
+  > and <code
+  >guess</code
+  >, and as much other <code
+  >Prelude</code
+  > machinery as we can think of, to write a function that can approximate <span class="math"
+  >π</span
+  >.</p
+><p
+>By the way, in case you don't recognize this technique, it's a famous example of the family of <a href="http://en.wikipedia.org/wiki/Monte_Carlo_method"
+  >Monte Carlo methods</a
+  >.</p
+></div>
+<div class="slide">
+<h1
+>Where's the connection to laziness?</h1
+><p
+>What aspects of laziness were important in developing our solution?</p
+></div>
+</body>
+</html>

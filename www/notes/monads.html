@@ -1,0 +1,291 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta name="generator" content="pandoc" />
+  <title>Monads and more</title>
+  <style type="text/css">
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode, table.sourceCode pre 
+   { margin: 0; padding: 0; border: 0; vertical-align: baseline; border: none; }
+td.lineNumbers { border-right: 1px solid #AAAAAA; text-align: right; color: #AAAAAA; padding-right: 5px; padding-left: 5px; }
+td.sourceCode { padding-left: 5px; }
+code.sourceCode span.kw { color: #007020; font-weight: bold; } 
+code.sourceCode span.dt { color: #902000; }
+code.sourceCode span.dv { color: #40a070; }
+code.sourceCode span.bn { color: #40a070; }
+code.sourceCode span.fl { color: #40a070; }
+code.sourceCode span.ch { color: #4070a0; }
+code.sourceCode span.st { color: #4070a0; }
+code.sourceCode span.co { color: #60a0b0; font-style: italic; }
+code.sourceCode span.ot { color: #007020; }
+code.sourceCode span.al { color: red; font-weight: bold; }
+code.sourceCode span.fu { color: #06287e; }
+code.sourceCode span.re { }
+code.sourceCode span.er { color: red; font-weight: bold; }
+  </style>
+</head>
+<body>
+<h1 class="title">Monads and more</h1>
+<h1 id="remember-the-maybe-type">Remember the Maybe type</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="fu">=</span> <span class="kw">Nothing</span><br />             <span class="fu">|</span> <span class="kw">Just</span> a</code></pre>
+<h1 id="we-know-that-maybe-is-a-functor">We know that Maybe is a functor</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">data</span> <span class="dt">Maybe</span> a <span class="fu">=</span> <span class="kw">Nothing</span><br />             <span class="fu">|</span> <span class="kw">Just</span> a<br /><br /><span class="kw">class</span> <span class="kw">Functor</span> f <span class="kw">where</span><br /><span class="ot">    fmap </span><span class="ot">::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b<br /><br /><span class="kw">instance</span> <span class="kw">Functor</span> <span class="dt">Maybe</span> <span class="kw">where</span><br />    <span class="fu">fmap</span> _ <span class="kw">Nothing</span>  <span class="fu">=</span> <span class="kw">Nothing</span><br />    <span class="fu">fmap</span> f (<span class="kw">Just</span> a) <span class="fu">=</span> <span class="kw">Just</span> (f a)</code></pre>
+<h1 id="what-does-fmap-actually-mean">What does fmap actually mean?</h1>
+<p>We have a polymorphic type <code>f</code>, and <code>fmap</code> gives us the ability to:</p>
+<ul>
+<li><p>Liberate a pure value from the type constructor that refers to it</p></li>
+<li><p>Call a function on it, which could return a result of a different type</p></li>
+<li><p>Have the type constructor refer to the type of the result</p></li>
+</ul>
+<h1 id="so-whats-f">So what's f?</h1>
+<p>That polymorphic type <code>f</code> was daunting to me when I was learning Haskell.</p>
+<p>The easiest easy to <em>begin</em> to think of <code>f</code> is as a &quot;container&quot;.</p>
+<p>Here is the most basic of containers:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">Container</span> a <span class="fu">=</span> <span class="dt">Container</span> a<br /><br /><span class="kw">instance</span> <span class="kw">Functor</span> <span class="dt">Container</span> <span class="kw">where</span><br />    <span class="fu">fmap</span> f (<span class="dt">Container</span> a) <span class="fu">=</span> <span class="dt">Container</span> (f a)</code></pre>
+<p>We can't get any simpler than this, since (being a <code>newtype</code>) it doesn't have a runtime representation at all.</p>
+<h1 id="more-containers">More containers</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> <span class="dt">Container</span> <span class="kw">where</span><br />    <span class="fu">fmap</span> f (<span class="dt">Container</span> a) <span class="fu">=</span> <span class="dt">Container</span> (f a)<br /><br /><span class="kw">instance</span> <span class="kw">Functor</span> <span class="dt">Maybe</span> <span class="kw">where</span><br />    <span class="fu">fmap</span> _ <span class="kw">Nothing</span>  <span class="fu">=</span> <span class="kw">Nothing</span><br />    <span class="fu">fmap</span> f (<span class="kw">Just</span> a) <span class="fu">=</span> <span class="kw">Just</span> (f a)<br /><br /><span class="kw">instance</span> <span class="kw">Functor</span> [] <span class="kw">where</span><br />    <span class="fu">fmap</span> <span class="fu">=</span> <span class="fu">map</span></code></pre>
+<p>Having seen these instances, we can now state with some confidence:</p>
+<ul>
+<li><p>For a container type, <code>fmap</code> replaces every element of the container with the result of applying <code>f</code> to that element.</p></li>
+<li><p>It leaves the <em>structure</em> of the container unchanged.</p></li>
+</ul>
+<p>In other words, <code>fmap</code> will not turn a <code>Just</code> into a <code>Nothing</code>, or a 3-element list into an empty list, or the like.</p>
+<h1 id="is-that-it">Is that it?</h1>
+<p>As useful as this intuitive picture is, it's actually not general enough.</p>
+<p>We'd be making a mistake if we thought we had the whole story now, because the truth is far richer (and stranger).</p>
+<h1 id="functions">Functions</h1>
+<p>Let's poke about in <code>ghci</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">&gt;&gt;</span> <span class="fu">:</span><span class="kw">type</span> <span class="fu">not</span><br /><span class="fu">not</span><span class="ot"> </span><span class="ot">::</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> <span class="dt">Bool</span></code></pre>
+<p>Remember that the <code>-&gt;</code> symbol is not magic: it's just a type constructor.</p>
+<p>Using a notational shortcut, we could rewrite the type above as:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="ot">-&gt;</span>) <span class="dt">Bool</span> <span class="dt">Bool</span></code></pre>
+<p>If we get rid of the concrete types and replace them with polymorphic placeholders, we can write a type signature like this:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="ot">-&gt;</span>) a b</code></pre>
+<h1 id="more-fun-with-functions">More fun with functions</h1>
+<p>Okay, so we know that this is a function type:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="ot">-&gt;</span>)</code></pre>
+<p>And this is a function that accepts an argument of some type <code>a</code>, and gives a result of some other type <code>b</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="ot">-&gt;</span>) a b</code></pre>
+<p>So then what's this?</p>
+<pre class="sourceCode"><code class="sourceCode haskell">(<span class="ot">-&gt;</span>) a</code></pre>
+<h1 id="isnt-that-suggestive">Isn't that suggestive?</h1>
+<p>This type, being a function that accepts an argument of type <code>a</code>, is polymorphic. (Why?)</p>
+<pre class="sourceCode"><code class="sourceCode haskell">((<span class="ot">-&gt;</span>) a)</code></pre>
+<p>Which suggests that even though it's surely not a container type, we could write a <code>Functor</code> instance.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> ((<span class="ot">-&gt;</span>) a) <span class="kw">where</span><br />    <span class="fu">fmap</span> f <span class="co">{- ...what? -}</span></code></pre>
+<h1 id="stop-hammer-time">Stop! Hammer time!</h1>
+<p>On the whiteboard, let's puzzle through what the <code>Functor</code> instance ought to look like.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> ((<span class="ot">-&gt;</span>) a) <span class="kw">where</span><br />    <span class="fu">fmap</span> f <span class="co">{- ...what? -}</span></code></pre>
+<h1 id="i-hope-you-havent-peeked-ahead">I hope you haven't peeked ahead!</h1>
+<p>Because here's that definition we were scrawling on the whiteboard.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> ((<span class="ot">-&gt;</span>) a) <span class="kw">where</span><br />    <span class="fu">fmap</span> f g <span class="fu">=</span> \x <span class="ot">-&gt;</span> f (g x)</code></pre>
+<p>Which we can simplify to:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> ((<span class="ot">-&gt;</span>) a) <span class="kw">where</span><br />    <span class="fu">fmap</span> f g <span class="fu">=</span> f <span class="fu">.</span> g</code></pre>
+<p>And again:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> ((<span class="ot">-&gt;</span>) a) <span class="kw">where</span><br />    <span class="fu">fmap</span> <span class="fu">=</span> (<span class="fu">.</span>)</code></pre>
+<h1 id="wow.-wow">Wow. Wow!</h1>
+<p>Function application is somehow a functor?</p>
+<p>I know, right!?</p>
+<p>Let's play with that in <code>ghci</code> a bit.</p>
+<h1 id="so-really-whats-a-functor">So really, what's a functor?</h1>
+<p>A functor (in Haskell) is simply a pair of things:</p>
+<ul>
+<li><p>A polymorphic type</p></li>
+<li><p>A definition for <code>fmap</code></p></li>
+</ul>
+<p>The instance has to obey two simple laws:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">fmap</span> <span class="fu">id</span>      <span class="fu">==</span> <span class="fu">id</span><br /><span class="fu">fmap</span> (f <span class="fu">.</span> g) <span class="fu">==</span> <span class="fu">fmap</span> f <span class="fu">.</span> <span class="fu">fmap</span> g</code></pre>
+<p>As usual with laws, it's up to you as a coder to satisfy the laws with your <code>Functor</code> instances.</p>
+<h1 id="the-next-step">The next step</h1>
+<p>In the <code>Control.Applicative</code> package we'll find another extremely useful typeclass:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="kw">where</span><br /><br /><span class="ot">    pure </span><span class="ot">::</span> a <span class="ot">-&gt;</span> f a<br /><br /><span class="ot">    (&lt;*&gt;) </span><span class="ot">::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre>
+<p>The <code>Applicative</code> class builds on functors to add two very useful new behaviours.</p>
+<ul>
+<li><p>The <code>pure</code> operator lifts a normal value into the type.</p></li>
+<li><p>The <code>&lt;*&gt;</code> operator sequences function application through the type.</p></li>
+</ul>
+<h1 id="lifting-again">Lifting again</h1>
+<p>If those definitions feel slippery, remember the signature for <code>fmap</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">fmap</span><span class="ot"> </span><span class="ot">::</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre>
+<p>The only difference between <code>fmap</code> and <code>&lt;*&gt;</code> is that <code>&lt;*&gt;</code> starts off with the function wrapped in the type <code>f</code>.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(&lt;*&gt;) </span><span class="ot">::</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre>
+<p>This is easiest to follow with a concrete example.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Applicative</span> <span class="dt">Maybe</span> <span class="kw">where</span><br />    pure <span class="fu">=</span> <span class="kw">Just</span><br /><br />    <span class="kw">Just</span> f <span class="fu">&lt;*&gt;</span> <span class="kw">Just</span> a <span class="fu">=</span> <span class="kw">Just</span> (f a)<br />    _      <span class="fu">&lt;*&gt;</span> _      <span class="fu">=</span> <span class="kw">Nothing</span></code></pre>
+<h1 id="thinking-about-constraints">Thinking about constraints</h1>
+<p>Which of these questions is easier to answer?</p>
+<ul>
+<li><p>&quot;I'm thinking of a number. It's less than 5.&quot;</p></li>
+<li><p>&quot;I'm thinking of a number. It's less than 5. It's greater than zero.&quot;</p></li>
+</ul>
+<p>By adding more information, we've constrained the possible numbers available to be guessed.</p>
+<p>We can loosely carry this line of thinking over to typeclasses:</p>
+<ul>
+<li><p>The more functions a typeclass has, the more constraints there are on the types that can possibly implement it.</p></li>
+<li><p>The more laws an instance must satisfy, the smaller the number of types that can satisfy them.</p></li>
+</ul>
+<h1 id="function-application-as-an-applicative-functor">Function application as an applicative functor</h1>
+<p>To keep those brains nice and groovy, let's look at how function application lives as an <code>Applicative</code>.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">Applicative</span> ((<span class="ot">-&gt;</span>) a) <span class="kw">where</span><br />    pure _  <span class="fu">=</span> \x <span class="ot">-&gt;</span> x<br /><br />    f <span class="fu">&lt;*&gt;</span> g <span class="fu">=</span> \x <span class="ot">-&gt;</span> f x (g x)</code></pre>
+<h1 id="functor-vs-applicative">Functor vs Applicative</h1>
+<p>The <code>Functor</code> class has one method and two laws.</p>
+<p>The <code>Applicative</code> class adds two methods and four laws (the laws are simple and intuitive, but I'm not going to describe them).</p>
+<p>By appeal to my prior handwaving, the added richness of <code>Applicative</code> comes at a cost:</p>
+<ul>
+<li>There exist many more types that we can turn into functors than into applicatives.</li>
+</ul>
+<p>That richness is appealing though: we'll take it when we can. (But I'm not going to explain why just yet.)</p>
+<h1 id="functor-vs-applicative-revisited">Functor vs Applicative, revisited</h1>
+<p>An applicative is once again a triple of things:</p>
+<ul>
+<li><p>A polymorphic type that we know to be a functor</p></li>
+<li><p>A definition for <code>pure</code></p></li>
+<li><p>A definition for <code>(&lt;*&gt;)</code></p></li>
+</ul>
+<p>And the definitions have to satisfy the aforementioned four laws (which you can <a href="http://hackage.haskell.org/packages/archive/base/latest/doc/html/Control-Applicative.html#t:Applicative">look up for yourself</a>).</p>
+<h1 id="and-on-to-monads">And on to monads</h1>
+<p>Monads represent another step up the ladder of richness from applicative functors.</p>
+<p>This is, of course, thanks to the bind operator.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(&gt;&gt;=) </span><span class="ot">::</span> <span class="kw">Monad</span> m <span class="ot">=&gt;</span> m a <span class="ot">-&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> m b</code></pre>
+<p>We've already used this operator aplenty, but even so, we lacked the background to discuss why it matters.</p>
+<h1 id="what-we-gain-with-a-bind-operator">What we gain with a bind operator</h1>
+<p>Here's a piece of code that we simply can't express using only the <code>Functor</code> or <code>Applicative</code> machinery:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">oddEnough act <span class="fu">=</span> <span class="kw">do</span><br />  v <span class="ot">&lt;-</span> act<br />  <span class="kw">if</span> <span class="fu">odd</span> v<br />    <span class="kw">then</span> <span class="fu">fail</span> <span class="st">&quot;too odd!&quot;</span><br />    <span class="kw">else</span> <span class="fu">return</span> v</code></pre>
+<p>Neither <code>fmap</code> nor <code>&lt;*&gt;</code> lets us &quot;change the shape&quot; of the outcome of a series of operations, but <code>&gt;&gt;=</code> <em>does</em>.</p>
+<p>To make that more concrete:</p>
+<ul>
+<li><p>Any number of compositions of <code>fmap</code> over a <em>k</em>-element list will always give back a <em>k</em>-element list.</p></li>
+<li><p>The <code>&gt;&gt;=</code> operator lets us inspect an intermediate result and thus change what the final result will be, and do so without knowing how the <code>Monad</code> instance is constructed.</p></li>
+</ul>
+<h1 id="some-examples">Some examples</h1>
+<p>Here's a standard function that takes a predicate expression and an action, and executes the action only if the predicate succeeds:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">when </span><span class="ot">::</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">Bool</span> <span class="ot">-&gt;</span> m () <span class="ot">-&gt;</span> m ()<br />when p act <span class="fu">=</span> <span class="kw">if</span> p <span class="kw">then</span> act <span class="kw">else</span> <span class="fu">return</span> ()</code></pre>
+<p>Notice that we've defined a very handy control flow function that will work in <em>all</em> monads.</p>
+<p>Suppose we want to perform an action that returns a success/fail indication, and use that result to determine whether to perform a <em>second</em> action.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">whenM </span><span class="ot">::</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> m <span class="dt">Bool</span> <span class="ot">-&gt;</span> m () <span class="ot">-&gt;</span> m ()</code></pre>
+<p>Let's write out a body for this function.</p>
+<h1 id="tantalizing-hints">Tantalizing hints</h1>
+<p>Here's a function from <code>Control.Monad</code> that we've seen before:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">liftM </span><span class="ot">::</span> <span class="kw">Monad</span> m   <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> r) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m r</code></pre>
+<p>It bears a striking resemblance to this:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">fmap</span><span class="ot">  </span><span class="ot">::</span> <span class="kw">Functor</span> f <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre>
+<p>And here's a function we just met:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">(&lt;*&gt;) </span><span class="ot">::</span> <span class="dt">Applicative</span> f <span class="ot">=&gt;</span> f (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> f a <span class="ot">-&gt;</span> f b</code></pre>
+<p>Which looks very similar to this <code>Control.Monad</code> combinator:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">ap    </span><span class="ot">::</span> <span class="kw">Monad</span> m       <span class="ot">=&gt;</span> m (a <span class="ot">-&gt;</span> b) <span class="ot">-&gt;</span> m a <span class="ot">-&gt;</span> m b</code></pre>
+<h1 id="a-little-history">A little history</h1>
+<p>We've seen that <code>Applicative</code> is defined to be a subclass of <code>Functor</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Functor</span> f <span class="ot">=&gt;</span> <span class="dt">Applicative</span> f <span class="co">{- ... -}</span></code></pre>
+<p>Shouldn't one of these hold, too?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="kw">Functor</span> m <span class="ot">=&gt;</span> <span class="kw">Monad</span> m <span class="co">{- ... -}</span><br /><br /><span class="kw">class</span> <span class="dt">Applicative</span> m <span class="ot">=&gt;</span> <span class="kw">Monad</span> m <span class="co">{- ... -}</span></code></pre>
+<p>&quot;Yes&quot; in principle, but for historical reasons, &quot;no&quot;.</p>
+<p>Monads and functors were introduced to Haskell around the same time, and I'm not sure the possible relationship between them was recognized at the time.</p>
+<p>Applicative functors <a href="http://www.soi.city.ac.uk/~ross/papers/Applicative.html">arrived on the scene much later</a>. By the time a possible resolution to the tangle was identified, there was too much code &quot;in the wild&quot; to change things.</p>
+<h1 id="function-application-as-a-monad">Function application as a monad</h1>
+<p>Continuing our theme that just like functors and applicatives, monads are not limited to container types:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Monad</span> ((<span class="ot">-&gt;</span>) r) <span class="kw">where</span><br />    <span class="co">-- same as the pure method of Applicative</span><br />    <span class="fu">return</span> _ <span class="fu">=</span> \x <span class="ot">-&gt;</span> x<br /><br />    f <span class="fu">&gt;&gt;=</span> g  <span class="fu">=</span> \x <span class="ot">-&gt;</span> g (f x) x</code></pre>
+<h1 id="parsing">Parsing</h1>
+<p>Suppose we want to parse part of a string.</p>
+<p>We need to consume some - but probably not all - of the input, and return a result. Let's return the remainder of the input that we haven't consumed, so someone else can deal with it.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">parse </span><span class="ot">::</span> <span class="dt">String</span> <span class="ot">-&gt;</span> (a, <span class="dt">String</span>)</code></pre>
+<h1 id="purely-functional-random-numbers">Purely functional random numbers</h1>
+<p>Let's briefly get back to some material I didn't have time to cover a few weeks ago.</p>
+<p>Haskell supplies a <code>random</code> package that we can use in a purely functional setting.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> <span class="dt">Random</span> a <span class="kw">where</span><br /><span class="ot">    random </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> g <span class="ot">-&gt;</span> (a, g)<br /><br /><span class="kw">class</span> <span class="dt">RandomGen</span> g <span class="kw">where</span><br /><span class="ot">    next   </span><span class="ot">::</span> g <span class="ot">-&gt;</span> (<span class="dt">Int</span>, g)<br /><span class="ot">    split  </span><span class="ot">::</span> g <span class="ot">-&gt;</span> (g, g)</code></pre>
+<h1 id="modifying-state">&quot;Modifying&quot; state</h1>
+<p>Notice the similarities between these types:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">random </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> g      <span class="ot">-&gt;</span> (a, g)<br /><span class="ot">parse  </span><span class="ot">::</span>                <span class="dt">String</span> <span class="ot">-&gt;</span> (a, <span class="dt">String</span>)</code></pre>
+<p>In each case, we emulate &quot;state update&quot; by returning a new state.</p>
+<h1 id="yuck">Yuck!</h1>
+<p>From that earlier lecture's unseen slides, recall that threading through all those updates is a pain:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">guess </span><span class="ot">::</span> (<span class="dt">RandomGen</span> g) <span class="ot">=&gt;</span> (<span class="dt">Double</span>,g) <span class="ot">-&gt;</span> (<span class="dt">Double</span>,g)<br />guess (_,g) <span class="fu">=</span> (z, g'')<br />    <span class="kw">where</span> z        <span class="fu">=</span> x<span class="fu">^</span><span class="dv">2</span> <span class="fu">+</span> y<span class="fu">^</span><span class="dv">2</span><br />          (x, g')  <span class="fu">=</span> random g<br />          (y, g'') <span class="fu">=</span> random g'</code></pre>
+<p>It would be really easy to reuse a piece of state by accident, and this is a very simple function!</p>
+<h1 id="a-new-look-at-state-transformation">A new look at state transformation</h1>
+<p>Here's our most general setting for those state transformation functions:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">s <span class="ot">-&gt;</span> (a,s)</code></pre>
+<p>If we pay no attention to the <code>s</code> parameter, we have one of the crucial criteria for being a <code>Functor</code>, <code>Applicative</code>, or <code>Monad</code>:</p>
+<ul>
+<li>A fully polymorphic type</li>
+</ul>
+<p>What about the rest?</p>
+<h1 id="a-little-protection">A little protection</h1>
+<p>It would actually be a bad thing if we were to declare this type to be a <code>Functor</code>:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">s <span class="ot">-&gt;</span> (a,s)</code></pre>
+<p>Why? It would overlap with the <code>Functor</code> instance for <code>((-&gt;) a)</code>.</p>
+<p>To avoid the potential for overlapping instances, we wrap up our state transformation type in a <code>newtype</code>.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">newtype</span> <span class="dt">State</span> s a <span class="fu">=</span> <span class="dt">State</span> {<br /><span class="ot">      runState </span><span class="ot">::</span> s <span class="ot">-&gt;</span> (a,s)<br />    }</code></pre>
+<h1 id="a-functor-instance">A Functor instance</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Functor</span> (<span class="dt">State</span> s) <span class="kw">where</span><br />    <span class="fu">fmap</span> f (<span class="dt">State</span> action) <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \origState <span class="ot">-&gt;</span><br />      <span class="kw">let</span> (a, newState) <span class="fu">=</span> action origState<br />      <span class="kw">in</span> (f a, newState)</code></pre>
+<p>The nice thing about our state transformer is that it works over <em>all</em> states. Some examples include:</p>
+<ul>
+<li><p>The current state of a PRNG</p></li>
+<li><p>The not-yet-consumed input for a parser</p></li>
+</ul>
+<h1 id="and-a-monad-instance">And a Monad instance</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="kw">Monad</span> (<span class="dt">State</span> s) <span class="kw">where</span><br />    <span class="fu">return</span> a <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span> (a, s)<br /><br />    <span class="dt">State</span> act <span class="fu">&gt;&gt;=</span> k <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span><br />      <span class="kw">let</span> (a, s') <span class="fu">=</span> act s<br />      <span class="kw">in</span> runState (k a) s'</code></pre>
+<p>The bind operator simply passes the result of the first operation to the second.</p>
+<h1 id="manipulating-state-directly">Manipulating state directly</h1>
+<p>We can retrieve the current state by copying it into the result field of our pair.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">get </span><span class="ot">::</span> <span class="dt">State</span> s s<br />get <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span> (s, s)</code></pre>
+<p>If we want to replace the current state with a modified version, that's equally simple.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">put </span><span class="ot">::</span> s <span class="ot">-&gt;</span> <span class="dt">State</span> s ()<br />put s <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \_ <span class="ot">-&gt;</span> ((), s)</code></pre>
+<h1 id="before">Before</h1>
+<p>Recall this function:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">guess </span><span class="ot">::</span> (<span class="dt">RandomGen</span> g) <span class="ot">=&gt;</span> (<span class="dt">Double</span>,g) <span class="ot">-&gt;</span> (<span class="dt">Double</span>,g)<br />guess (_,g) <span class="fu">=</span> (z, g'')<br />    <span class="kw">where</span> z        <span class="fu">=</span> x<span class="fu">^</span><span class="dv">2</span> <span class="fu">+</span> y<span class="fu">^</span><span class="dv">2</span><br />          (x, g')  <span class="fu">=</span> random g<br />          (y, g'') <span class="fu">=</span> random g'</code></pre>
+<h1 id="with-a-little-help">With a little help</h1>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">System.Random</span><br /><span class="kw">import</span> <span class="dt">Control.Monad.State</span><br /><br /><span class="ot">modify' </span><span class="ot">::</span> <span class="dt">MonadState</span> s m <span class="ot">=&gt;</span> (s <span class="ot">-&gt;</span> (a,s)) <span class="ot">-&gt;</span> m a<br />modify' f <span class="fu">=</span> <span class="kw">do</span><br />  s <span class="ot">&lt;-</span> get<br />  <span class="kw">let</span> (a,s') <span class="fu">=</span> f s<br />  put s'<br />  <span class="fu">return</span> a</code></pre>
+<p>The <code>MonadState</code> class takes the <code>State</code>-specific methods, and makes them available for other monads to implement:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="fu">|</span> m <span class="ot">-&gt;</span> s <span class="kw">where</span><br /><span class="ot">    get </span><span class="ot">::</span> m s<br /><span class="ot">    put </span><span class="ot">::</span> s <span class="ot">-&gt;</span> m ()</code></pre>
+<h1 id="functional-dependencies">Functional dependencies</h1>
+<p>Who noticed the vertical bar and arrow?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="fu">|</span> m <span class="ot">-&gt;</span> s <span class="co">{- ... -}</span></code></pre>
+<p>This is called a <em>functional dependency</em>. Fundeps are used to make type checking of multi-parameter type classes tractable.</p>
+<p>This fundep tells the type checker (and us) that the type of the state parameter <code>s</code> can be determined from the type of the monad parameter <code>m</code>.</p>
+<p>How does this work?</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">instance</span> <span class="dt">MonadState</span> s (<span class="dt">State</span> s) <span class="kw">where</span><br />    get   <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \s <span class="ot">-&gt;</span> (s, s)<br />    put s <span class="fu">=</span> <span class="dt">State</span> <span class="fu">$</span> \_ <span class="ot">-&gt;</span> ((), s)</code></pre>
+<p>Here, we're saying that the type <code>State s</code> is our monad, and the fundep ties its <code>s</code> parameter to the <code>s</code> parameter of the <code>MonadState</code> class.</p>
+<h1 id="a-new-guesser">A new guesser</h1>
+<p>Here's a rewrite of our earlier <code>guess</code> function to use the <code>modify'</code> function that we just wrote:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">guess </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> <span class="dt">State</span> g <span class="dt">Double</span><br />guess <span class="fu">=</span> <span class="kw">do</span><br />  a <span class="ot">&lt;-</span> modify' random<br />  b <span class="ot">&lt;-</span> modify' random<br />  <span class="fu">return</span> (a<span class="fu">*</span>a <span class="fu">+</span> b<span class="fu">*</span>b)</code></pre>
+<p>Notice that we've managed to completely hide the state of the PRNG!</p>
+<h1 id="why-functional-dependencies">Why functional dependencies?</h1>
+<p>Suppose we were to write a simpler multi-parameter type class, without the fundep:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">class</span> (<span class="kw">Monad</span> m) <span class="ot">=&gt;</span> <span class="dt">MonadState</span> s m <span class="co">{- ... -}</span></code></pre>
+<p>And if we were to try to typecheck these type signatures:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">modify' </span><span class="ot">::</span> <span class="dt">MonadState</span> s m <span class="ot">=&gt;</span> (s <span class="ot">-&gt;</span> (a,s)) <span class="ot">-&gt;</span> m a<br /><br /><span class="ot">guess </span><span class="ot">::</span> <span class="dt">RandomGen</span> g <span class="ot">=&gt;</span> <span class="dt">State</span> g <span class="dt">Double</span></code></pre>
+<p>Without the fundep, the compiler would choke on these, because it has no information to assure it that the <code>g</code> parameter to <code>State</code> is related to the <code>s</code> parameter to <code>MonadState</code>.</p>
+<h1 id="using-the-state-monad">Using the state monad</h1>
+<p>Suppose we're running a social network, and we want to know who is connected to whom.</p>
+<p>To build a matrix of connections, we need to represent user addresses as integer positions on each axis.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="kw">import</span> <span class="dt">Control.Applicative</span><br /><span class="kw">import</span> <span class="dt">Control.Monad.State</span><br /><span class="kw">import</span> <span class="kw">qualified</span> <span class="dt">Data.Map</span> <span class="kw">as</span> <span class="dt">Map</span><br /><br /><span class="kw">type</span> <span class="dt">Address</span> <span class="fu">=</span> <span class="dt">String</span><br /><br /><span class="kw">data</span> <span class="dt">Number</span> <span class="fu">=</span> <span class="dt">N</span> <span class="fu">!</span>(<span class="dt">Map.Map</span> <span class="dt">Address</span> <span class="dt">Int</span>) <span class="fu">!</span><span class="dt">Int</span><br />              <span class="kw">deriving</span> (<span class="kw">Show</span>)</code></pre>
+<p>The <code>Number</code> type is the state we'll use (and possibly modify) while numbering.</p>
+<h1 id="getting-started">Getting started</h1>
+<p>This is the top-level address-numbering function.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">renumber </span><span class="ot">::</span> [(<span class="dt">Address</span>,<span class="dt">Address</span>)] <span class="ot">-&gt;</span> [(<span class="dt">Int</span>,<span class="dt">Int</span>)]<br />renumber xs <span class="fu">=</span> evalState (<span class="fu">mapM</span> pair xs) (<span class="dt">N</span> Map.empty <span class="dv">0</span>)<br />  <span class="kw">where</span> pair (x,y) <span class="fu">=</span> (,) <span class="fu">&lt;$&gt;</span> number x <span class="fu">&lt;*&gt;</span> number y</code></pre>
+<p>This depends on a few functions we haven't seen before.</p>
+<p>Monadic mapping:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="fu">mapM</span><span class="ot"> </span><span class="ot">::</span> <span class="kw">Monad</span> m <span class="ot">=&gt;</span> (a <span class="ot">-&gt;</span> m b) <span class="ot">-&gt;</span> [a] <span class="ot">-&gt;</span> m [b]</code></pre>
+<p>The second of the three &quot;run me a state monad&quot; functions:</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">runState  </span><span class="ot">::</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span> (a, s)<br /><span class="ot">evalState </span><span class="ot">::</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span>  a<br /><span class="ot">execState </span><span class="ot">::</span> <span class="dt">State</span> s a <span class="ot">-&gt;</span> s <span class="ot">-&gt;</span>     s</code></pre>
+<p>The super-useful <code>&lt;$&gt;</code> operator is nothing but shorthand for <code>fmap</code>.</p>
+<p>And finally, a use in the wild for the <code>&lt;*&gt;</code> operator!</p>
+<h1 id="what-about-the-number-function">What about the number function?</h1>
+<p>This is where the real work happens.</p>
+<p>If an address is already stored in the numbering map, our function returns the number associated with the address.</p>
+<pre class="sourceCode"><code class="sourceCode haskell"><span class="ot">number </span><span class="ot">::</span> <span class="dt">Address</span> <span class="ot">-&gt;</span> <span class="dt">State</span> <span class="dt">Number</span> <span class="dt">Int</span><br />number addr <span class="fu">=</span> <span class="kw">do</span><br />  <span class="dt">N</span> numMap highest <span class="ot">&lt;-</span> get<br />  <span class="kw">case</span> Map.lookup addr numMap <span class="kw">of</span><br />    <span class="kw">Just</span> j  <span class="ot">-&gt;</span> <span class="fu">return</span> j<br />    <span class="kw">Nothing</span> <span class="ot">-&gt;</span> <span class="kw">do</span> <span class="kw">let</span> highest' <span class="fu">=</span> highest <span class="fu">+</span> <span class="dv">1</span><br />                      newMap <span class="fu">=</span> Map.insert addr highest numMap<br />                  put <span class="fu">$!</span> <span class="dt">N</span> newMap highest'<br />                  <span class="fu">return</span> highest'</code></pre>
+<p>Otherwise, we increment the highest number seen, associate the previous number with the address, store the modified state, and return the number.</p>
+<h1 id="the-reader-monad">The Reader monad</h1>
+<p>Reader is another widely used monad, and in fact we've already seen a form of it:</p>
+<pre class="sourceCode"><code class="sourceCode haskell">((<span class="ot">-&gt;</span>) a)</code></pre>
+<p>This is best understood in comparison to the state monad:</p>
+<ul>
+<li><p>In <code>State</code>, every function got passed a piece of state that it could transform. This lets us achieve shared mutable state.</p></li>
+<li><p>In <code>Reader</code>, every function is passed a piece of state that it is not allowed to change. This lets us achieve shared <em>read-only</em> state.</p></li>
+</ul>
+<p>As an example of a piece of immutable data that we might want to thread around all over the place, think &quot;application configuration&quot;.</p>
+<p>The reader monad lets us hide the plumbing of passing that information around.</p>
+<h1 id="reader-vs-reader">Reader vs reader</h1>
+<p>The <code>Reader</code> type is defined in <code>Control.Monad.Reader</code>.</p>
+<p>The <em>only</em> difference between it and <code>((-&gt;) a)</code> is that <code>Reader</code> is a <code>newtype</code> wrapper around <code>((-&gt;) a)</code>.</p>
+</body>
+</html>
