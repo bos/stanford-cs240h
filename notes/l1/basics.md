@@ -1381,7 +1381,7 @@ class Monad m where
     fail :: String -> m a   -- called when pattern binding fails
     fail s = error s        -- default is to throw exception
 
-    (>>) :: m a -> m b -> m a
+    (>>) :: m a -> m b -> m b
     m >> k = m >>= \_ -> k
 ~~~~
 
